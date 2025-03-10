@@ -12,8 +12,6 @@ import IconCloud from "@/components/ui/icon-cloud"
 
 
 export default async function Home() {
-  let blogList = (await getAllBlogs()).slice(0, 4)
-  // console.log('blogList: ', blogList)
 
   return (
     <>
