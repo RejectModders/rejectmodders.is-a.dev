@@ -77,9 +77,6 @@ importers:
       feed:
         specifier: ^4.2.2
         version: 4.2.2
-      google:
-        specifier: link:@next/third-parties/google
-        version: link:@next/third-parties/google
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
@@ -119,6 +116,9 @@ importers:
       remark-gfm:
         specifier: ^4.0.0
         version: 4.0.0
+      simple-icons:
+        specifier: ^14.10.0
+        version: 14.10.0
       tailwind-merge:
         specifier: ^2.5.4
         version: 2.5.4
@@ -2645,6 +2645,10 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  simple-icons@14.10.0:
+    resolution: {integrity: sha512-B5Uip8C0jQ0Mux9kDDmaveexwYS+ATVMaRZmaOaJJqbi+QpRBOHRCjGAeJ4RG7DYeoAkPvEOWRcHssUQ87db7g==}
+    engines: {node: '>=0.12.18'}
 
   simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
@@ -5999,6 +6003,8 @@ snapshots:
       object-inspect: 1.13.3
 
   signal-exit@4.1.0: {}
+
+  simple-icons@14.10.0: {}
 
   simple-swizzle@0.2.2:
     dependencies:
