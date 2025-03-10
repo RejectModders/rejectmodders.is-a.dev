@@ -88,6 +88,6 @@ export type ProjectItemType = {
       link: { href: 'github.com/RejectModders/Discord.py-Template', label: 'Discord.py-Template' },
       gitStars: 1,
       gitForks: 1
-    }
+    },
   ]
   
