@@ -368,8 +368,8 @@ export function Header() {
                       }}
                     >
                       <TypingAnimation
-                        className="text-2xl md:text-4xl font-bold tracking-tight ml-2"
-                        text={`Hi, {' '} I'm ${name} 👋`}
+                        className="text-2xl md:text-5xl font-bold tracking-tight ml-2"
+                        text={`Hi, I'm ${name} 👋`}
                         duration={150}
                       />
                     </div>
