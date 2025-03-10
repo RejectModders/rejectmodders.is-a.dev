@@ -19,7 +19,7 @@ export default async function Home() {
         {/* personal info */}
         <div className="mb-10 grid grid-cols-1 md:grid-cols-2">
           <div className='md:mt-20'>
-            <h2 className="text-xl font-semibold tracking-tight sm:text-2xl opacity-80">
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl opacity-80">
               {headline}
             </h2>
             <p className="mt-6 text-base text-muted-foreground">
