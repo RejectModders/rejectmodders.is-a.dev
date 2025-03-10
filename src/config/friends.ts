@@ -18,6 +18,6 @@ export const friends: Array<FriendItemType> = [
   },
   {
     name: 'RejectModders',
-    link: { href: 'https://pornhub.com},
+    link: { href: 'https://pornhub.com' },
   },
 ]
