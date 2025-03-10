@@ -77,14 +77,6 @@ export default async function Home() {
             ))}
           </ul>
         </div>
-        <div className="mx-auto flex flex-col max-w-xl gap-6 py-8 my-8 lg:max-w-none border-t border-muted">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-5xl opacity-80">
-            {blogHeadLine}
-          </h2>
-          <p className="text-base text-muted-foreground max-w-2xl mb-8">
-            {blogIntro}
-          </p>
-        </div>
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           {/* left column */}
           {/* blog */}
