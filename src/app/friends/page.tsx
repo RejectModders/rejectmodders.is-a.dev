@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
 import { type Metadata } from 'next'
 import { SimpleLayout } from '@/components/layout/SimpleLayout'
 
-import { friendsHeadLine, friendsIntro, friends } from '@/config/infoConfig'
+import { friendsHeadLine, friendsIntro, projects, githubProjects, friends } from '@/config/infoConfig'
 
 import { FriendCard } from '@/components/friends/FriendCard'
+import { GithubProjectCard } from '@/components/project/GithubProjectCard'
+import { CustomIcon } from '@/components/shared/CustomIcon'
 
 export const metadata: Metadata = {
   title: 'Friends',
@@ -12,15 +13,6 @@ export const metadata: Metadata = {
 }
 
 export default function Friends() {
-  useEffect(() => {
-    // Smooth scrolling for this page
-    document.documentElement.style.scrollBehavior = "smooth";
-
-    return () => {
-      document.documentElement.style.scrollBehavior = "auto";
-    };
-  }, []);
-
   return (
     <SimpleLayout
       title={friendsHeadLine}
