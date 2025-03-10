@@ -54,6 +54,15 @@ export type ProjectItemType = {
       techStack: ['Next.js', 'TailwindCSS', 'Shadcn/UI'],
       tags: ['Hosting', 'Game Panel', 'FiveM']
     },
+    {
+      name: 'Ceebs',
+      description:
+        'Ceebs, food delivery bot for campus.',
+      link: { href: 'ceebs.site', label: 'Ceebs' },
+      category: ['Website'],
+      techStack: ['Next.js', 'TailwindCSS', 'Shadcn/UI'],
+      tags: ['Discord Bot', 'Food Delivery']
+    },
   ]
   
   export const githubProjects: Array<ProjectItemType> = [
