@@ -24,9 +24,13 @@ const nextConfig = {
               "img-src 'self' data: blob: https://avatars.githubusercontent.com https://unavatar.io https://www.gravatar.com https://i.ytimg.com https://yt3.ggpht.com https://pbs.twimg.com",
               "connect-src 'self' https://api.github.com https://api.spotify.com https://accounts.spotify.com https://va.vercel-scripts.com",
               "media-src 'self'",
+              // block Flash, Java applets and other legacy plugins
+              "object-src 'none'",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",
+              // auto-upgrade any accidental HTTP sub-resource requests
+              "upgrade-insecure-requests",
             ].join("; "),
           },
           // ── Clickjacking ─────────────────────────────────────────
@@ -49,10 +53,11 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
           },
-          // ── XSS auditor (legacy) ─────────────────────────────────
+          // ── HSTS — preload-ready ──────────────────────────────────
+          // After verifying all subdomains support HTTPS, submit at hstspreload.org
           {
-            key: "X-XSS-Protection",
-            value: "0",
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains; preload",
           },
           // ── Cross-origin isolation ───────────────────────────────
           {
@@ -63,9 +68,27 @@ const nextConfig = {
             key: "Cross-Origin-Resource-Policy",
             value: "same-origin",
           },
+          // credentialless allows cross-origin resources without CORP headers
           {
             key: "Cross-Origin-Embedder-Policy",
-            value: "unsafe-none",
+            value: "credentialless",
+          },
+          // ── Reporting ────────────────────────────────────────────
+          {
+            key: "Report-To",
+            value: JSON.stringify({
+              group: "default",
+              max_age: 86400,
+              endpoints: [{ url: "https://rejectmodders.is-a.dev/api/csp-report" }],
+            }),
+          },
+          {
+            key: "NEL",
+            value: JSON.stringify({
+              report_to: "default",
+              max_age: 86400,
+              include_subdomains: true,
+            }),
           },
         ],
       },
