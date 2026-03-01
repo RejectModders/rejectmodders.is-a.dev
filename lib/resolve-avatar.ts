@@ -1,6 +1,19 @@
 import { createHash } from "crypto"
 
 /**
+ * Wrap an external avatar URL through our caching proxy (/api/avatar?url=...).
+ * This means browsers never hit GitHub/unavatar/etc. directly — only our edge
+ * function does, and it caches the result for 24 h via Next.js Data Cache.
+ *
+ * Local paths (starting with /) are returned as-is.
+ */
+function proxied(url: string | null): string | null {
+  if (!url) return null
+  if (url.startsWith("/")) return url // already a local asset
+  return `/api/avatar?url=${encodeURIComponent(url)}`
+}
+
+/**
  * Extract a GitHub username from a GitHub URL or raw username string.
  */
 function extractGithubUsername(github: string | null): string | null {
@@ -189,23 +202,25 @@ export interface FriendResolved extends FriendRaw {
  */
 export async function resolveAvatar(friend: FriendRaw): Promise<string | null> {
   // 1. Custom avatar — always takes priority, no lookups needed
-  if (friend.avatar) return friend.avatar
+  // Local paths (e.g. /friends/amanda.png) are passed through as-is;
+  // external URLs (e.g. an imgur link) are proxied through our cache.
+  if (friend.avatar) return proxied(friend.avatar)
 
   // 2. GitHub — always available, no API key needed
   const githubUsername = extractGithubUsername(friend.github)
-  if (githubUsername) return buildGithubAvatarUrl(githubUsername)
+  if (githubUsername) return proxied(buildGithubAvatarUrl(githubUsername))
 
   // 3. Twitter/X — via unavatar.io, no API key needed
   const twitterAvatar = await resolveTwitterAvatar(friend.twitter)
-  if (twitterAvatar) return twitterAvatar
+  if (twitterAvatar) return proxied(twitterAvatar)
 
   // 4. Gravatar from email
   const gravatar = await resolveGravatarAvatar(friend.email)
-  if (gravatar) return gravatar
+  if (gravatar) return proxied(gravatar)
 
   // 5. YouTube (requires YOUTUBE_API_KEY in .env.local)
   const ytAvatar = await resolveYoutubeAvatar(friend.youtube)
-  if (ytAvatar) return ytAvatar
+  if (ytAvatar) return proxied(ytAvatar)
 
   return null
 }

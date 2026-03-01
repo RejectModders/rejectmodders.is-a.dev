@@ -20,8 +20,8 @@ const nextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              // avatars, OG images, GitHub avatars, unavatar, gravatar, etc.
-              "img-src 'self' data: blob: https://avatars.githubusercontent.com https://unavatar.io https://www.gravatar.com https://i.ytimg.com https://yt3.ggpht.com https://pbs.twimg.com",
+              // all avatars now proxied through /api/avatar (same-origin), so external avatar hosts removed from img-src
+              "img-src 'self' data: blob:",
               "connect-src 'self' https://api.github.com https://api.spotify.com https://accounts.spotify.com https://va.vercel-scripts.com",
               "media-src 'self'",
               // block Flash, Java applets and other legacy plugins
