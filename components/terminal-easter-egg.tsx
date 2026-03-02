@@ -2389,7 +2389,7 @@ export function TerminalEasterEgg() {
   const [dragging, setDragging]     = useState(false)
   // sudo password flow
   const [sudoPending, setSudoPending]         = useState<string | null>(null)   // the full cmd waiting for auth
-  const [sudoAuthenticated, setSudoAuthenticated] = useState(false)             // stays true for session
+  const [sudoAuthenticated, setSudoAuthenticated] = useState(false)             // one-shot: resets after each use
   const [awaitingPassword, setAwaitingPassword]   = useState(false)
   const dragStart                   = useRef({ mx: 0, my: 0, px: 0, py: 0 })
   const inputRef  = useRef<HTMLInputElement>(null)
@@ -2536,11 +2536,16 @@ export function TerminalEasterEgg() {
       if (!sudoAuthenticated) {
         setSudoPending(trimmed)
         setAwaitingPassword(true)
-        appendLines([L(`[sudo] password for rm: `, col.fg)])
+        appendLines([
+          L(`[sudo] password for rm: `, col.fg),
+          L(`  hint: it's the most common password in the world 🙃`, col.muted),
+        ])
         return
       }
 
       // ── authenticated — now run the command ───────────────────────────
+      // reset immediately so next sudo always prompts again
+      setSudoAuthenticated(false)
 
       // exact-match sudo keys first (sudo cat secrets.txt, sudo make me a sandwich, etc.)
       if (COMMANDS[cmd]) {
@@ -2655,6 +2660,9 @@ export function TerminalEasterEgg() {
               if (!handled) appendLines([L(`sudo: ${sub}: command not found`, col.red), BR()])
             }
           }
+
+          // one-shot: always reset so the next sudo prompts again
+          setSudoAuthenticated(false)
         } else {
           setSudoPending(null)
           appendLines([
