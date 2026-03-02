@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { NavNowPlaying } from "@/components/nav-now-playing"
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -69,7 +68,6 @@ export function Navbar() {
                 </Link>
               )
             })}
-            <NavNowPlaying />
             <a
               href="https://github.com/RejectModders"
               target="_blank"

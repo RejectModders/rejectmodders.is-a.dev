@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { CustomCursor } from '@/components/custom-cursor'
 import { PageTransition } from '@/components/page-transition'
 import { ScrollToTop } from '@/components/scroll-to-top'
+import { TerminalEasterEgg } from '@/components/terminal-easter-egg'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -19,12 +20,12 @@ export const metadata: Metadata = {
   authors: [{ name: 'RejectModders' }],
   icons: {
     icon: [
-      { url: 'https://avatars.githubusercontent.com/u/142326052?s=32', sizes: '32x32' },
-      { url: 'https://avatars.githubusercontent.com/u/142326052?s=64', sizes: '64x64' },
-      { url: 'https://avatars.githubusercontent.com/u/142326052?s=192', sizes: '192x192' },
+      { url: '/avatar.png', sizes: '32x32' },
+      { url: '/avatar.png', sizes: '64x64' },
+      { url: '/avatar.png', sizes: '192x192' },
     ],
-    shortcut: 'https://avatars.githubusercontent.com/u/142326052?s=32',
-    apple: 'https://avatars.githubusercontent.com/u/142326052?s=180',
+    shortcut: '/avatar.png',
+    apple: '/avatar.png',
   },
   openGraph: {
     title: 'RejectModders | Cybersecurity Developer',
@@ -34,9 +35,9 @@ export const metadata: Metadata = {
     siteName: 'RejectModders',
     images: [
       {
-        url: 'https://avatars.githubusercontent.com/u/142326052',
-        width: 460,
-        height: 460,
+        url: '/avatar.png',
+        width: 192,
+        height: 192,
         alt: 'RejectModders Avatar',
       },
     ],
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: 'RejectModders | Cybersecurity Developer',
     description: 'Cybersecurity-focused developer from Missouri. Building security tools and writing code.',
-    images: ['https://avatars.githubusercontent.com/u/142326052'],
+    images: ['/avatar.png'],
   },
   other: {
     'theme-color': '#dc2626',
@@ -67,6 +68,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="relative font-sans antialiased noise-bg cursor-none">
         <CustomCursor />
+        <TerminalEasterEgg />
         <ScrollToTop />
         <PageTransition>
           {children}

@@ -4,7 +4,7 @@ import { motion, useInView } from "framer-motion"
 import { useRef, useEffect, useState } from "react"
 import {
   Shield, Code2, Terminal, MapPin, Calendar, ExternalLink,
-  Users, BookOpen, Zap, Target, Globe, Bot, Rocket, GitMerge, Search
+  Users, BookOpen, Zap, Globe, Bot, Rocket, GitMerge, Search
 } from "lucide-react"
 
 // ── Shared animation constants ──────────────────────────────────────────────
@@ -54,8 +54,8 @@ const skills = [
 ]
 
 const orgs = [
-  { name: "Disutils Team", role: "Former Lead / Founder", url: "https://github.com/disutils", avatar: "https://avatars.githubusercontent.com/u/184031343?v=4", description: "An org I built around Discord tooling and bot development. We shipped a few useful things but I eventually moved on to focus fully on security work. It was a good run.", highlights: ["Disckit Framework", "DisMusic Bot", "Inactive"] },
-  { name: "VulnRadar", role: "Founder", url: "https://vulnradar.dev", avatar: "https://avatars.githubusercontent.com/u/261703628?v=4", description: "My current main project. VulnRadar scans websites for security vulnerabilities and gives you an actual useful report with severity levels and how to fix what it finds.", highlights: ["175+ Vulnerability Checks", "Instant Reports", "Fix Guidance"] },
+  { name: "Disutils Team", role: "Former Lead / Founder", url: "https://github.com/disutils", avatar: `/api/avatar?url=${encodeURIComponent("https://avatars.githubusercontent.com/u/184031343?v=4")}`, description: "An org I built around Discord tooling and bot development. We shipped a few useful things but I eventually moved on to focus fully on security work. It was a good run.", highlights: ["Disckit Framework", "DisMusic Bot", "Inactive"] },
+  { name: "VulnRadar", role: "Founder", url: "https://vulnradar.dev", avatar: `/api/avatar?url=${encodeURIComponent("https://avatars.githubusercontent.com/u/261703628?v=4")}`, description: "My current main project. VulnRadar scans websites for security vulnerabilities and gives you an actual useful report with severity levels and how to fix what it finds.", highlights: ["175+ Vulnerability Checks", "Instant Reports", "Fix Guidance"] },
 ]
 
 const timelineItems = [
@@ -166,7 +166,7 @@ export function AboutPageContent() {
               {stats?.avatar_url && (
                 <div className="relative mb-6">
                   <motion.div animate={{ scale: [1, 1.06, 1], opacity: [0.4, 0.1, 0.4] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 rounded-2xl border-2 border-primary/40" />
-                  <img src={stats.avatar_url} alt="RejectModders" className="relative h-40 w-40 rounded-2xl border-2 border-primary/20 object-cover transition-transform duration-150 hover:scale-105" />
+                  <img src={`/api/avatar?url=${encodeURIComponent(stats.avatar_url)}`} alt="RejectModders" className="relative h-40 w-40 rounded-2xl border-2 border-primary/20 object-cover transition-transform duration-150 hover:scale-105" />
                   <motion.div {...fadeUp(0.6)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="absolute -bottom-2 -right-2 rounded-full border border-primary/30 bg-background px-3 py-1 font-mono text-xs text-primary animate-pulse-glow">
                     Hireable
                   </motion.div>
@@ -243,16 +243,32 @@ export function AboutPageContent() {
                 >
                   <div className="mb-1.5 flex items-center justify-between">
                     <span className="text-sm font-medium text-foreground">{skill.name}</span>
-                    <span className="font-mono text-xs text-muted-foreground">{skill.level}%</span>
+                    <motion.span
+                      className="font-mono text-xs text-primary"
+                      initial={{ opacity: 0 }}
+                      animate={skillsInView ? { opacity: 1 } : {}}
+                      transition={{ duration: 0.3, delay: 0.1 + i * 0.06 }}
+                    >
+                      <AnimatedNumber value={skillsInView ? skill.level : 0} isInView={skillsInView} />%
+                    </motion.span>
                   </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                  <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-secondary">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={skillsInView ? { width: `${skill.level}%` } : {}}
-                      transition={{ duration: 1.0, delay: 0.1 + i * 0.06, ease: "easeOut" }}
-                      className="h-full rounded-full bg-primary"
-                      style={{ boxShadow: "0 0 8px oklch(0.58 0.2 15 / 0.4)" }}
-                    />
+                      transition={{ duration: 1.1, delay: 0.1 + i * 0.06, ease: "easeOut" }}
+                      className="relative h-full rounded-full bg-primary"
+                      style={{ boxShadow: "0 0 8px oklch(0.58 0.2 15 / 0.5)" }}
+                    >
+                      {/* scan-line shimmer */}
+                      <motion.div
+                        className="absolute inset-y-0 w-6 rounded-full"
+                        style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)" }}
+                        initial={{ left: "-1.5rem" }}
+                        animate={skillsInView ? { left: "110%" } : {}}
+                        transition={{ duration: 0.6, delay: 0.9 + i * 0.06, ease: "easeOut" }}
+                      />
+                    </motion.div>
                   </div>
                 </motion.div>
               ))}

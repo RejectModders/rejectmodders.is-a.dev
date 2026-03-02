@@ -207,7 +207,7 @@ export function SpotifyPageContent() {
                   className="relative block p-1"
                 >
                   <SpotifyImage
-                    src={`https://spotify-github-profile.kittinanx.com/api/view?uid=${SPOTIFY_UID}&cover_image=true&theme=default&show_offline=true&background_color=0d0d0d&interchange=true&bar_color=1DB954`}
+                    src={`/api/avatar?ttl=60&url=${encodeURIComponent(`https://spotify-github-profile.kittinanx.com/api/view?uid=${SPOTIFY_UID}&cover_image=true&theme=default&show_offline=true&background_color=0d0d0d&interchange=true&bar_color=1DB954`)}`}
                     alt="Spotify Now Playing"
                     skeletonRows={1}
                   />
@@ -257,7 +257,7 @@ export function SpotifyPageContent() {
 
                 <div className="relative p-1">
                   <SpotifyImage
-                    src={`https://spotify-recently-played-readme.vercel.app/api?user=${SPOTIFY_UID}&count=5&unique=true&width=500`}
+                    src={`/api/avatar?ttl=300&url=${encodeURIComponent(`https://spotify-recently-played-readme.vercel.app/api?user=${SPOTIFY_UID}&count=5&unique=true&width=500`)}`}
                     alt="Recently Played on Spotify"
                     skeletonRows={5}
                   />

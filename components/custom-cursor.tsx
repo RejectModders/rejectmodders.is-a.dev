@@ -2,26 +2,17 @@
 
 import { useEffect, useRef, useState } from "react"
 
-// Brand red
-const CR = 220, CG = 38, CB = 38
-
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+const lerp  = (a: number, b: number, t: number) => a + (b - a) * t
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 
-interface Slash {
-  x: number; y: number
-  angle: number
-  life: number
-  len: number
-}
+const R = 220, G = 38, B = 38
+const rgb   = (a: number) => `rgba(${R},${G},${B},${clamp(a,0,1).toFixed(3)})`
+const white = (a: number) => `rgba(255,255,255,${clamp(a,0,1).toFixed(3)})`
 
-interface Splat {
-  x: number; y: number
-  dx: number; dy: number
-  life: number
-  len: number
-  thick: number
-}
+const TAIL_LEN = 18
+const TAIL_GAP = 2
+
+interface Ring { x: number; y: number; r: number; life: number; maxR: number }
 
 export function CustomCursor() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -39,61 +30,39 @@ export function CustomCursor() {
     resize()
     window.addEventListener("resize", resize)
 
-    // raw mouse
     let mx = 0, my = 0
-    let px = 0, py = 0
-
-    // crosshair — tight follow
-    let cx = 0, cy = 0
-    // ghost diamond — loose follow
-    let gx = 0, gy = 0
-
-    // velocity
+    let dx = 0, dy = 0   // dot  — fast
+    let rx = 0, ry = 0   // ring — slow
     let vx = 0, vy = 0
     let speed = 0
 
-    // state
-    let hovering  = false
     let clicking  = false
+    let typing    = false
     let visible_  = false
     let rafId: number
+    let frame = 0
 
-    // slash trail
-    const slashes: Slash[] = []
-    let slashTimer = 0
+    let clickBlend  = 0
+    let typingBlend = 0
 
-    // ink splats
-    const splats: Splat[] = []
+    const tail: { x: number; y: number }[] = Array.from({ length: TAIL_LEN }, () => ({ x: 0, y: 0 }))
+    let tailHead = 0
+    let tailFrame = 0
 
-    // hover glow alpha (smooth)
-    let hoverAlpha = 0
+    const rings: Ring[] = []
 
-    // ── events ───────────────────────────────────────────────────────
     const onMove = (e: MouseEvent) => {
-      px = mx; py = my
       mx = e.clientX; my = e.clientY
       if (!visible_) { visible_ = true; setVisible(true) }
       const el = e.target as HTMLElement
-      hovering = !!el.closest("a, button, [role='button'], input, textarea, select, .card-hover")
+      typing = !!el.closest("input,textarea,[contenteditable]")
     }
     const onLeave = () => { visible_ = false; setVisible(false) }
-    const onEnter = () => { visible_ = true;  setVisible(true) }
+    const onEnter = () => { visible_ = true;  setVisible(true)  }
     const onDown  = () => {
       clicking = true
-      const count = 10 + Math.floor(Math.random() * 5)
-      const bias  = Math.atan2(vy, vx)
-      for (let i = 0; i < count; i++) {
-        const angle = bias + (Math.random() - 0.5) * Math.PI * 1.6
-        const spd   = 2.5 + Math.random() * 5
-        splats.push({
-          x: mx, y: my,
-          dx: Math.cos(angle) * spd,
-          dy: Math.sin(angle) * spd,
-          life:  1,
-          len:   6 + Math.random() * 14,
-          thick: 0.8 + Math.random() * 1.6,
-        })
-      }
+      rings.push({ x: mx, y: my, r: 0, life: 1, maxR: 28 })
+      setTimeout(() => { if (rings.length < 20) rings.push({ x: mx, y: my, r: 0, life: 1, maxR: 46 }) }, 70)
     }
     const onUp = () => { clicking = false }
 
@@ -103,168 +72,134 @@ export function CustomCursor() {
     document.addEventListener("mousedown",  onDown)
     document.addEventListener("mouseup",    onUp)
 
-    // ── helpers ──────────────────────────────────────────────────────
-    const col = (a: number) => `rgba(${CR},${CG},${CB},${clamp(a, 0, 1)})`
-
-    const drawCrosshair = (x: number, y: number, armLen: number, gap: number, alpha: number) => {
+    const drawIBeam = (x: number, y: number, a: number) => {
+      const h = 20, cap = 6
       ctx.save()
-      ctx.strokeStyle = col(alpha)
-      ctx.lineWidth   = 1.5
-      ctx.lineCap     = "round"
-      ctx.beginPath(); ctx.moveTo(x,       y - gap); ctx.lineTo(x,           y - gap - armLen); ctx.stroke()
-      ctx.beginPath(); ctx.moveTo(x,       y + gap); ctx.lineTo(x,           y + gap + armLen); ctx.stroke()
-      ctx.beginPath(); ctx.moveTo(x - gap, y      ); ctx.lineTo(x - gap - armLen, y           ); ctx.stroke()
-      ctx.beginPath(); ctx.moveTo(x + gap, y      ); ctx.lineTo(x + gap + armLen, y           ); ctx.stroke()
+      ctx.strokeStyle = rgb(a)
+      ctx.lineWidth = 1.5
+      ctx.lineCap = "round"
+      ctx.beginPath(); ctx.moveTo(x, y - h/2); ctx.lineTo(x, y + h/2); ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(x - cap/2, y - h/2); ctx.lineTo(x + cap/2, y - h/2); ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(x - cap/2, y + h/2); ctx.lineTo(x + cap/2, y + h/2); ctx.stroke()
       ctx.restore()
     }
 
-    // ── draw loop ────────────────────────────────────────────────────
     const draw = () => {
       rafId = requestAnimationFrame(draw)
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       if (!visible_) return
+      frame++
 
-      const t = performance.now() / 1000
+      // velocity
+      vx    = lerp(vx, mx - dx, 0.3)
+      vy    = lerp(vy, my - dy, 0.3)
+      speed = clamp(Math.hypot(vx, vy), 0, 50)
 
-      vx    = lerp(vx, mx - px, 0.25)
-      vy    = lerp(vy, my - py, 0.25)
-      speed = clamp(Math.hypot(vx, vy), 0, 40)
+      // dot follows mouse directly, ring lags behind
+      dx = lerp(dx, mx, 0.55)
+      dy = lerp(dy, my, 0.55)
+      rx = lerp(rx, mx, 0.10)
+      ry = lerp(ry, my, 0.10)
 
-      cx = lerp(cx, mx, 0.42)
-      cy = lerp(cy, my, 0.42)
-      gx = lerp(gx, mx, 0.10)
-      gy = lerp(gy, my, 0.10)
+      clickBlend  = lerp(clickBlend,  clicking ? 1 : 0, 0.30)
+      typingBlend = lerp(typingBlend, typing   ? 1 : 0, 0.18)
 
-      hoverAlpha = lerp(hoverAlpha, hovering ? 1 : 0, 0.12)
-
-      // ── slash trail ──────────────────────────────────────────────
-      slashTimer++
-      if (speed > 2 && slashTimer % 3 === 0) {
-        slashes.push({
-          x: cx, y: cy,
-          angle: Math.atan2(vy, vx) + Math.PI / 2,
-          life:  1,
-          len:   clamp(speed * 0.9, 4, 18),
-        })
+      // tail
+      tailFrame++
+      if (tailFrame % TAIL_GAP === 0) {
+        tail[tailHead] = { x: dx, y: dy }
+        tailHead = (tailHead + 1) % TAIL_LEN
       }
-      for (let i = slashes.length - 1; i >= 0; i--) {
-        const s = slashes[i]
-        s.life -= 0.055
-        if (s.life <= 0) { slashes.splice(i, 1); continue }
-        const hw = Math.cos(s.angle) * s.len * 0.5
-        const hh = Math.sin(s.angle) * s.len * 0.5
+
+      // 1. comet tail
+      if (speed > 1) {
+        for (let i = 0; i < TAIL_LEN - 1; i++) {
+          const ai = (tailHead + i)     % TAIL_LEN
+          const bi = (tailHead + i + 1) % TAIL_LEN
+          const t  = i / (TAIL_LEN - 1)
+          const a  = t * t * 0.5 * clamp(speed / 12, 0, 1) * (1 - typingBlend)
+          if (a < 0.005) continue
+          ctx.beginPath()
+          ctx.moveTo(tail[ai].x, tail[ai].y)
+          ctx.lineTo(tail[bi].x, tail[bi].y)
+          ctx.strokeStyle = rgb(a)
+          ctx.lineWidth   = lerp(0.4, 2.0, t)
+          ctx.lineCap     = "round"
+          ctx.stroke()
+        }
+      }
+
+      // 2. click shockwave rings
+      for (let i = rings.length - 1; i >= 0; i--) {
+        const rg = rings[i]
+        rg.life -= 0.04
+        if (rg.life <= 0) { rings.splice(i, 1); continue }
+        rg.r = rg.maxR * (1 - rg.life)
+        const ea = rg.life * rg.life
         ctx.beginPath()
-        ctx.moveTo(s.x - hw, s.y - hh)
-        ctx.lineTo(s.x + hw, s.y + hh)
-        ctx.strokeStyle = col(s.life * 0.45)
-        ctx.lineWidth   = 1
-        ctx.lineCap     = "round"
+        ctx.arc(rg.x, rg.y, rg.r, 0, Math.PI * 2)
+        ctx.strokeStyle = rgb(ea * 0.65)
+        ctx.lineWidth   = 1.5 * ea
         ctx.stroke()
       }
 
-      // ── tension line: ghost → crosshair ──────────────────────────
-      const tensionDist = Math.hypot(cx - gx, cy - gy)
-      if (tensionDist > 4) {
+      // 3. outer ring — plain circle, stretches with velocity
+      const breathe = Math.sin(frame * 0.025) * 0.03 + 1
+      const baseR   = 18 * breathe * lerp(1, 0.8, clickBlend)
+      const stretch = clamp(speed / 20, 0, 0.55)
+      const angle   = Math.atan2(vy, vx)
+      ctx.save()
+      ctx.translate(rx, ry)
+      ctx.rotate(angle)
+      ctx.beginPath()
+      ctx.ellipse(0, 0, baseR * (1 + stretch), baseR * (1 - stretch * 0.45), 0, 0, Math.PI * 2)
+      ctx.strokeStyle = rgb(0.28 + clickBlend * 0.25)
+      ctx.lineWidth   = 1.1
+      ctx.stroke()
+      ctx.restore()
+
+      // 4. dot / i-beam
+      if (typingBlend > 0.05) {
+        const t_ = performance.now() / 1000
+        const blink = Math.sin(t_ * Math.PI * 1.4) * 0.5 + 0.5
+        drawIBeam(dx, dy, typingBlend * lerp(0.5, 1, blink * 0.6 + 0.4))
+      }
+      if (typingBlend < 0.95) {
+        const dotR = lerp(2.5, 2.5, 0) * lerp(1, 0.5, clickBlend) * (1 - typingBlend * 0.85)
+        if (dotR > 0.2) {
+          const glow = ctx.createRadialGradient(dx, dy, 0, dx, dy, dotR * 5)
+          glow.addColorStop(0, rgb(0.22 * (1 - typingBlend)))
+          glow.addColorStop(1, rgb(0))
+          ctx.beginPath(); ctx.arc(dx, dy, dotR * 5, 0, Math.PI * 2)
+          ctx.fillStyle = glow; ctx.fill()
+          ctx.beginPath(); ctx.arc(dx, dy, dotR, 0, Math.PI * 2)
+          ctx.fillStyle = `rgb(${R},${G},${B})`; ctx.fill()
+          ctx.beginPath(); ctx.arc(dx - dotR * 0.3, dy - dotR * 0.3, dotR * 0.35, 0, Math.PI * 2)
+          ctx.fillStyle = white(0.5); ctx.fill()
+        }
+      }
+
+      // 5. lag thread
+      const lag = Math.hypot(dx - rx, dy - ry)
+      if (lag > 10 && typingBlend < 0.4) {
         ctx.save()
-        ctx.setLineDash([3, 5])
-        ctx.strokeStyle = col(clamp(tensionDist / 80, 0, 0.30))
-        ctx.lineWidth   = 0.8
-        ctx.beginPath()
-        ctx.moveTo(gx, gy)
-        ctx.lineTo(cx, cy)
-        ctx.stroke()
+        ctx.setLineDash([2, 5])
+        ctx.strokeStyle = rgb(clamp(lag / 100, 0, 0.15))
+        ctx.lineWidth   = 0.6
+        ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(dx, dy); ctx.stroke()
         ctx.setLineDash([])
         ctx.restore()
       }
-
-      // ── ghost diamond (squish along velocity) ────────────────────
-      const breathe    = Math.sin(t * 1.8) * 0.06 + 1
-      const baseR      = hovering ? 18 : 13
-      const stretch    = clamp(speed / 14, 0, 0.6)
-      const moveAngle  = Math.atan2(vy, vx)
-      const ghostRx    = baseR * (1 + stretch) * breathe
-      const ghostRy    = baseR * (1 - stretch * 0.5) * breathe
-      const ghostA     = lerp(0.28, 0.60, hoverAlpha) + (clicking ? 0.15 : 0)
-
-      ctx.save()
-      ctx.translate(gx, gy)
-      ctx.rotate(moveAngle + Math.PI / 4)
-      ctx.strokeStyle = col(ghostA)
-      ctx.lineWidth   = lerp(1.1, 1.9, hoverAlpha)
-      ctx.beginPath()
-      ctx.moveTo( ghostRx,  0); ctx.lineTo(0,  ghostRy)
-      ctx.lineTo(-ghostRx,  0); ctx.lineTo(0, -ghostRy)
-      ctx.closePath(); ctx.stroke()
-      // inner echo
-      ctx.strokeStyle = col(ghostA * 0.35)
-      ctx.lineWidth   = 0.7
-      ctx.beginPath()
-      ctx.moveTo( ghostRx * 0.45,  0); ctx.lineTo(0,  ghostRy * 0.45)
-      ctx.lineTo(-ghostRx * 0.45,  0); ctx.lineTo(0, -ghostRy * 0.45)
-      ctx.closePath(); ctx.stroke()
-      ctx.restore()
-
-      // ── ink splats ────────────────────────────────────────────────
-      for (let i = splats.length - 1; i >= 0; i--) {
-        const s = splats[i]
-        s.x += s.dx; s.y += s.dy
-        s.dx *= 0.88; s.dy *= 0.88
-        s.life -= 0.04
-        if (s.life <= 0) { splats.splice(i, 1); continue }
-        const a   = Math.atan2(s.dy, s.dx)
-        const ex  = s.x + Math.cos(a) * s.len * s.life
-        const ey  = s.y + Math.sin(a) * s.len * s.life
-        ctx.beginPath()
-        ctx.moveTo(s.x, s.y)
-        ctx.lineTo(ex,  ey)
-        ctx.strokeStyle = col(s.life * 0.85)
-        ctx.lineWidth   = s.thick * s.life
-        ctx.lineCap     = "round"
-        ctx.stroke()
-      }
-
-      // ── crosshair ────────────────────────────────────────────────
-      const armLen = hovering ? 11 : 7
-      const armGap = clicking  ? 1 : 4
-      drawCrosshair(cx, cy, armLen, armGap, 0.95)
-
-      // 45° corner ticks — scope feel
-      ctx.save()
-      ctx.strokeStyle = col(0.40)
-      ctx.lineWidth   = 1
-      ctx.lineCap     = "round"
-      for (const [sx, sy] of [[-1,-1],[1,-1],[1,1],[-1,1]] as [number,number][]) {
-        ctx.beginPath()
-        ctx.moveTo(cx + sx * (armGap + 2), cy + sy * (armGap + 2))
-        ctx.lineTo(cx + sx * (armGap + armLen * 0.55), cy + sy * (armGap + armLen * 0.55))
-        ctx.stroke()
-      }
-      ctx.restore()
-
-      // center dot
-      const dotR = clicking ? 1.5 : 2.5
-      ctx.beginPath()
-      ctx.arc(cx, cy, dotR, 0, Math.PI * 2)
-      ctx.fillStyle = `rgb(${CR},${CG},${CB})`
-      ctx.fill()
-
-      // soft hover glow behind crosshair
-      if (hoverAlpha > 0.01) {
-        const hg = ctx.createRadialGradient(cx, cy, 0, cx, cy, armLen * 2.8)
-        hg.addColorStop(0, col(0.16 * hoverAlpha))
-        hg.addColorStop(1, col(0))
-        ctx.beginPath()
-        ctx.arc(cx, cy, armLen * 2.8, 0, Math.PI * 2)
-        ctx.fillStyle = hg
-        ctx.fill()
-      }
     }
 
+    dx = rx = mx = window.innerWidth  / 2
+    dy = ry = my = window.innerHeight / 2
+    tail.forEach(p => { p.x = dx; p.y = dy })
     rafId = requestAnimationFrame(draw)
 
     return () => {
       cancelAnimationFrame(rafId)
-      window.removeEventListener("resize",     resize)
+      window.removeEventListener("resize",      resize)
       document.removeEventListener("mousemove",  onMove)
       document.removeEventListener("mouseleave", onLeave)
       document.removeEventListener("mouseenter", onEnter)
@@ -273,13 +208,11 @@ export function CustomCursor() {
     }
   }, [])
 
-  if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return null
-
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-9999"
-      style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
+      className="pointer-events-none fixed inset-0 z-[9999]"
+      style={{ opacity: visible ? 1 : 0, transition: "opacity 0.25s ease" }}
     />
   )
 }

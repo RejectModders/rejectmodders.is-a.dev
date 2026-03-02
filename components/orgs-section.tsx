@@ -10,7 +10,7 @@ const orgs = [
 		description:
 		"Discord developer tools, bot frameworks, and community utilities. I ran this for about a year before winding it down to focus on VulnRadar.",
 		url: "https://github.com/disutils",
-		avatar: "https://avatars.githubusercontent.com/u/184031343?v=4",
+		avatar: `/api/avatar?url=${encodeURIComponent("https://avatars.githubusercontent.com/u/184031343?v=4")}`,
 		highlights: ["Disckit", "DisMusic", "Inactive"],
 		color: "oklch(0.58 0.15 250)",
 	},
@@ -18,7 +18,7 @@ const orgs = [
 		name: "VulnRadar",
 		description: "Security scanning platform. 175+ vulnerability checks with instant reports.",
 		url: "https://vulnradar.dev",
-		avatar: "https://avatars.githubusercontent.com/u/261703628?v=4",
+		avatar: `/api/avatar?url=${encodeURIComponent("https://avatars.githubusercontent.com/u/261703628?v=4")}`,
 		highlights: ["175+ Checks", "Instant Reports", "Fix Guidance"],
 		color: "oklch(0.58 0.2 15)",
 	},

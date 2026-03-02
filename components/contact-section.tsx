@@ -90,7 +90,7 @@ export function ContactSection() {
                 <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.1, 0.4] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   className="absolute inset-0 rounded-full border-2 border-primary/40" />
-                <img src={stats.avatar_url} alt="RejectModders"
+                <img src={`/api/avatar?url=${encodeURIComponent(stats.avatar_url)}`} alt="RejectModders"
                   className="relative h-20 w-20 rounded-full border-2 border-primary/30 transition-transform duration-150 hover:scale-105" />
               </div>
             )}

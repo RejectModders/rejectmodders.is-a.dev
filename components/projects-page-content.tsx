@@ -364,7 +364,7 @@ export function ProjectsPageContent() {
                   {/* Org badge + repo name */}
                   <div className="mb-3 flex items-start gap-2">
                     <img
-                      src={repo.owner.avatar_url}
+                      src={`/api/avatar?url=${encodeURIComponent(repo.owner.avatar_url)}`}
                       alt={`${repo.owner.login} avatar`}
                       className="mt-0.5 h-5 w-5 rounded-full"
                     />

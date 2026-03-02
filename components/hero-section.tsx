@@ -159,8 +159,16 @@ export function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.1, duration: 0.6 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
       >
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 4, duration: 2 }}
+          className="font-mono text-[10px] text-muted-foreground/25 select-none"
+        >
+          {`// psst — try the konami code`}
+        </motion.p>
         <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}>
           <ChevronDown className="h-6 w-6 text-muted-foreground" />
         </motion.div>
