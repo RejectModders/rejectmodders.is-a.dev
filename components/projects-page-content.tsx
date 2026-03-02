@@ -164,7 +164,7 @@ export function ProjectsPageContent() {
     const totalForks = filteredRepos.reduce((acc, r) => acc + r.forks_count, 0)
     const langs = new Set(filteredRepos.map((r) => r.language).filter(Boolean))
     return {
-      totalRepos: filteredRepos.filter((r) => !r.archived).length,
+      totalRepos: filteredRepos.length,
       totalStars,
       totalForks,
       languages: langs.size,

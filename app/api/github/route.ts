@@ -20,8 +20,8 @@ async function fetchJSON(url: string): Promise<GHRepo[]> {
 export async function GET() {
   try {
     const results = await Promise.all([
-      fetchJSON(`https://api.github.com/users/${USER}/repos?sort=updated&per_page=30`),
-      ...ORGS.map(org => fetchJSON(`https://api.github.com/orgs/${org}/repos?sort=updated&per_page=20`)),
+      fetchJSON(`https://api.github.com/users/${USER}/repos?sort=updated&per_page=100&type=public`),
+      ...ORGS.map(org => fetchJSON(`https://api.github.com/orgs/${org}/repos?sort=updated&per_page=100&type=public`)),
     ])
 
     const all: GHRepo[] = results.flat()
