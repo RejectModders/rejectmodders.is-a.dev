@@ -1,6 +1,6 @@
-"use client"
+﻿"use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 // ── Rage-click detection ──────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ const CRASH_SCENARIOS = [
   {
     title: "SEGMENTATION FAULT",
     code: "signal 11",
-    color: "oklch(0.58 0.2 15)",  // site primary red
+    color: "var(--primary)",  // site primary
     msg: "Segmentation fault (core dumped)",
     detail: "Process click_handler exceeded memory bounds.",
     lines: [
@@ -187,7 +187,7 @@ function RageCrash() {
           <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
           <div className="w-3 h-3 rounded-full bg-[#28c840]" />
           <span className="ml-2 text-xs" style={{ color: scenario.color }}>
-            {scenario.title} — {scenario.code}
+            {scenario.title} - {scenario.code}
           </span>
         </div>
 
@@ -232,50 +232,14 @@ function RageCrash() {
   )
 }
 
-// ── Visitor counter (kept) ────────────────────────────────────────────────────
-function useVisitorNumber() {
-  const [num, setNum] = useState<number | null>(null)
-  useEffect(() => {
-    const key = "rm_visitor_num"
-    const stored = localStorage.getItem(key)
-    if (stored) { setNum(parseInt(stored)); return }
-    const n = 1_337_000 + Math.floor(Math.random() * 83_000)
-    localStorage.setItem(key, String(n))
-    setNum(n)
-  }, [])
-  return num
-}
-
 export function FloatingCTA() {
-  const [showVisitor, setShowVisitor] = useState(false)
-  const visitorNum = useVisitorNumber()
   const rage = useRageClick()
-
-  useEffect(() => {
-    const t = setTimeout(() => setShowVisitor(true), 6000)
-    return () => clearTimeout(t)
-  }, [])
 
   return (
     <>
       {/* Rage-click crash overlay */}
       <AnimatePresence>
         {rage && <RageCrash key={Date.now()} />}
-      </AnimatePresence>
-
-      {/* Visitor counter */}
-      <AnimatePresence>
-        {showVisitor && visitorNum && (
-          <motion.div
-            key="visitor"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed bottom-6 right-6 z-40 select-none text-right font-mono text-[10px] text-muted-foreground/30"
-          >
-            visitor #{visitorNum.toLocaleString()}
-          </motion.div>
-        )}
       </AnimatePresence>
     </>
   )

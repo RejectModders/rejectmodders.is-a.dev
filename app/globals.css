@@ -10,20 +10,20 @@
   --card-foreground: oklch(0.93 0.005 90);
   --popover: oklch(0.12 0.005 0);
   --popover-foreground: oklch(0.93 0.005 90);
-  --primary: oklch(0.58 0.2 15);
+  --primary: oklch(0.55 0.26 13);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.15 0.005 0);
   --secondary-foreground: oklch(0.85 0.005 90);
   --muted: oklch(0.18 0.008 0);
   --muted-foreground: oklch(0.6 0.005 90);
-  --accent: oklch(0.58 0.2 15);
+  --accent: oklch(0.55 0.26 13);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.2 0.01 0);
   --input: oklch(0.2 0.01 0);
-  --ring: oklch(0.58 0.2 15);
-  --chart-1: oklch(0.58 0.2 15);
+  --ring: oklch(0.55 0.26 13);
+  --chart-1: oklch(0.55 0.26 13);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
@@ -31,12 +31,12 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.12 0 0);
   --sidebar-foreground: oklch(0.93 0.005 90);
-  --sidebar-primary: oklch(0.58 0.2 15);
+  --sidebar-primary: oklch(0.55 0.26 13);
   --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.18 0 0);
   --sidebar-accent-foreground: oklch(0.93 0.005 90);
   --sidebar-border: oklch(0.2 0.01 0);
-  --sidebar-ring: oklch(0.58 0.2 15);
+  --sidebar-ring: oklch(0.55 0.26 13);
 }
 
 .light {
@@ -46,27 +46,27 @@
   --card-foreground: oklch(0.12 0.005 0);
   --popover: oklch(0.95 0.002 90);
   --popover-foreground: oklch(0.12 0.005 0);
-  --primary: oklch(0.52 0.22 15);
+  --primary: oklch(0.49 0.27 13);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.92 0.003 90);
   --secondary-foreground: oklch(0.2 0.005 0);
   --muted: oklch(0.90 0.004 90);
   --muted-foreground: oklch(0.45 0.008 0);
-  --accent: oklch(0.52 0.22 15);
+  --accent: oklch(0.49 0.27 13);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.82 0.006 0);
   --input: oklch(0.82 0.006 0);
-  --ring: oklch(0.52 0.22 15);
+  --ring: oklch(0.49 0.27 13);
   --sidebar: oklch(0.95 0.002 90);
   --sidebar-foreground: oklch(0.12 0.005 0);
-  --sidebar-primary: oklch(0.52 0.22 15);
+  --sidebar-primary: oklch(0.49 0.27 13);
   --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.92 0.003 90);
   --sidebar-accent-foreground: oklch(0.12 0.005 0);
   --sidebar-border: oklch(0.82 0.006 0);
-  --sidebar-ring: oklch(0.52 0.22 15);
+  --sidebar-ring: oklch(0.49 0.27 13);
 }
 
 @theme inline {
@@ -137,12 +137,13 @@
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.58 0.2 15);
+  background: var(--primary);
 }
 
 /* Glow effect utility */
 .glow-red {
-  box-shadow: 0 0 20px oklch(0.58 0.2 15 / 0.15), 0 0 60px oklch(0.58 0.2 15 / 0.05);
+  box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 15%, transparent),
+              0 0 60px color-mix(in oklch, var(--primary) 5%, transparent);
 }
 
 /* Noise overlay */
@@ -168,11 +169,11 @@
 
 /* Text gradient helper */
 .text-gradient {
-  background: linear-gradient(135deg, oklch(0.65 0.22 15), oklch(0.75 0.18 20));
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 80%, white));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: oklch(0.65 0.22 15);
+  color: var(--primary);
 }
 
 /* Animated underline */
@@ -186,20 +187,21 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: oklch(0.58 0.2 15);
+  background: var(--primary);
   transition: width 0.3s ease;
 }
 .animated-underline:hover::after {
   width: 100%;
 }
 
-/* ── Consistent card hover — red border glow on ALL cards ── */
+/* ── Consistent card hover — primary border glow on ALL cards ── */
 .card-hover {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 .card-hover:hover {
-  border-color: oklch(0.58 0.2 15 / 0.45);
-  box-shadow: 0 0 0 1px oklch(0.58 0.2 15 / 0.12), 0 8px 32px oklch(0.58 0.2 15 / 0.08);
+  border-color: color-mix(in oklch, var(--primary) 45%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary) 12%, transparent),
+              0 8px 32px color-mix(in oklch, var(--primary) 8%, transparent);
   transform: translateY(-3px);
 }
 
@@ -214,9 +216,95 @@
 
 /* Pulse glow */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px oklch(0.58 0.2 15 / 0.2); }
-  50% { box-shadow: 0 0 40px oklch(0.58 0.2 15 / 0.4); }
+  0%, 100% { box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 20%, transparent); }
+  50% { box-shadow: 0 0 40px color-mix(in oklch, var(--primary) 40%, transparent); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
 }
+
+/* ── Website break / glitch mode — escalating stages ──────────────────────── */
+@keyframes glitch-shake-1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-2px,1px)} }
+@keyframes glitch-shake-2 { 0%,100%{transform:translate(0,0) rotate(0deg)} 25%{transform:translate(-4px,2px) rotate(0.3deg)} 75%{transform:translate(4px,-2px) rotate(-0.3deg)} }
+@keyframes glitch-shake-3 { 0%,100%{transform:translate(0,0) rotate(0deg)} 10%{transform:translate(-6px,3px) rotate(0.6deg)} 30%{transform:translate(6px,-4px) rotate(-0.8deg)} 50%{transform:translate(-4px,5px) rotate(0.5deg)} 70%{transform:translate(5px,-3px) rotate(-0.7deg)} 90%{transform:translate(-3px,4px) rotate(0.4deg)} }
+@keyframes glitch-shake-4 { 0%,100%{transform:translate(0,0) rotate(0deg)} 5%{transform:translate(-8px,4px) rotate(0.8deg)} 15%{transform:translate(8px,-6px) rotate(-1.2deg)} 25%{transform:translate(-5px,8px) rotate(1.5deg)} 35%{transform:translate(10px,-3px) rotate(-0.9deg)} 45%{transform:translate(-6px,6px) rotate(1.1deg)} 55%{transform:translate(7px,5px) rotate(-1.4deg)} 65%{transform:translate(-9px,-4px) rotate(0.7deg)} 75%{transform:translate(5px,9px) rotate(-1.6deg)} 85%{transform:translate(-7px,-7px) rotate(1.3deg)} 95%{transform:translate(9px,3px) rotate(-0.8deg)} }
+@keyframes glitch-shake-5 {
+  0%,100%{transform:translate(0,0) rotate(0deg)} 5%{transform:translate(-12px,6px) rotate(1.5deg)} 10%{transform:translate(12px,-9px) rotate(-2deg)} 15%{transform:translate(-8px,12px) rotate(2.5deg)} 20%{transform:translate(15px,-5px) rotate(-1.8deg)} 25%{transform:translate(-10px,10px) rotate(2deg)} 30%{transform:translate(11px,8px) rotate(-2.4deg)} 35%{transform:translate(-14px,-6px) rotate(1.2deg)} 40%{transform:translate(8px,14px) rotate(-2.6deg)} 45%{transform:translate(-11px,-11px) rotate(2.2deg)} 50%{transform:translate(14px,5px) rotate(-1.6deg)} 55%{transform:translate(-7px,-14px) rotate(2.8deg)} 60%{transform:translate(10px,11px) rotate(-2.2deg)} 65%{transform:translate(-15px,4px) rotate(1.8deg)} 70%{transform:translate(7px,-12px) rotate(-2.5deg)} 75%{transform:translate(-10px,9px) rotate(2deg)} 80%{transform:translate(13px,-4px) rotate(-1.4deg)} 85%{transform:translate(-5px,13px) rotate(2.4deg)} 90%{transform:translate(12px,-10px) rotate(-3deg)} 95%{transform:translate(-13px,5px) rotate(1.2deg)}
+}
+@keyframes hue-1  { 0%,100%{filter:hue-rotate(0deg)} 50%{filter:hue-rotate(20deg)} }
+@keyframes hue-2  { 0%,100%{filter:hue-rotate(0deg) saturate(1)} 50%{filter:hue-rotate(60deg) saturate(2)} }
+@keyframes hue-3  { 0%,100%{filter:hue-rotate(0deg) saturate(1) brightness(1)} 33%{filter:hue-rotate(120deg) saturate(4) brightness(1.3)} 66%{filter:hue-rotate(60deg) saturate(3) contrast(1.5)} }
+@keyframes hue-4  { 0%{filter:hue-rotate(0deg) saturate(1)} 20%{filter:hue-rotate(90deg) saturate(6) brightness(1.6)} 40%{filter:hue-rotate(180deg) saturate(8) invert(0.15)} 60%{filter:hue-rotate(270deg) saturate(5) brightness(0.7)} 80%{filter:hue-rotate(360deg) saturate(10) contrast(2)} 100%{filter:hue-rotate(0deg) saturate(1)} }
+@keyframes hue-5  { 0%{filter:hue-rotate(0deg) saturate(1) brightness(1)} 8%{filter:hue-rotate(120deg) saturate(12) brightness(2) contrast(3)} 16%{filter:hue-rotate(240deg) saturate(18) brightness(0.4) invert(0.4)} 24%{filter:hue-rotate(60deg) saturate(8) brightness(2) contrast(2)} 32%{filter:hue-rotate(300deg) saturate(20) brightness(0.5) invert(0.6)} 40%{filter:hue-rotate(180deg) saturate(6) brightness(3) contrast(4)} 48%{filter:hue-rotate(90deg) saturate(15) brightness(0.3) invert(0.8)} 56%{filter:hue-rotate(270deg) saturate(10) brightness(2) contrast(1.5)} 64%{filter:hue-rotate(45deg) saturate(25) brightness(0.5) invert(0.5)} 72%{filter:hue-rotate(315deg) saturate(12) brightness(2.5) contrast(5)} 80%{filter:hue-rotate(135deg) saturate(7) brightness(0.6) invert(0.3)} 88%{filter:hue-rotate(225deg) saturate(14) brightness(2) contrast(3)} 100%{filter:hue-rotate(0deg) saturate(1) brightness(1)} }
+@keyframes glitch-r { 0%{clip-path:inset(0 0 98% 0);transform:translate(-4px,0)} 25%{clip-path:inset(30% 0 55% 0);transform:translate(6px,0)} 50%{clip-path:inset(65% 0 20% 0);transform:translate(-5px,2px)} 75%{clip-path:inset(15% 0 75% 0);transform:translate(8px,-2px)} 100%{clip-path:inset(0 0 98% 0);transform:translate(0,0)} }
+@keyframes glitch-b { 0%{clip-path:inset(40% 0 45% 0);transform:translate(4px,0)} 25%{clip-path:inset(70% 0 18% 0);transform:translate(-6px,2px)} 50%{clip-path:inset(20% 0 65% 0);transform:translate(7px,0)} 75%{clip-path:inset(85% 0 5% 0);transform:translate(-5px,-2px)} 100%{clip-path:inset(40% 0 45% 0);transform:translate(0,0)} }
+@keyframes scanlines { 0%{background-position:0 0} 100%{background-position:0 100vh} }
+@keyframes elem-float  { 0%,100%{transform:translateY(0) rotate(0deg);opacity:1} 25%{transform:translateY(-20px) rotate(-3deg) scale(1.05);opacity:0.7} 50%{transform:translateY(12px) rotate(4deg) scale(0.96);opacity:0.5} 75%{transform:translateY(-14px) rotate(-5deg) scale(1.08);opacity:0.3} }
+@keyframes elem-spin   { 0%{transform:rotate(0deg) scale(1)} 25%{transform:rotate(12deg) scale(1.04) skewX(4deg)} 50%{transform:rotate(-15deg) scale(0.92) skewY(-2deg)} 75%{transform:rotate(8deg) scale(1.06) skewX(-3deg)} 100%{transform:rotate(0deg) scale(1)} }
+@keyframes elem-flicker { 0%,100%{opacity:1} 15%{opacity:0.1} 30%{opacity:0.9} 45%{opacity:0} 60%{opacity:0.8} 75%{opacity:0.15} 90%{opacity:0.6} }
+@keyframes text-corrupt { 0%,100%{letter-spacing:normal;transform:none} 20%{letter-spacing:0.4em;transform:scaleX(1.3)} 40%{letter-spacing:-0.2em;transform:scaleX(0.7) skewX(8deg)} 60%{letter-spacing:0.6em;transform:scaleX(1.4)} 80%{letter-spacing:-0.1em;transform:scaleX(0.85) scaleY(1.3)} }
+@keyframes border-glitch { 0%,100%{border-color:transparent} 25%{border-color:#ff0050;border-width:3px} 50%{border-color:#00ffcc;border-width:1px} 75%{border-color:#ff00ff;border-width:4px} }
+@keyframes bg-flash { 0%,100%{background-color:transparent} 15%{background-color:rgba(255,0,80,0.12)} 30%{background-color:rgba(0,255,200,0.08)} 50%{background-color:rgba(255,0,255,0.1)} 70%{background-color:rgba(255,255,0,0.06)} 85%{background-color:rgba(0,0,255,0.08)} }
+
+/* ── Stage 1: barely noticeable ─────────────────────────────────────────────── */
+.website-break-1 { animation: glitch-shake-1 1s infinite, hue-1 3s infinite; }
+
+/* ── Stage 2: something's off ──────────────────────────────────────────────── */
+.website-break-2 { animation: glitch-shake-2 0.6s infinite, hue-2 1.5s infinite; position: relative; }
+.website-break-2::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9997; animation: glitch-r 0.5s infinite; background: rgba(255,0,80,0.05); mix-blend-mode: screen; }
+
+/* ── Stage 3: clearly broken ────────────────────────────────────────────────── */
+.website-break-3 { animation: glitch-shake-3 0.3s infinite, hue-3 0.8s infinite; position: relative; }
+.website-break-3::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9997; animation: glitch-r 0.25s infinite; background: rgba(255,0,80,0.08); mix-blend-mode: screen; }
+.website-break-3::after  { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9997; animation: glitch-b 0.3s infinite reverse; background: rgba(0,200,255,0.08); mix-blend-mode: screen; }
+.website-break-3 h1 { animation: elem-float 2s infinite !important; }
+.website-break-3 h2 { animation: elem-float 2s infinite !important; }
+.website-break-3 section { animation: bg-flash 1.5s infinite !important; }
+
+/* ── Stage 4: pretty bad ─────────────────────────────────────────────────────── */
+.website-break-4 { animation: glitch-shake-4 0.12s infinite, hue-4 0.4s infinite; position: relative; overflow: hidden; }
+.website-break-4::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9997; animation: glitch-r 0.15s infinite; background: rgba(255,0,80,0.1); mix-blend-mode: screen; }
+.website-break-4::after  { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9997; animation: glitch-b 0.2s infinite reverse; background: rgba(0,200,255,0.1); mix-blend-mode: screen; }
+.website-break-4 h1 { animation: text-corrupt 0.5s infinite, elem-float 1s infinite !important; }
+.website-break-4 h2 { animation: text-corrupt 0.5s infinite, elem-float 1s infinite !important; }
+.website-break-4 h3 { animation: elem-flicker 0.7s infinite !important; }
+.website-break-4 p  { animation: elem-flicker 0.7s infinite !important; }
+.website-break-4 button { animation: elem-spin 0.6s infinite, border-glitch 0.4s infinite !important; }
+.website-break-4 a      { animation: elem-spin 0.6s infinite, border-glitch 0.4s infinite !important; }
+.website-break-4 section { animation: bg-flash 0.5s infinite !important; }
+.website-break-4 nav    { animation: elem-spin 0.8s infinite !important; }
+.website-break-4 footer { animation: elem-spin 0.8s infinite !important; }
+
+/* ── Stage 5: total chaos ────────────────────────────────────────────────────── */
+.website-break-5 { animation: glitch-shake-5 0.08s infinite, hue-5 0.3s infinite; position: relative; overflow: hidden; }
+.website-break-5::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9997; animation: glitch-r 0.1s infinite; background: rgba(255,0,80,0.14); mix-blend-mode: screen; }
+.website-break-5::after  { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9997; animation: glitch-b 0.13s infinite reverse; background: rgba(0,200,255,0.14); mix-blend-mode: screen; }
+.website-break-5 h1 { animation: text-corrupt 0.3s infinite, elem-float 0.7s infinite !important; }
+.website-break-5 h2 { animation: text-corrupt 0.3s infinite, elem-float 0.7s infinite !important; }
+.website-break-5 h3 { animation: elem-flicker 0.4s infinite !important; }
+.website-break-5 p  { animation: elem-flicker 0.4s infinite !important; }
+.website-break-5 button { animation: elem-spin 0.35s infinite, border-glitch 0.2s infinite !important; }
+.website-break-5 a      { animation: elem-spin 0.35s infinite, border-glitch 0.2s infinite !important; }
+.website-break-5 img    { animation: elem-float 0.6s infinite, hue-4 0.4s infinite !important; }
+.website-break-5 canvas:not([style*="9999"]) { animation: elem-float 0.6s infinite !important; }
+.website-break-5 nav    { animation: elem-spin 0.4s infinite !important; }
+.website-break-5 footer { animation: elem-spin 0.4s infinite !important; }
+.website-break-5 section { animation: bg-flash 0.3s infinite !important; }
+.website-break-5 li { animation: text-corrupt 0.4s infinite !important; }
+/* scanlines only at stage 5 */
+.website-break-5 body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9996; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px); animation: scanlines 0.3s linear infinite; }
+
+/* ── Rainbow website mode ────────────────────────────────────────────────────── */
+@keyframes rainbow-hue { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+.website-rainbow { animation: rainbow-hue 2s linear infinite; }
+
+
+
+
+
+
+
+
+
+
+

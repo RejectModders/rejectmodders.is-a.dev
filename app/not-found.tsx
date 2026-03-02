@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -55,7 +55,7 @@ export default function NotFound() {
     { text: "  2   * * *  (hop unreachable)",                  delay: 2.35, color: "text-yellow-400" },
     { text: "  3   * * *  (destination not found)",            delay: 2.6,  color: "text-red-400" },
     { text: "",                                                 delay: 2.8,  color: "" },
-    { text: "  route not mapped — page does not exist.",       delay: 2.9,  color: "text-primary" },
+    { text: "  route not mapped - page does not exist.",       delay: 2.9,  color: "text-primary" },
   ]
 
   return (
@@ -64,7 +64,7 @@ export default function NotFound() {
       <ScanLine />
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{ background: "radial-gradient(circle, oklch(0.58 0.2 15 / 0.08) 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, color-mix(in oklch, var(--primary) 8%, transparent) 0%, transparent 70%)" }}
       />
 
       <div className="relative z-10 w-full max-w-lg text-center">
@@ -99,7 +99,7 @@ export default function NotFound() {
             <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
             <div className="h-3 w-3 rounded-full bg-[#28c840]" />
             <Terminal className="ml-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            <span className="font-mono text-xs text-muted-foreground/70">bash — diagnostic</span>
+            <span className="font-mono text-xs text-muted-foreground/70">bash - diagnostic</span>
           </div>
           <div className="p-4 font-mono text-xs space-y-1 sm:p-5 sm:text-sm">
             {lines.map((line, i) => (

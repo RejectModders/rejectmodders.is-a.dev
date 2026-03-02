@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -7,6 +7,69 @@ import { X, Terminal, Maximize2, Minimize2, Minus } from "lucide-react"
 const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"]
 
 interface Line { text: string; color: string }
+
+// ── Cookie helpers ────────────────────────────────────────────────────────────
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null
+  const match = document.cookie.match(new RegExp("(?:^|;\\s*)" + name + "=([^;]*)"))
+  return match ? decodeURIComponent(match[1]) : null
+}
+function setCookie(name: string, value: string, days = 365) {
+  if (typeof document === "undefined") return
+  document.cookie = `${name}=${encodeURIComponent(value)};max-age=${days * 86400};path=/;SameSite=Lax`
+}
+
+// ── Site color map (oklch values) ────────────────────────────────────────────
+const SITE_COLORS: Record<string, { dark: string; light: string; label: string }> = {
+  red:    { dark: "oklch(0.55 0.26 13)",  light: "oklch(0.49 0.27 13)",  label: "red"    },
+  orange: { dark: "oklch(0.65 0.20 48)",  light: "oklch(0.57 0.22 48)",  label: "orange" },
+  yellow: { dark: "oklch(0.74 0.18 88)",  light: "oklch(0.60 0.20 88)",  label: "yellow" },
+  green:  { dark: "oklch(0.60 0.20 142)", light: "oklch(0.50 0.22 142)", label: "green"  },
+  cyan:   { dark: "oklch(0.64 0.17 200)", light: "oklch(0.52 0.19 200)", label: "cyan"   },
+  blue:   { dark: "oklch(0.58 0.22 252)", light: "oklch(0.50 0.24 252)", label: "blue"   },
+  purple: { dark: "oklch(0.60 0.28 295)", light: "oklch(0.52 0.29 295)", label: "purple" },
+  pink:   { dark: "oklch(0.64 0.24 338)", light: "oklch(0.55 0.26 338)", label: "pink"   },
+  white:  { dark: "oklch(0.92 0.00 0)",   light: "oklch(0.28 0.00 0)",   label: "white"  },
+}
+
+function applySiteColor(colorName: string) {
+  const entry = SITE_COLORS[colorName]
+  if (!entry || typeof document === "undefined") return
+  const isLight = document.documentElement.classList.contains("light")
+  const val = isLight ? entry.light : entry.dark
+  const root = document.documentElement
+  const props = [
+    "--primary", "--accent", "--ring", "--chart-1",
+    "--sidebar-primary", "--sidebar-ring",
+  ]
+  props.forEach(p => root.style.setProperty(p, val))
+  // For light colors (white, yellow, cyan, green) the button bg is near-white -
+  // force a dark foreground so text is always readable
+  const lightColors = new Set(["white", "yellow", "cyan", "green"])
+  const fg = lightColors.has(colorName)
+    ? "oklch(0.10 0 0)"   // near-black
+    : "oklch(0.98 0 0)"   // near-white
+  const fgProps = ["--primary-foreground", "--accent-foreground", "--sidebar-primary-foreground"]
+  fgProps.forEach(p => root.style.setProperty(p, fg))
+}
+
+function loadSavedPreferences() {
+  if (typeof document === "undefined") return
+  // theme
+  const theme = getCookie("rm_theme")
+  if (theme === "light") {
+    document.documentElement.classList.add("light")
+    document.documentElement.classList.remove("dark")
+  } else if (theme === "dark") {
+    document.documentElement.classList.remove("light")
+    document.documentElement.classList.add("dark")
+  }
+  // site color - apply CSS vars directly, no dispatch needed
+  const color = getCookie("rm_site_color")
+  if (color && SITE_COLORS[color]) applySiteColor(color)
+  // NOTE: cursor color + style are read directly from cookies by custom-cursor.tsx
+  // at its own useEffect init - no need to dispatch events here (causes flash)
+}
 
 const col = {
   primary:  "text-primary",
@@ -23,15 +86,17 @@ const col = {
 const L = (text: string, color = col.muted): Line => ({ text, color })
 const BR = (): Line => ({ text: "", color: "" })
 
-// ── ASCII art logo ────────────────────────────────────────────────────────────
+// -- ASCII art logo ----------------------------------------------------------
 const LOGO_LINES: Line[] = [
-  L(" ██████╗ ███╗   ███╗", col.primary),
-  L(" ██╔══██╗████╗ ████║", col.primary),
-  L(" ██████╔╝██╔████╔██║", col.primary),
-  L(" ██╔══██╗██║╚██╔╝██║", col.primary),
-  L(" ██║  ██║██║ ╚═╝ ██║", col.primary),
-  L(" ╚═╝  ╚═╝╚═╝     ╚═╝", col.primary),
+  BR(),
+  L("  ____  __  __  ", col.primary),
+  L(" |  _ \\|  \\/  | ", col.primary),
+  L(" | |_) | |\\/| | ", col.primary),
+  L(" |  _ <| |  | | ", col.primary),
+  L(" |_| \\_\\_|  |_| ", col.primary),
+  BR(),
   L(" RejectModders Terminal v2.0", col.fg),
+  L(" type 'help' to get started", col.muted),
   BR(),
 ]
 
@@ -95,6 +160,11 @@ const ALL_CMDS = [
   "sudo please","sudo make me a sandwich",
   ":(){ :|:& };:","while true","for i in","exit 1",
   "motd","banner2","figlet","toilet",
+  "website","website red","website orange","website yellow","website green",
+  "website cyan","website blue","website purple","website pink","website white","website break","website fix","website rainbow",
+  "cursor","cursor red","cursor green","cursor blue","cursor cyan","cursor purple",
+  "cursor pink","cursor orange","cursor yellow","cursor white","cursor break","cursor fix","cursor rainbow",
+  "cursor 1","cursor 2","cursor 3","cursor 4","cursor 5",
   // linux extended
   "cat /etc/passwd","cat /etc/os-release","cat /proc/cpuinfo","cat /proc/meminfo",
   "cat /etc/hosts","cat /etc/motd","cat .bashrc","cat /home/rm/todo.txt",
@@ -234,8 +304,16 @@ const HELP_PAGES: { title: string; rows: [string, string][] }[] = [
     ["whoishiring",        "who's hiring in sec"],
     ["ascii / banner",     "ASCII art"],
     ["cat amanda.txt",     "♥"],
-    ["cursor <color>",     "change cursor color"],
-    ["theme <dark|light>", "toggle site theme"],
+    ["cursor <color>",     "change cursor color (saved)"],
+    ["cursor <1-5>",       "change cursor style (saved)"],
+    ["cursor rainbow",     "🌈 cycle all colors"],
+    ["cursor break",       "👀 ⚠ seizure warning"],
+    ["cursor fix",         "undo cursor break / rainbow"],
+    ["website <color>",    "change site accent color (saved)"],
+    ["website rainbow",    "🌈 rainbow the whole site"],
+    ["website break",      "💀 ⚠ seizure warning"],
+    ["website fix",        "undo website break / rainbow"],
+    ["theme <dark|light>", "toggle site theme (saved)"],
   ]},
   { title: "EDITORS & SHELL", rows: [
     ["vim",                "you can never leave"],
@@ -297,7 +375,7 @@ function buildHelpPage(page: number): Line[] {
   if (p < HELP_TOTAL) {
     out.push(L(`  ▶  help ${p + 1}  →  next page   (${HELP_TOTAL - p} remaining)`, col.cyan))
   } else {
-    out.push(L(`  ✓  all ${HELP_TOTAL} pages complete — help 1 to restart`, col.green))
+    out.push(L(`  ✓  all ${HELP_TOTAL} pages complete - help 1 to restart`, col.green))
   }
   out.push(L(`  ▶  help --all  →  full linux command list`, col.muted))
   out.push(BR())
@@ -347,10 +425,10 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     BR(),
     L("Hey, I'm RejectModders.", col.fg),
     L("Cybersecurity developer from Missouri. I got into this stuff because I", col.muted),
-    L("genuinely enjoy finding how things break — and then stopping it.", col.muted),
+    L("genuinely enjoy finding how things break - and then stopping it.", col.muted),
     BR(),
     L("Languages I actually use:", col.fg),
-    L("  Python (main), C, C++, C# — I'll write it in whatever fits.", col.muted),
+    L("  Python (main), C, C++, C# - I'll write it in whatever fits.", col.muted),
     BR(),
     L("What I do:", col.fg),
     L("  › Vulnerability research", col.muted),
@@ -359,7 +437,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("  › Open-source projects", col.muted),
     BR(),
     L("Currently:", col.primary),
-    L("  Building VulnRadar — a platform with 175+ vulnerability checks,", col.muted),
+    L("  Building VulnRadar - a platform with 175+ vulnerability checks,", col.muted),
     L("  severity ratings, and fix guidance. The tool I wished existed.", col.muted),
     BR(),
   ],
@@ -399,18 +477,19 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   skills: () => [
-    L("# skills.json — proficiency levels", col.primary),
+    L("# skills.json - proficiency levels", col.primary),
     BR(),
-    L("  Python              ████████████████████  95%", col.primary),
-    L("  Cybersecurity       ██████████████████░░  90%", col.primary),
-    L("  Git / GitHub        ██████████████████░░  90%", col.primary),
-    L("  Vuln Research       █████████████████░░░  85%", col.primary),
-    L("  Discord Bot Dev     █████████████████░░░  85%", col.primary),
-    L("  Linux               █████████████████░░░  85%", col.primary),
-    L("  C / C++             ████████████████░░░░  80%", col.fg),
-    L("  C#                  ███████████████░░░░░  75%", col.fg),
-    L("  JavaScript          ██████████████░░░░░░  70%", col.muted),
-    L("  TypeScript          █████████████░░░░░░░  65%", col.muted),
+    L("  Python              ████████████████████  100%", col.primary),
+    L("  Git / GitHub        ████████████████████  100%", col.primary),
+    L("  Discord Bot Dev     ████████████████████  100%", col.primary),
+    L("  Cybersecurity       ██████████████░░░░░░   70%", col.primary),
+    L("  JavaScript          ██████████████░░░░░░   70%", col.fg),
+    L("  TypeScript          █████████████░░░░░░░   65%", col.fg),
+    L("  Linux               █████████████░░░░░░░   65%", col.fg),
+    L("  SQL                 █████████████░░░░░░░   65%", col.fg),
+    L("  C / C++             █████████░░░░░░░░░░░   45%", col.muted),
+    L("  Bash                ████████░░░░░░░░░░░░   40%", col.muted),
+    L("  C#                  ████░░░░░░░░░░░░░░░░   20%", col.muted),
     BR(),
   ],
 
@@ -440,18 +519,18 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   friends: () => [
-    L("# friends.json — listing members...", col.primary),
+    L("# friends.json - listing members...", col.primary),
     BR(),
     L("  [1]  Amanda        ♥  (classified)", col.primary),
-    L("  [2]  HD            ●  realhd.dev", col.fg),
-    L("  [3]  joe?          ●  just a guy", col.fg),
-    L("  [4]  Jiggly Balls  ●  krish-space.is-a.dev", col.fg),
-    L("  [5]  Alex Gallego  ●  nyalex.dev", col.fg),
-    L("  [6]  FeralHS       ●  (lurker)", col.fg),
-    L("  [7]  Wolf          ●  github.com/wolf4605", col.fg),
-    L("  [8]  weebuhd       ●  (mysterious)", col.fg),
-    L("  [9]  CrownScorpion ●  youtube.com/@crownscorpion", col.fg),
-    L(" [10]  + others...   ●  /friends", col.muted),
+    L("  [2]  HD            �-�  realhd.dev", col.fg),
+    L("  [3]  joe?          �-�  just a guy", col.fg),
+    L("  [4]  Jiggly Balls  �-�  krish-space.is-a.dev", col.fg),
+    L("  [5]  Alex Gallego  �-�  nyalex.dev", col.fg),
+    L("  [6]  FeralHS       �-�  (lurker)", col.fg),
+    L("  [7]  Wolf          �-�  github.com/wolf4605", col.fg),
+    L("  [8]  weebuhd       �-�  (mysterious)", col.fg),
+    L("  [9]  CrownScorpion �-�  youtube.com/@crownscorpion", col.fg),
+    L(" [10]  + others...   �-�  /friends", col.muted),
     BR(),
   ],
 
@@ -605,21 +684,19 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   neofetch: () => [
-    L("        ███████╗          rm@rejectmodders.is-a.dev", col.primary),
-    L("        ██╔══██╗          ─────────────────────────", col.primary),
-    L("        ███████╔╝         OS:     Vercel Edge Linux", col.fg),
-    L("        ██╔══██╗          Host:   rejectmodders.is-a.dev", col.fg),
-    L("        ██║  ██║          Kernel: Next.js 16.1.6", col.fg),
-    L("        ╚═╝  ╚═╝          Shell:  rm-terminal v2.0", col.fg),
+    L("  ____  __  __    rm@rejectmodders.is-a.dev", col.primary),
+    L(" |  _ \\|  \\/  |   -------------------------", col.primary),
+    L(" | |_) | |\\/| |   OS:     Vercel Edge Linux", col.fg),
+    L(" |  _ <| |  | |   Host:   rejectmodders.is-a.dev", col.fg),
+    L(" |_| \\_\\_|  |_|   Kernel: Next.js 15", col.fg),
+    L("                  Shell:  rm-terminal v2.0", col.fg),
+    L("                  DE:     React 19 + Framer Motion", col.fg),
+    L("                  WM:     Tailwind CSS v4", col.fg),
+    L("                  Theme:  Dark (obviously)", col.fg),
+    L("                  CPU:    big brain", col.fg),
+    L("                  Memory: 69mb / 420mb", col.fg),
     BR(),
-    L("                          Resolution: ∞ × ∞", col.fg),
-    L("                          DE: React 19 + Framer Motion", col.fg),
-    L("                          WM: Tailwind CSS v4", col.fg),
-    L("                          Theme: Dark (obviously)", col.fg),
-    L("                          CPU: big brain", col.fg),
-    L("                          Memory: 69mb / 420mb", col.fg),
-    BR(),
-    L("                          ████████████████████████", col.green),
+    L("                  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588", col.green),
     BR(),
   ],
 
@@ -736,8 +813,8 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       "To understand recursion, you must first understand recursion.",
       "Go to sleep. The code will still be broken in the morning.",
       "Always code as if the person maintaining your code is a violent psychopath who knows where you live.",
-      "Talk is cheap. Show me the code. — Linus Torvalds",
-      "First, solve the problem. Then, write the code. — John Johnson",
+      "Talk is cheap. Show me the code. - Linus Torvalds",
+      "First, solve the problem. Then, write the code. - John Johnson",
     ]
     const f = fortunes[Math.floor(Math.random() * fortunes.length)]
     return [
@@ -751,7 +828,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   joke: () => {
     const jokes = [
       ["Why do programmers prefer dark mode?", "Because light attracts bugs."],
-      ["How many programmers does it take to change a light bulb?", "None — it's a hardware problem."],
+      ["How many programmers does it take to change a light bulb?", "None - it's a hardware problem."],
       ["A SQL query walks into a bar...", "...walks up to two tables and asks: 'Can I join you?'"],
       ["Why do Java developers wear glasses?", "Because they don't C#."],
       ["What's a programmer's favourite hangout place?", "Foo Bar."],
@@ -771,16 +848,16 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   quote: () => {
     const quotes = [
-      ["The quieter you become, the more you can hear.", "— Ram Dass"],
-      ["First, do no harm.", "— Hippocrates (also applies to prod deployments)"],
-      ["The only way to do great work is to love what you do.", "— Steve Jobs"],
-      ["Security is a process, not a product.", "— Bruce Schneier"],
-      ["With great power comes great responsibility.", "— Uncle Ben (and sudo)"],
-      ["The best defense is a good offense.", "— Sun Tzu / every pentester ever"],
-      ["Simplicity is the ultimate sophistication.", "— Leonardo da Vinci"],
-      ["Move fast and break things.", "— Zuckerberg (please don't do this in prod)"],
-      ["If it's stupid but it works, it's not stupid.", "— Murphy's Other Law"],
-      ["Never trust user input.", "— Every security engineer, always"],
+      ["The quieter you become, the more you can hear.", "- Ram Dass"],
+      ["First, do no harm.", "- Hippocrates (also applies to prod deployments)"],
+      ["The only way to do great work is to love what you do.", "- Steve Jobs"],
+      ["Security is a process, not a product.", "- Bruce Schneier"],
+      ["With great power comes great responsibility.", "- Uncle Ben (and sudo)"],
+      ["The best defense is a good offense.", "- Sun Tzu / every pentester ever"],
+      ["Simplicity is the ultimate sophistication.", "- Leonardo da Vinci"],
+      ["Move fast and break things.", "- Zuckerberg (please don't do this in prod)"],
+      ["If it's stupid but it works, it's not stupid.", "- Murphy's Other Law"],
+      ["Never trust user input.", "- Every security engineer, always"],
     ]
     const [q, attr] = quotes[Math.floor(Math.random() * quotes.length)]
     return [
@@ -858,7 +935,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     const result = Math.random() < 0.5 ? "HEADS" : "TAILS"
     return [
       L("Flipping coin...", col.muted),
-      L(`  ● ${result}`, result === "HEADS" ? col.green : col.yellow),
+      L(`  �-� ${result}`, result === "HEADS" ? col.green : col.yellow),
       BR(),
     ]
   },
@@ -881,16 +958,16 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   whoishiring: () => [
     L("# Who's Hiring in Security? (Mar 2026)", col.primary),
     BR(),
-    L("  › Cloudflare         — Security Engineer", col.fg),
+    L("  › Cloudflare         - Security Engineer", col.fg),
     L("    cloudflare.com/careers", col.cyan),
     BR(),
-    L("  › Google Project Zero — Vulnerability Researcher", col.fg),
+    L("  › Google Project Zero - Vulnerability Researcher", col.fg),
     L("    careers.google.com", col.cyan),
     BR(),
-    L("  › Synack              — Pentest / Red Team", col.fg),
+    L("  › Synack              - Pentest / Red Team", col.fg),
     L("    synack.com/company/careers", col.cyan),
     BR(),
-    L("  › VulnRadar           — You? :)", col.primary),
+    L("  › VulnRadar           - You? :)", col.primary),
     L("    vulnradar.dev", col.cyan),
     BR(),
     L("  Check HN: Who's Hiring thread for more.", col.muted),
@@ -898,12 +975,11 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   banner: () => [
-    L("██████╗ ███╗   ███╗", col.primary),
-    L("██╔══██╗████╗ ████║", col.primary),
-    L("███████╔╝██╔████╔██║", col.primary),
-    L("██╔══██╗██║╚██╔╝██║", col.primary),
-    L("██║  ██║██║ ╚═╝ ██║", col.primary),
-    L("╚═╝  ╚═╝╚═╝     ╚═╝", col.primary),
+    L("  ____  __  __  ", col.primary),
+    L(" |  _ \\|  \\/  | ", col.primary),
+    L(" | |_) | |\\/| | ", col.primary),
+    L(" |  _ <| |  | | ", col.primary),
+    L(" |_| \\_\\_|  |_| ", col.primary),
     BR(),
   ],
 
@@ -989,7 +1065,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     BR(),
     L("    init: portfolio v2 with konami code terminal", col.fg),
     BR(),
-    L("(END — press q to quit)", col.muted),
+    L("(END - press q to quit)", col.muted),
     BR(),
   ],
 
@@ -1029,12 +1105,12 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("GNU Emacs 29.1", col.fg),
     L("An operating system with a text editor included.", col.muted),
     BR(),
-    L("  M-x butterfly     — fix bugs by flapping wings", col.fg),
-    L("  M-x doctor        — tell emacs your problems", col.fg),
-    L("  M-x psychoanalyze-pinhead — self explanatory", col.fg),
-    L("  M-x zone          — watch emacs have a meltdown", col.fg),
+    L("  M-x butterfly     - fix bugs by flapping wings", col.fg),
+    L("  M-x doctor        - tell emacs your problems", col.fg),
+    L("  M-x psychoanalyze-pinhead - self explanatory", col.fg),
+    L("  M-x zone          - watch emacs have a meltdown", col.fg),
     BR(),
-    L("  (to exit: C-x C-c — if you dare)", col.muted),
+    L("  (to exit: C-x C-c - if you dare)", col.muted),
     BR(),
   ],
 
@@ -1062,7 +1138,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     const file = (args ?? "").replace("touch ", "").trim() || "newfile.txt"
     return [
       L(`touch: created '${file}'`, col.fg),
-      L(`(not really — this is a browser, not a filesystem)`, col.muted),
+      L(`(not really - this is a browser, not a filesystem)`, col.muted),
       BR(),
     ]
   },
@@ -1074,7 +1150,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       L(`MAN(1)                    User Commands                   MAN(1)`, col.primary),
       BR(),
       L(`NAME`, col.fg),
-      L(`       ${cmd} — a command in the rm-terminal`, col.fg),
+      L(`       ${cmd} - a command in the rm-terminal`, col.fg),
       BR(),
       L(`SYNOPSIS`, col.fg),
       L(`       ${cmd} [options]`, col.fg),
@@ -1086,7 +1162,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       L(`BUGS`, col.fg),
       L(`       Probably. Report them on GitHub.`, col.muted),
       BR(),
-      L(`(END — press q to quit)`, col.muted),
+      L(`(END - press q to quit)`, col.muted),
       BR(),
     ]
   },
@@ -1232,7 +1308,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     return [
       L(`  Input:  ${txt}`, col.muted),
       L(`  MD5:    ${fake}`, col.green),
-      L("  (simulated — use a real tool for actual hashing)", col.muted),
+      L("  (simulated - use a real tool for actual hashing)", col.muted),
       BR(),
     ]
   },
@@ -1296,7 +1372,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   snake: () => [
     L("┌──────────────────────────┐", col.primary),
-    L("│  @@@@●                  │", col.green),
+    L("│  @@@@�-�                  │", col.green),
     L("│      ↓                  │", col.muted),
     L("│  ★                      │", col.red),
     L("│                         │", col.muted),
@@ -1304,7 +1380,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("└──────────────────────────┘", col.primary),
     BR(),
     L("Score: 3   Length: 5", col.fg),
-    L("(controls: arrow keys — but this is fake)", col.muted),
+    L("(controls: arrow keys - but this is fake)", col.muted),
     BR(),
   ],
 
@@ -1333,7 +1409,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("└──────────┘", col.primary),
     BR(),
     L("Lines: 4   Level: 3   Score: 1337", col.fg),
-    L("(also fake — but you knew that)", col.muted),
+    L("(also fake - but you knew that)", col.muted),
     BR(),
   ],
 
@@ -1525,7 +1601,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("  Download: ████████████████████ 420.69 Mbps", col.green),
     L("  Upload:   ████████████████░░░░ 360.00 Mbps", col.green),
     BR(),
-    L("(it's a static site — it's fast by default)", col.muted),
+    L("(it's a static site - it's fast by default)", col.muted),
     BR(),
   ],
 
@@ -1533,7 +1609,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   "systemctl": (args) => {
     const sub = (args ?? "").replace(/^systemctl\s*/i, "").trim() || "status"
     return [
-      L(`● next-server.service - Next.js Production Server`, col.fg),
+      L(`�-� next-server.service - Next.js Production Server`, col.fg),
       L(`     Loaded: loaded (/etc/systemd/system/next-server.service; enabled)`, col.fg),
       L(`     Active: active (running) since forever`, col.green),
       L(`    Process: ${sub}`, col.muted),
@@ -1572,7 +1648,20 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     }
     const [r, g, b] = colors[color]
     window.dispatchEvent(new CustomEvent("rm:cursor-color", { detail: { r, g, b } }))
-    return [L(`Cursor color set to ${color}.`, col.green), L("(resets on page refresh)", col.muted), BR()]
+    return [L(`Cursor color set to ${color}. Preference saved.`, col.green), BR()]
+  },
+
+  website: (args) => {
+    const color = (args ?? "").replace(/^website\s*/i, "").trim().toLowerCase()
+    if (!color || !SITE_COLORS[color]) {
+      return [
+        L("Usage: website <color>", col.red),
+        L("Colors: red, orange, yellow, green, cyan, blue, purple, pink, white", col.muted),
+        BR(),
+      ]
+    }
+    window.dispatchEvent(new CustomEvent("rm:site-color", { detail: color }))
+    return [L(`Site color set to ${color}. Preference saved.`, col.green), BR()]
   },
 
   theme: (args) => {
@@ -1670,7 +1759,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   "cat .bashrc": () => [
-    L("# .bashrc — rm@rejectmodders.is-a.dev", col.muted),
+    L("# .bashrc - rm@rejectmodders.is-a.dev", col.muted),
     BR(),
     L("export PATH=$HOME/.local/bin:$PATH", col.fg),
     L("export EDITOR=vim", col.fg),
@@ -1698,7 +1787,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   "cat /etc/motd": () => [
-    L("╔═══════════════════════════════════╗", col.primary),
+    L("╔═══════════════════════════════════�-", col.primary),
     L("║  Welcome to rejectmodders.is-a.dev ║", col.primary),
     L("║  Unauthorized access is logged.    ║", col.primary),
     L("║  Just kidding. Hi :)               ║", col.primary),
@@ -1733,7 +1822,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("  420   rm       20   0   6969   690   0.0  0.1   bash", col.fg),
     BR(),
     L("F1 Help  F2 Setup  F3 Search  F4 Filter  F9 Kill  F10 Quit", col.muted),
-    L("(press q or F10 to quit htop — jk type clear)", col.muted),
+    L("(press q or F10 to quit htop - jk type clear)", col.muted),
     BR(),
   ],
 
@@ -1743,7 +1832,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     if (pid === "1")  return [L(`kill: (1) init: Operation not permitted. Don't kill init.`, col.red), BR()]
     return [
       L(`kill: sent SIGTERM to PID ${pid}`, col.yellow),
-      L(`(not really — there's no real process here)`, col.muted),
+      L(`(not really - there's no real process here)`, col.muted),
       BR(),
     ]
   },
@@ -1754,7 +1843,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     if (name === "next-server" || name === "node") return [L(`killall: (1) next-server: Operation not permitted`, col.red), BR()]
     return [
       L(`Killed ${name} (PID ${Math.floor(Math.random() * 9000) + 1000})`, col.green),
-      L(`(not really — nothing actually runs here)`, col.muted),
+      L(`(not really - nothing actually runs here)`, col.muted),
       BR(),
     ]
   },
@@ -1813,7 +1902,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   "curl ifconfig.me": () => [
     L("Fetching your public IP...", col.muted),
-    L("(this would reveal your IP — so we won't)", col.yellow),
+    L("(this would reveal your IP - so we won't)", col.yellow),
     L("Use 'myip' for a safe version.", col.muted),
     BR(),
   ],
@@ -1884,7 +1973,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       L(`Selecting previously unselected package ${pkg}.`, col.muted),
       L(`Setting up ${pkg}... done.`, col.green),
       BR(),
-      L("(nothing actually installed — this is a browser)", col.muted),
+      L("(nothing actually installed - this is a browser)", col.muted),
       BR(),
     ]
   },
@@ -1943,7 +2032,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     BR(),
     L("SHA256:rm4c3sSg00dK3y+f0rS3cur1ty (rm@rejectmodders.is-a.dev)", col.green),
     BR(),
-    L("(key not actually generated — this is a browser)", col.muted),
+    L("(key not actually generated - this is a browser)", col.muted),
     BR(),
   ],
 
@@ -1990,7 +2079,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   export: (args) => {
     const kv = (args ?? "").replace(/export\s*/i, "").trim()
     if (!kv) return [L("declare -x NODE_ENV=production", col.fg), L("declare -x SITE=rejectmodders.is-a.dev", col.fg), BR()]
-    return [L(`export: ${kv} — set for this session only`, col.green), BR()]
+    return [L(`export: ${kv} - set for this session only`, col.green), BR()]
   },
 
   source: (args) => {
@@ -2015,7 +2104,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   tee: (args) => {
     const f = (args ?? "").replace(/tee\s*/i, "").trim() || "output.txt"
-    return [L(`tee: writing to ${f} (stdout only — no real filesystem)`, col.muted), BR()]
+    return [L(`tee: writing to ${f} (stdout only - no real filesystem)`, col.muted), BR()]
   },
 
   wc: (args) => {
@@ -2029,7 +2118,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   sort: () => [L("amanda", col.primary), L("rejectmodders", col.fg), L("vulnradar", col.fg), BR()],
 
-  uniq: () => [L("(no duplicates found — you're one of a kind)", col.green), BR()],
+  uniq: () => [L("(no duplicates found - you're one of a kind)", col.green), BR()],
 
   diff: (args) => {
     const f = (args ?? "").replace(/diff\s*/i, "").trim()
@@ -2062,7 +2151,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     const q = (args ?? "").replace(/grep\s*/i, "").trim() || "password"
     return [
       L(`grep -r "${q}" .`, col.muted),
-      L(`./app/globals.css:--primary: oklch(0.58 0.2 15);`, col.fg),
+      L(`./app/globals.css:--primary: oklch(0.55 0.26 13);`, col.fg),
       L(`./components/terminal-easter-egg.tsx:// many many lines`, col.fg),
       q === "password" ? L("./NOT_A_REAL_FILE.txt:password=hunter2", col.red) : L("(no sensitive results)", col.green),
       BR(),
@@ -2116,7 +2205,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   "sudo please": () => [
-    L("sudo: you said please — points for politeness.", col.yellow),
+    L("sudo: you said please - points for politeness.", col.yellow),
     L("sudo: still denied though.", col.red),
     L("  hint: try 'sudo make me a sandwich'", col.muted),
     BR(),
@@ -2154,7 +2243,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       L("Python 3.12.0 (main, Mar 1 2026)", col.green),
       L('Type "help", "copyright", "credits" or "license" for more information.', col.muted),
       L(">>> ", col.green),
-      L("(type exit() to quit — jk just type clear)", col.muted),
+      L("(type exit() to quit - jk just type clear)", col.muted),
       BR(),
     ]
     if (code === "import antigravity") return [L("🛸 (you're floating)", col.cyan), BR()]
@@ -2168,7 +2257,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       BR(),
     ]
     try {
-      const r = eval(code) // intentionally limited — only math/simple expressions
+      const r = eval(code) // intentionally limited - only math/simple expressions
       return [L(`>>> ${code}`, col.muted), L(String(r), col.green), BR()]
     } catch {
       return [L(`SyntaxError: ${code}`, col.red), BR()]
@@ -2210,7 +2299,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("  0: rm-terminal (1 window) created just now", col.fg),
     L("  1: vulnradar (3 windows) created yesterday", col.fg),
     BR(),
-    L("(press Ctrl+B then D to detach — jk type clear)", col.muted),
+    L("(press Ctrl+B then D to detach - jk type clear)", col.muted),
     BR(),
   ],
 
@@ -2231,7 +2320,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       BR(),
       L(new Date().toString(), col.green),
       BR(),
-      L("(press Ctrl+C to quit — jk type clear)", col.muted),
+      L("(press Ctrl+C to quit - jk type clear)", col.muted),
       BR(),
     ]
   },
@@ -2327,7 +2416,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("              lsblk  mount  python3  node  cmatrix", col.fg),
     BR(),
     L("Fun:          doge  nyan  parrot  rick  sudo please  sudo make me a sandwich", col.fg),
-    L("              :(){ :|:& };:  cursor <color>  theme <dark|light>", col.fg),
+    L("              :(){ :|:& };:  cursor <color>  website <color>  theme <dark|light>", col.fg),
     BR(),
     L("Type 'help' for the main help table.", col.muted),
     BR(),
@@ -2388,13 +2477,21 @@ export function TerminalEasterEgg() {
   const [pos, setPos]               = useState({ x: 0, y: 0 })
   const [dragging, setDragging]     = useState(false)
   // sudo password flow
-  const [sudoPending, setSudoPending]         = useState<string | null>(null)   // the full cmd waiting for auth
-  const [sudoAuthenticated, setSudoAuthenticated] = useState(false)             // one-shot: resets after each use
+  const [sudoPending, setSudoPending]         = useState<string | null>(null)
+  const [sudoAuthenticated, setSudoAuthenticated] = useState(false)
   const [awaitingPassword, setAwaitingPassword]   = useState(false)
-  const dragStart                   = useRef({ mx: 0, my: 0, px: 0, py: 0 })
-  const inputRef  = useRef<HTMLInputElement>(null)
-  const bottomRef = useRef<HTMLDivElement>(null)
-  const konamiRef = useRef(0)
+  // confirm prompt (cursor↔website cross-suggestion + break warnings)
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false)
+  const [confirmContext, setConfirmContext]   = useState<{
+    type: "website-from-cursor" | "cursor-from-website" | "website-break" | "cursor-break"
+    color?: string
+  } | null>(null)
+
+  const dragStart    = useRef({ mx: 0, my: 0, px: 0, py: 0 })
+  const terminalRef  = useRef<HTMLDivElement>(null)
+  const inputRef     = useRef<HTMLInputElement>(null)
+  const bottomRef    = useRef<HTMLDivElement>(null)
+  const konamiRef    = useRef(0)
 
   // Center on open
   useEffect(() => {
@@ -2427,6 +2524,24 @@ export function TerminalEasterEgg() {
     return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp) }
   }, [dragging])
 
+  // Click outside → minimize
+  useEffect(() => {
+    if (!open || isMinimized || isFullscreen) return
+    const handler = (e: MouseEvent) => {
+      if (terminalRef.current && !terminalRef.current.contains(e.target as Node)) {
+        setIsMinimized(true)
+      }
+    }
+    // Use mousedown so it fires before any click handlers
+    window.addEventListener("mousedown", handler)
+    return () => window.removeEventListener("mousedown", handler)
+  }, [open, isMinimized, isFullscreen])
+
+  // Load saved preferences on mount
+  useEffect(() => {
+    loadSavedPreferences()
+  }, [])
+
   // External event listeners (from command palette, cursor command, theme command)
   useEffect(() => {
     const openTerminal = () => { setOpen(true) }
@@ -2434,12 +2549,24 @@ export function TerminalEasterEgg() {
       const t = (e as CustomEvent).detail as string
       document.documentElement.classList.toggle("light", t === "light")
       document.documentElement.classList.toggle("dark",  t === "dark")
+      setCookie("rm_theme", t)
+      // re-apply site color since light/dark affects the value
+      const color = getCookie("rm_site_color")
+      if (color && SITE_COLORS[color]) applySiteColor(color)
+    }
+    const setSiteColor = (e: Event) => {
+      const color = (e as CustomEvent).detail as string
+      if (!SITE_COLORS[color]) return
+      applySiteColor(color)
+      setCookie("rm_site_color", color)
     }
     window.addEventListener("rm:open-terminal", openTerminal)
     window.addEventListener("rm:set-theme",     setThemeEv)
+    window.addEventListener("rm:site-color",    setSiteColor)
     return () => {
       window.removeEventListener("rm:open-terminal", openTerminal)
       window.removeEventListener("rm:set-theme",     setThemeEv)
+      window.removeEventListener("rm:site-color",    setSiteColor)
     }
   }, [])
 
@@ -2476,6 +2603,8 @@ export function TerminalEasterEgg() {
       setSudoAuthenticated(false)
       setSudoPending(null)
       setAwaitingPassword(false)
+      setAwaitingConfirm(false)
+      setConfirmContext(null)
       setTimeout(() => inputRef.current?.focus(), 80)
     }
   }, [open])
@@ -2526,7 +2655,7 @@ export function TerminalEasterEgg() {
     if (cmd.startsWith("sudo ")) {
       const sub = cmd.slice(5).trim()
 
-      // sudo please — no password, just a joke
+      // sudo please - no password, just a joke
       if (sub === "please") {
         appendLines(COMMANDS["sudo please"]!())
         return
@@ -2543,7 +2672,7 @@ export function TerminalEasterEgg() {
         return
       }
 
-      // ── authenticated — now run the command ───────────────────────────
+      // ── authenticated - now run the command ───────────────────────────
       // reset immediately so next sudo always prompts again
       setSudoAuthenticated(false)
 
@@ -2582,6 +2711,167 @@ export function TerminalEasterEgg() {
       return
     }
 
+    // ── cursor command (inline so we can trigger confirm prompt) ─────────
+    if (cmd.startsWith("cursor")) {
+      const arg = cmd.replace(/^cursor\s*/i, "").trim()
+      const colors: Record<string, [number, number, number]> = {
+        red: [220, 38, 38], green: [34, 197, 94], blue: [59, 130, 246],
+        cyan: [6, 182, 212], purple: [168, 85, 247], pink: [236, 72, 153],
+        orange: [249, 115, 22], yellow: [234, 179, 8], white: [255, 255, 255],
+      }
+      const STYLE_NAMES: Record<number, string> = {
+        1: "default (ring + comet tail)",
+        2: "crosshair",
+        3: "minimal dot",
+        4: "arrow",
+        5: "scanner / tech ring",
+      }
+
+      // cursor break
+      if (arg === "break") {
+        appendLines([
+          L("⚠  SEIZURE WARNING", col.red),
+          L("   This will cause rapid flashing, strobing colors and erratic", col.yellow),
+          L("   movement on screen. Do NOT proceed if you have photosensitive", col.yellow),
+          L("   epilepsy or are sensitive to flashing lights.", col.yellow),
+          BR(),
+          L("   Also: there is no undo except refreshing the page.", col.muted),
+          BR(),
+          L("Continue? [y/N] ", col.red),
+        ])
+        setConfirmContext({ type: "cursor-break" })
+        setAwaitingConfirm(true)
+        return
+      }
+
+      // cursor fix
+      if (arg === "fix") {
+        window.dispatchEvent(new CustomEvent("rm:cursor-fix"))
+        // re-dispatch saved color + style so everything is fully restored
+        const savedCursorColor = getCookie("rm_cursor_color")
+        if (savedCursorColor) {
+          const parts = savedCursorColor.split(",").map(Number)
+          if (parts.length === 3 && parts.every(n => !isNaN(n)))
+            window.dispatchEvent(new CustomEvent("rm:cursor-color", { detail: { r: parts[0], g: parts[1], b: parts[2] } }))
+        }
+        const savedCursorStyle = getCookie("rm_cursor_style")
+        if (savedCursorStyle) window.dispatchEvent(new CustomEvent("rm:cursor-style", { detail: parseInt(savedCursorStyle) }))
+        appendLines([L("cursor restored. boring again.", col.green), BR()])
+        return
+      }
+
+      // cursor rainbow
+      if (arg === "rainbow") {
+        window.dispatchEvent(new CustomEvent("rm:cursor-rainbow"))
+        appendLines([L("🌈 cursor is now rainbow. run 'cursor fix' to stop.", col.green), BR()])
+        return
+      }
+
+      // cursor 1-5 (style)
+      const styleNum = parseInt(arg)
+      if (!isNaN(styleNum) && styleNum >= 1 && styleNum <= 5) {
+        window.dispatchEvent(new CustomEvent("rm:cursor-style", { detail: styleNum }))
+        appendLines([
+          L(`Cursor style set to ${styleNum}: ${STYLE_NAMES[styleNum]}. Preference saved.`, col.green),
+          BR(),
+        ])
+        return
+      }
+
+      // cursor <color>
+      if (!arg || !colors[arg]) {
+        appendLines([
+          L("Usage: cursor <color|style|break>", col.red),
+          L("  cursor red / green / blue / cyan / purple / pink / orange / yellow / white", col.muted),
+          L("  cursor 1   default ring + comet tail", col.muted),
+          L("  cursor 2   crosshair", col.muted),
+          L("  cursor 3   minimal dot", col.muted),
+          L("  cursor 4   arrow", col.muted),
+          L("  cursor 5   scanner / tech ring", col.muted),
+          L("  cursor break   👀  ⚠ seizure warning", col.muted),
+          L("  cursor fix     undo cursor break", col.muted),
+          BR(),
+        ])
+        return
+      }
+      const [r, g, b] = colors[arg]
+      window.dispatchEvent(new CustomEvent("rm:cursor-color", { detail: { r, g, b } }))
+      appendLines([L(`Cursor color set to ${arg}. Preference saved.`, col.green), BR()])
+      if (SITE_COLORS[arg]) {
+        setConfirmContext({ type: "website-from-cursor", color: arg })
+        setAwaitingConfirm(true)
+        appendLines([L(`Also set website color to ${arg}? [Y/n] `, col.cyan)])
+      }
+      return
+    }
+
+    // ── website command (inline so we can trigger confirm prompt) ────────
+    if (cmd.startsWith("website")) {
+      const arg = cmd.replace(/^website\s*/i, "").trim()
+
+      // website break
+      if (arg === "break") {
+        appendLines([
+          L("⚠  SEIZURE WARNING", col.red),
+          L("   This will cause rapid flashing, extreme color shifts, spinning", col.yellow),
+          L("   elements and full-page strobing. Do NOT proceed if you have", col.yellow),
+          L("   photosensitive epilepsy or are sensitive to flashing lights.", col.yellow),
+          BR(),
+          L("   Also: the terminal will close and there is no undo except refreshing.", col.muted),
+          BR(),
+          L("Continue? [y/N] ", col.red),
+        ])
+        setConfirmContext({ type: "website-break" })
+        setAwaitingConfirm(true)
+        return
+      }
+
+      // website fix
+      if (arg === "fix") {
+        const html = document.documentElement
+        for (let s = 1; s <= 5; s++) html.classList.remove(`website-break-${s}`)
+        html.classList.remove("website-rainbow")
+        // re-apply saved color so CSS variable overrides are restored
+        const savedColor = getCookie("rm_site_color")
+        if (savedColor && SITE_COLORS[savedColor]) applySiteColor(savedColor)
+        window.dispatchEvent(new CustomEvent("rm:website-fix"))
+        appendLines([L("website restored. back to normal.", col.green), BR()])
+        return
+      }
+
+      // website rainbow
+      if (arg === "rainbow") {
+        const html = document.documentElement
+        for (let s = 1; s <= 5; s++) html.classList.remove(`website-break-${s}`)
+        html.classList.add("website-rainbow")
+        appendLines([L("🌈 website is now rainbow. run 'website fix' to stop.", col.green), BR()])
+        return
+      }
+
+      if (!arg || !SITE_COLORS[arg]) {
+        appendLines([
+          L("Usage: website <color|break>", col.red),
+          L("Colors: red, orange, yellow, green, cyan, blue, purple, pink, white", col.muted),
+          L("  website break   💀", col.muted),
+          BR(),
+        ])
+        return
+      }
+      window.dispatchEvent(new CustomEvent("rm:site-color", { detail: arg }))
+      appendLines([L(`Site color set to ${arg}. Preference saved.`, col.green), BR()])
+      const cursorColors: Record<string, [number, number, number]> = {
+        red: [220, 38, 38], green: [34, 197, 94], blue: [59, 130, 246],
+        cyan: [6, 182, 212], purple: [168, 85, 247], pink: [236, 72, 153],
+        orange: [249, 115, 22], yellow: [234, 179, 8], white: [255, 255, 255],
+      }
+      if (cursorColors[arg]) {
+        setConfirmContext({ type: "cursor-from-website", color: arg })
+        setAwaitingConfirm(true)
+        appendLines([L(`Also set cursor color to ${arg}? [Y/n] `, col.cyan)])
+      }
+      return
+    }
+
     // async commands
     if (ASYNC_CMDS[cmd]) {
       appendLines([L("fetching...", col.muted)])
@@ -2609,7 +2899,7 @@ export function TerminalEasterEgg() {
       "git clone","git stash","git log","git diff","git branch","git",
       "sudo apt install","apt install","apt",
       "npm install","python3","python","node",
-      "cursor","theme","cowsay","fortune","joke","quote","ping",
+      "cursor","theme","website","cowsay","fortune","joke","quote","ping",
       "chmod","chown","useradd","passwd",
     ]
     for (const prefix of prefixCmds) {
@@ -2626,6 +2916,95 @@ export function TerminalEasterEgg() {
     if (e.key === "Enter") {
       const val = input
       setInput("")
+
+      // ── confirm prompt (cursor↔website cross-suggestion + break warnings) ──
+      if (awaitingConfirm && confirmContext) {
+        setAwaitingConfirm(false)
+        const answer = val.trim().toLowerCase()
+
+        // break warnings default to NO
+        if (confirmContext.type === "website-break" || confirmContext.type === "cursor-break") {
+          const accepted = answer === "y" || answer === "yes"
+          appendLines([L(`> ${val || "n"}`, col.muted)])
+          if (!accepted) {
+            appendLines([L("good call. staying safe.", col.green), BR()])
+            setConfirmContext(null)
+            return
+          }
+          if (confirmContext.type === "cursor-break") {
+            appendLines([L("initiating cursor_break.exe...", col.muted), BR()])
+            setTimeout(() => appendLines([L("haha, you thought this would work..?", col.red)]), 1500)
+            setTimeout(() => {
+              appendLines([L("cursor is now permanently broken.", col.red), L("refresh or type cursor fix. good luck. 😈", col.muted), BR()])
+              window.dispatchEvent(new CustomEvent("rm:cursor-break"))
+            }, 5000)
+            // auto-fix: random 15-20s after break fires at 5s (total ~20-25s)
+            const autoDelay = 5000 + 15000 + Math.random() * 5000
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent("rm:cursor-fix"))
+              const savedCursorColor = getCookie("rm_cursor_color")
+              if (savedCursorColor) {
+                const parts = savedCursorColor.split(",").map(Number)
+                if (parts.length === 3 && parts.every(n => !isNaN(n)))
+                  window.dispatchEvent(new CustomEvent("rm:cursor-color", { detail: { r: parts[0], g: parts[1], b: parts[2] } }))
+              }
+              const savedCursorStyle = getCookie("rm_cursor_style")
+              if (savedCursorStyle) window.dispatchEvent(new CustomEvent("rm:cursor-style", { detail: parseInt(savedCursorStyle) }))
+              window.dispatchEvent(new CustomEvent("rm:bug-fix-toast"))
+            }, autoDelay)
+          } else {
+            // website break - close terminal, then escalate through stages
+            appendLines([L("initiating website_break.exe...", col.muted), BR()])
+            setTimeout(() => setOpen(false), 800)
+            const stages = [1,2,3,4,5]
+            stages.forEach((stage, i) => {
+              setTimeout(() => {
+                const html = document.documentElement
+                for (let s = 1; s <= 5; s++) html.classList.remove(`website-break-${s}`)
+                html.classList.add(`website-break-${stage}`)
+              }, 5000 + i * 8000) // stage 1 at 5s, then every 8s
+            })
+            // auto-fix: random 5-10s after stage 5 (stage 5 fires at 5 + 4*8 = 37s, total ~42-47s)
+            const stage5At  = 5000 + 4 * 8000
+            const autoDelay = stage5At + 5000 + Math.random() * 5000
+            setTimeout(() => {
+              const html = document.documentElement
+              for (let s = 1; s <= 5; s++) html.classList.remove(`website-break-${s}`)
+              html.classList.remove("website-rainbow")
+              const savedColor = getCookie("rm_site_color")
+              if (savedColor && SITE_COLORS[savedColor]) applySiteColor(savedColor)
+              window.dispatchEvent(new CustomEvent("rm:bug-fix-toast"))
+            }, autoDelay)
+          }
+          setConfirmContext(null)
+          return
+        }
+
+        // cross-suggestion prompts default to YES
+        const accepted = answer === "" || answer === "y" || answer === "yes"
+        appendLines([L(`> ${val || "y"}`, col.muted)])
+        if (accepted) {
+          if (confirmContext.type === "website-from-cursor") {
+            window.dispatchEvent(new CustomEvent("rm:site-color", { detail: confirmContext.color }))
+            appendLines([L(`Site color set to ${confirmContext.color}. Preference saved.`, col.green), BR()])
+          } else {
+            const cursorColors: Record<string, [number, number, number]> = {
+              red: [220, 38, 38], green: [34, 197, 94], blue: [59, 130, 246],
+              cyan: [6, 182, 212], purple: [168, 85, 247], pink: [236, 72, 153],
+              orange: [249, 115, 22], yellow: [234, 179, 8], white: [255, 255, 255],
+            }
+            const rgb = cursorColors[confirmContext.color ?? ""]
+            if (rgb) {
+              window.dispatchEvent(new CustomEvent("rm:cursor-color", { detail: { r: rgb[0], g: rgb[1], b: rgb[2] } }))
+              appendLines([L(`Cursor color set to ${confirmContext.color}. Preference saved.`, col.green), BR()])
+            }
+          }
+        } else {
+          appendLines([L("Okay, keeping them separate.", col.muted), BR()])
+        }
+        setConfirmContext(null)
+        return
+      }
 
       // ── password prompt interception ──────────────────────────────────
       if (awaitingPassword) {
@@ -2706,7 +3085,7 @@ export function TerminalEasterEgg() {
       if (match) setInput(match)
       return
     }
-  }, [input, cmdHistory, runCommand, awaitingPassword, sudoPending, appendLines])
+  }, [input, cmdHistory, runCommand, awaitingPassword, awaitingConfirm, confirmContext, sudoPending, appendLines])
 
   return (
     <>
@@ -2746,6 +3125,7 @@ export function TerminalEasterEgg() {
 
             <motion.div
               key="terminal"
+              ref={terminalRef}
               initial={{ opacity: 0, scale: 0.96, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -2757,7 +3137,7 @@ export function TerminalEasterEgg() {
                   : "z-50 flex flex-col bg-background border border-border rounded-xl shadow-2xl font-mono text-sm overflow-hidden"
               }
             >
-              {/* Title bar — drag handle */}
+              {/* Title bar - drag handle */}
               <div
                 onMouseDown={onMouseDown}
                 className={`flex items-center gap-2 px-4 py-2 bg-muted/40 border-b border-border shrink-0 ${!isFullscreen ? "cursor-grab active:cursor-grabbing" : ""}`}
@@ -2828,7 +3208,12 @@ export function TerminalEasterEgg() {
                   onKeyDown={handleKeyDown}
                   type={awaitingPassword ? "password" : "text"}
                   className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground/40 caret-primary ml-1"
-                  placeholder={awaitingPassword ? "enter password..." : "type a command..."}
+                  placeholder={
+                    awaitingPassword ? "enter password..." :
+                    awaitingConfirm && (confirmContext?.type === "website-break" || confirmContext?.type === "cursor-break") ? "y / n  (default: n)" :
+                    awaitingConfirm ? "y / n  (default: y)" :
+                    "type a command..."
+                  }
                   autoComplete="off"
                   spellCheck={false}
                 />

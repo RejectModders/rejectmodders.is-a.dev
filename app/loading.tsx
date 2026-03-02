@@ -21,7 +21,7 @@ export default function RootLoading() {
         <div className="absolute inset-0 grid-bg opacity-10" />
         <div
           className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ background: "radial-gradient(circle, oklch(0.58 0.2 15 / 0.07) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, color-mix(in oklch, var(--primary) 7%, transparent) 0%, transparent 70%)" }}
         />
         <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
           <span className="inline-block h-2 w-2 animate-ping rounded-full bg-primary opacity-75" />

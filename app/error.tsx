@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -104,7 +104,7 @@ export default function ErrorPage({
             <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
             <div className="h-3 w-3 rounded-full bg-[#28c840]" />
             <Terminal className="ml-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            <span className="font-mono text-xs text-muted-foreground/70">crash log — rejectmodders@is-a.dev</span>
+            <span className="font-mono text-xs text-muted-foreground/70">crash log - rejectmodders@is-a.dev</span>
           </div>
           <div className="p-4 font-mono text-xs space-y-1 sm:p-5 sm:text-sm">
             {lines.map((line, i) => (

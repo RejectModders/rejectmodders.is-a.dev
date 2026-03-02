@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -33,7 +33,7 @@ export function Navbar() {
 
   return (
     <>
-      {/* Entire header + contents animate in as one unit — no stagger, no delay */}
+      {/* Entire header + contents animate in as one unit - no stagger, no delay */}
       <motion.header
         initial={{ y: -64, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -53,7 +53,7 @@ export function Navbar() {
             {" />"}
           </Link>
 
-          {/* Desktop links — all appear together, no stagger */}
+          {/* Desktop links - all appear together, no stagger */}
           <div className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => {
               const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href.replace("/#", "/"))

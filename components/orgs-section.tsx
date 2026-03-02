@@ -20,7 +20,7 @@ const orgs = [
 		url: "https://vulnradar.dev",
 		avatar: `/api/avatar?url=${encodeURIComponent("https://avatars.githubusercontent.com/u/261703628?v=4")}`,
 		highlights: ["175+ Checks", "Instant Reports", "Fix Guidance"],
-		color: "oklch(0.58 0.2 15)",
+		color: "var(--primary)",
 	},
 ]
 

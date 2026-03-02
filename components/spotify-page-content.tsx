@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, useInView } from "framer-motion"
 import { useRef, useState } from "react"
@@ -40,7 +40,7 @@ function FloatingNote({ delay, x, icon }: { delay: number; x: string; icon: stri
   )
 }
 
-// Skeleton shimmer — shown while the external image is loading
+// Skeleton shimmer - shown while the external image is loading
 function SpotifyCardSkeleton({ rows = 1 }: { rows?: number }) {
   return (
     <div className="space-y-3 p-4">
@@ -72,7 +72,7 @@ function SpotifyImage({ src, alt, skeletonRows }: { src: string; alt: string; sk
         <SpotifyCardSkeleton rows={skeletonRows} />
       </motion.div>
 
-      {/* Actual image — fades in once loaded */}
+      {/* Actual image - fades in once loaded */}
       <motion.img
         src={src}
         alt={alt}
@@ -191,7 +191,7 @@ export function SpotifyPageContent() {
                 <Music2 className="h-4 w-4 text-[#1DB954]/60" />
               </motion.div>
 
-              {/* Card — image fades in after it loads */}
+              {/* Card - image fades in after it loads */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={nowPlayingInView ? { opacity: 1, y: 0 } : {}}

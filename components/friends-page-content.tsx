@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
@@ -82,7 +82,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
           <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 md:p-8">
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.035]"
-              style={{ background: "radial-gradient(ellipse at 70% 50%, oklch(0.58 0.2 15), transparent 65%)" }}
+              style={{ background: "radial-gradient(ellipse at 70% 50%, color-mix(in oklch, var(--primary) 100%, transparent), transparent 65%)" }}
             />
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-1.5">
@@ -119,7 +119,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
               <div
                 className="pointer-events-none absolute inset-0 opacity-[0.04]"
                 style={{
-                  background: "radial-gradient(ellipse at 30% 50%, oklch(0.58 0.2 15), transparent 60%)",
+                  background: "radial-gradient(ellipse at 30% 50%, color-mix(in oklch, var(--primary) 100%, transparent), transparent 60%)",
                 }}
               />
 
@@ -249,7 +249,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
                         </a>
                       )
                     })}
-                    {/* Email — assembled at runtime, never in HTML source */}
+                    {/* Email - assembled at runtime, never in HTML source */}
                     {friend.email && (
                       <button
                         onClick={() => {

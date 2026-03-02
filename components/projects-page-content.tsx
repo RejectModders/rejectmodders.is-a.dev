@@ -1,10 +1,10 @@
-"use client"
+﻿"use client"
 
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import { useRef, useEffect, useState, useMemo } from "react"
 import { Star, GitFork, ExternalLink, Code2, Search, Filter, ArrowUpRight, Archive } from "lucide-react"
 
-// Easing function — matches the site-wide EASE curve
+// Easing function - matches the site-wide EASE curve
 function easeOut(t: number) {
   return 1 - Math.pow(1 - t, 3)
 }
@@ -27,7 +27,7 @@ function ProjectAnimatedNumber({ value, isInView, startSignal }: {
 
     if (from === to) return
 
-    const DURATION = 500 // ms — all counters share the same duration
+    const DURATION = 500 // ms - all counters share the same duration
     const startTime = performance.now()
 
     cancelAnimationFrame(rafRef.current)
@@ -46,7 +46,7 @@ function ProjectAnimatedNumber({ value, isInView, startSignal }: {
 
     rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
-  // startSignal is intentionally in deps — it triggers re-animation on filter change
+  // startSignal is intentionally in deps - it triggers re-animation on filter change
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInView, startSignal])
 
@@ -137,7 +137,7 @@ export function ProjectsPageContent() {
       if (filter === "disutils" && repo.owner.login !== "disutils") return false
       if (filter === "vulnradar" && repo.owner.login !== "VulnRadar") return false
 
-      // Archived filter — default shows active only, toggled shows archived only
+      // Archived filter - default shows active only, toggled shows archived only
       if (showArchived && !repo.archived) return false
       if (!showArchived && repo.archived) return false
 
@@ -171,7 +171,7 @@ export function ProjectsPageContent() {
     }
   }, [filteredRepos])
 
-  // Single signal that bumps whenever stats change — all 4 counters share the
+  // Single signal that bumps whenever stats change - all 4 counters share the
   // exact same value so they start their RAF loops at the same moment
   const [statsSignal, setStatsSignal] = useState(0)
   useEffect(() => {

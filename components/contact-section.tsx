@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, useInView } from "framer-motion"
 import { useRef, useEffect, useState } from "react"
@@ -40,7 +40,7 @@ export function ContactSection() {
   const links = [
     { href: "https://github.com/RejectModders", icon: Github, label: "Follow on GitHub", primary: true },
     { href: "https://vulnradar.dev", icon: ExternalLink, label: "Visit vulnradar.dev", primary: false },
-    // email is intentionally obfuscated — assembled at runtime to deter scrapers
+    // email is intentionally obfuscated - assembled at runtime to deter scrapers
     { href: ["rejectmodders", "vulnradar.dev"].join("@"), icon: Mail, label: "Get in Touch", primary: false, isEmail: true },
   ]
 
@@ -102,7 +102,7 @@ export function ContactSection() {
             </div>
           </div>
 
-          {/* Stats — CSS transitions only, NO Framer Motion whileHover */}
+          {/* Stats - CSS transitions only, NO Framer Motion whileHover */}
           {stats && (
             <div className="mb-6 grid grid-cols-3 gap-3">
               {statItems.map((s, i) => (
@@ -122,7 +122,7 @@ export function ContactSection() {
             </div>
           )}
 
-          {/* Links — CSS transitions for hover, Framer only for entrance */}
+          {/* Links - CSS transitions for hover, Framer only for entrance */}
           <div className="flex flex-col gap-3">
             {links.map((link, i) => {
               const sharedClass = `group card-hover flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-medium border ${

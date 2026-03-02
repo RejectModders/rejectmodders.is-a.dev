@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, AnimatePresence } from "framer-motion"
 import { usePathname } from "next/navigation"
@@ -41,8 +41,8 @@ function ProgressBar({ loading }: { loading: boolean }) {
         className="h-full transition-all"
         style={{
           width: `${width}%`,
-          background: "oklch(0.58 0.2 15)",
-          boxShadow: "0 0 8px oklch(0.58 0.2 15), 0 0 3px oklch(0.58 0.2 15)",
+          background: "var(--primary)",
+          boxShadow: "0 0 8px var(--primary), 0 0 3px var(--primary)",
           transitionDuration: width === 100 ? "300ms" : "200ms",
           transitionTimingFunction: "ease-out",
         }}
@@ -58,7 +58,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const [displayKey, setDisplayKey] = useState(pathname)
   const pendingPathname = useRef(pathname)
 
-  // When pathname changes, the new page has fully loaded — stop loading
+  // When pathname changes, the new page has fully loaded - stop loading
   useEffect(() => {
     if (pathname !== pendingPathname.current) {
       pendingPathname.current = pathname

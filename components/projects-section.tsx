@@ -177,7 +177,7 @@ export function ProjectsSection() {
           >
             <Link
               href="/projects"
-              className="group inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-6 py-3 font-mono text-sm text-primary transition-all duration-150 hover:-translate-y-0.5 hover:bg-primary/10 hover:shadow-[0_0_20px_oklch(0.58_0.2_15/0.15)]"
+              className="group inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-6 py-3 font-mono text-sm text-primary transition-all duration-150 hover:-translate-y-0.5 hover:bg-primary/10 hover:shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_15%,transparent)]"
             >
               View all projects
               <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />

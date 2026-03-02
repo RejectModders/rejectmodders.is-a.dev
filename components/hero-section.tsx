@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
@@ -7,7 +7,7 @@ import Link from "next/link"
 import dynamic from "next/dynamic"
 
 const Particles = dynamic(() => import("@/components/particles"), { ssr: false })
-// Letter animation — starts at 0.4s, each letter adds 0.025s
+// Letter animation - starts at 0.4s, each letter adds 0.025s
 const letterVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
@@ -48,15 +48,15 @@ export function HeroSection() {
       <Particles count={55} />
 
       {/* Radial glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 40%, oklch(0.58 0.2 15 / 0.1) 0%, transparent 60%)" }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 40%, color-mix(in oklch, var(--primary) 10%, transparent) 0%, transparent 60%)" }} />
 
       {/* Floating orbs */}
-      <motion.div className="absolute left-1/4 top-1/4 h-72 w-72 rounded-full opacity-[0.03] pointer-events-none" style={{ background: "oklch(0.58 0.2 15)", willChange: "transform" }} animate={{ x: [0, 20, 0], y: [0, -15, 0] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
-      <motion.div className="absolute bottom-1/4 right-1/4 h-72 w-72 rounded-full opacity-[0.02] pointer-events-none" style={{ background: "oklch(0.58 0.2 15)", willChange: "transform" }} animate={{ x: [0, -15, 0], y: [0, 20, 0] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} />
+      <motion.div className="absolute left-1/4 top-1/4 h-72 w-72 rounded-full opacity-[0.03] pointer-events-none" style={{ background: "var(--primary)", willChange: "transform" }} animate={{ x: [0, 20, 0], y: [0, -15, 0] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
+      <motion.div className="absolute bottom-1/4 right-1/4 h-72 w-72 rounded-full opacity-[0.02] pointer-events-none" style={{ background: "var(--primary)", willChange: "transform" }} animate={{ x: [0, -15, 0], y: [0, 20, 0] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} />
 
       <motion.div style={{ y, opacity, willChange: "transform, opacity" }} className="relative z-10 flex flex-col items-center gap-5 px-4 text-center">
 
-        {/* Status badge — appears right after navbar (0.38s) */}
+        {/* Status badge - appears right after navbar (0.38s) */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -70,7 +70,7 @@ export function HeroSection() {
           <span className="font-mono text-xs text-primary">Available for hire</span>
         </motion.div>
 
-        {/* Name — letters from 0.4s, "RejectModders" = 13 letters × 0.025 = last letter at ~0.72s */}
+        {/* Name - letters from 0.4s, "RejectModders" = 13 letters �- 0.025 = last letter at ~0.72s */}
         <h1 className="whitespace-nowrap text-5xl font-bold tracking-tight text-foreground md:text-7xl lg:text-8xl">
           <AnimatedText text="Reject" />
           {"Modders".split("").map((char, i) => (
@@ -80,15 +80,14 @@ export function HeroSection() {
               variants={letterVariants}
               initial="hidden"
               animate="visible"
-              className="inline-block"
-              style={{ background: "linear-gradient(135deg, #f87171, #dc2626)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+              className="inline-block text-primary"
             >
               {char}
             </motion.span>
           ))}
         </h1>
 
-        {/* Subtitle — 0.75s (right after name finishes) */}
+        {/* Subtitle - 0.75s (right after name finishes) */}
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -100,14 +99,14 @@ export function HeroSection() {
           <span className="text-foreground">Right now that means security tools and keeping people safe online.</span>
         </motion.p>
 
-        {/* Tech tags — start at 0.82s, stagger 0.04s, last tag at ~1.02s */}
+        {/* Tech tags - start at 0.82s, stagger 0.04s, last tag at ~1.02s */}
         <motion.div
           initial="hidden"
           animate="visible"
           variants={{ visible: { transition: { staggerChildren: 0.04, delayChildren: 0.82 } } }}
           className="flex flex-wrap justify-center gap-2"
         >
-          {["Python", "C", "C++", "C#", "JavaScript", "TypeScript"].map((lang) => (
+          {["Python", "C / C++", "JavaScript", "TypeScript", "Bash"].map((lang) => (
             <motion.span
               key={lang}
               variants={{
@@ -121,7 +120,7 @@ export function HeroSection() {
           ))}
         </motion.div>
 
-        {/* CTA buttons — start at 0.62s, stagger 0.07s (appear while name is still animating, feels parallel) */}
+        {/* CTA buttons - start at 0.62s, stagger 0.07s (appear while name is still animating, feels parallel) */}
         <motion.div
           initial="hidden"
           animate="visible"
@@ -172,7 +171,7 @@ export function HeroSection() {
           transition={{ delay: 4, duration: 2 }}
           className="font-mono text-[10px] text-muted-foreground/25 select-none"
         >
-          {`// psst — try the konami code`}
+          {`// psst - try the konami code`}
         </motion.p>
         <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}>
           <ChevronDown className="h-6 w-6 text-muted-foreground" />

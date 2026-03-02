@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
@@ -11,7 +11,7 @@ const features = [
   { icon: FileSearch, label: "175+ Vulnerability Checks", desc: "SQLi, XSS, SSRF, open redirects, misconfigs and more" },
   { icon: Zap,        label: "Instant Reports",           desc: "Full severity-rated report the moment a scan finishes" },
   { icon: Shield,     label: "Fix Guidance",              desc: "Every finding comes with an actual explanation of how to fix it" },
-  { icon: CheckCircle2, label: "Open Source",             desc: "Built in public — you can read, fork, or contribute" },
+  { icon: CheckCircle2, label: "Open Source",             desc: "Built in public - you can read, fork, or contribute" },
 ]
 
 export function VulnRadarSection() {
@@ -21,9 +21,9 @@ export function VulnRadarSection() {
   return (
     <section ref={ref} id="vulnradar" className="relative py-24 md:py-32" style={{ overflow: "clip" }}>
 
-      {/* Ambient red glow — left side */}
+      {/* Ambient red glow - left side */}
       <div className="pointer-events-none absolute -left-32 top-1/2 -z-10 h-96 w-96 -translate-y-1/2 rounded-full"
-        style={{ background: "radial-gradient(circle, oklch(0.58 0.2 15 / 0.12) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(circle, color-mix(in oklch, var(--primary) 12%, transparent) 0%, transparent 70%)" }} />
 
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
@@ -131,7 +131,7 @@ export function VulnRadarSection() {
                 <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
                 <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
                 <div className="h-3 w-3 rounded-full bg-[#28c840]" />
-                <span className="ml-3 font-mono text-xs text-muted-foreground">vulnradar — scan</span>
+                <span className="ml-3 font-mono text-xs text-muted-foreground">vulnradar - scan</span>
               </div>
 
               {/* Terminal body */}
@@ -141,7 +141,7 @@ export function VulnRadarSection() {
 
               {/* Red corner glow */}
               <div className="pointer-events-none absolute bottom-0 right-0 h-40 w-40 rounded-full"
-                style={{ background: "radial-gradient(circle at 100% 100%, oklch(0.58 0.2 15 / 0.1), transparent 70%)" }} />
+                style={{ background: "radial-gradient(circle at 100% 100%, color-mix(in oklch, var(--primary) 10%, transparent), transparent 70%)" }} />
             </div>
           </motion.div>
 
@@ -157,8 +157,8 @@ const lines = [
   { delay: 0.7,  text: "  Scanning target...",                            color: "text-muted-foreground" },
   { delay: 1.1,  text: "  Running 175 vulnerability checks",              color: "text-muted-foreground" },
   { delay: 1.6,  text: "",                                                 color: "" },
-  { delay: 1.7,  text: "  [CRITICAL] SQL Injection — /api/search",        color: "text-red-400" },
-  { delay: 2.0,  text: "  [HIGH]     XSS — /search?q=",                   color: "text-orange-400" },
+  { delay: 1.7,  text: "  [CRITICAL] SQL Injection - /api/search",        color: "text-red-400" },
+  { delay: 2.0,  text: "  [HIGH]     XSS - /search?q=",                   color: "text-orange-400" },
   { delay: 2.3,  text: "  [MEDIUM]   Missing HSTS header",                color: "text-yellow-400" },
   { delay: 2.6,  text: "  [INFO]     3 outdated dependencies",            color: "text-blue-400" },
   { delay: 2.9,  text: "",                                                 color: "" },

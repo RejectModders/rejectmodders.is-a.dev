@@ -6,6 +6,7 @@ import {
   Shield, Code2, Terminal, MapPin, Calendar, ExternalLink,
   Users, BookOpen, Zap, Globe, Bot, Rocket, GitMerge, Search
 } from "lucide-react"
+import { SKILLS } from "@/data/skills"
 
 // ── Shared animation constants ──────────────────────────────────────────────
 const EASE = [0.215, 0.61, 0.355, 1] as const
@@ -45,13 +46,6 @@ function AnimatedNumber({ value, isInView }: { value: number | string; isInView:
   return <>{display}</>
 }
 
-const skills = [
-  { name: "Python", level: 95 }, { name: "C / C++", level: 80 },
-  { name: "C#", level: 75 }, { name: "JavaScript", level: 70 },
-  { name: "TypeScript", level: 65 }, { name: "Cybersecurity", level: 90 },
-  { name: "Vulnerability Research", level: 85 }, { name: "Discord Bot Dev", level: 85 },
-  { name: "Linux", level: 85 }, { name: "Git / GitHub", level: 90 },
-]
 
 const orgs = [
   { name: "Disutils Team", role: "Former Lead / Founder", url: "https://github.com/disutils", avatar: `/api/avatar?url=${encodeURIComponent("https://avatars.githubusercontent.com/u/184031343?v=4")}`, description: "An org I built around Discord tooling and bot development. We shipped a few useful things but I eventually moved on to focus fully on security work. It was a good run.", highlights: ["Disckit Framework", "DisMusic Bot", "Inactive"] },
@@ -234,7 +228,7 @@ export function AboutPageContent() {
               <span className="ml-2 font-mono text-xs text-muted-foreground">skills.json</span>
             </div>
             <div className="grid gap-5 md:grid-cols-2">
-              {skills.map((skill, i) => (
+              {SKILLS.map((skill, i) => (
                 <motion.div
                   key={skill.name}
                   initial={{ opacity: 0, y: 16 }}
@@ -249,16 +243,16 @@ export function AboutPageContent() {
                       animate={skillsInView ? { opacity: 1 } : {}}
                       transition={{ duration: 0.3, delay: 0.1 + i * 0.06 }}
                     >
-                      <AnimatedNumber value={skillsInView ? skill.level : 0} isInView={skillsInView} />%
+                      {skill.level > 100 ? skill.level : <AnimatedNumber value={skillsInView ? skill.level : 0} isInView={skillsInView} />}%
                     </motion.span>
                   </div>
                   <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-secondary">
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={skillsInView ? { width: `${skill.level}%` } : {}}
+                      animate={skillsInView ? { width: `${Math.min(skill.level, 100)}%` } : {}}
                       transition={{ duration: 1.1, delay: 0.1 + i * 0.06, ease: "easeOut" }}
                       className="h-full rounded-full bg-primary"
-                      style={{ boxShadow: "0 0 8px oklch(0.58 0.2 15 / 0.5)" }}
+                      style={{ boxShadow: "0 0 8px color-mix(in oklch, var(--primary) 50%, transparent)" }}
                     />
                   </div>
                 </motion.div>

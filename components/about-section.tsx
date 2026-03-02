@@ -1,9 +1,10 @@
-"use client"
+﻿"use client"
 
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { Shield, Code2, Terminal, MapPin, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { SKILLS } from "@/data/skills"
 
 const stats = [
 	{ label: "Public Repos", value: "9+" },
@@ -50,7 +51,7 @@ export function AboutSection() {
 						transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
 						className="flex flex-col lg:col-span-3"
 					>
-						{/* Card — grows to fill available height */}
+						{/* Card - grows to fill available height */}
 						<div className="flex flex-1 flex-col rounded-xl border border-border bg-card p-6 md:p-8 transition-all duration-200 hover:border-primary/30 hover:shadow-[0_0_30px_oklch(0.58_0.2_15/0.06)]">
 							<div className="mb-6 flex items-center gap-2">
 								{[["bg-[#ff5f57]","border-[#e0443e]"], ["bg-[#febc2e]","border-[#d4a012]"], ["bg-[#28c840]","border-[#1aab29]"]].map(([bg, border], i) => (
@@ -97,7 +98,7 @@ export function AboutSection() {
 							</motion.div>
 						</div>
 
-						{/* Stats — CSS hover only */}
+						{/* Stats - CSS hover only */}
 						<div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
 							{stats.map((stat, i) => (
 								<motion.div
@@ -136,16 +137,7 @@ export function AboutSection() {
 							</div>
 
                                                         <div className="flex-1 overflow-y-auto space-y-4 pr-1" style={{ scrollbarWidth: "none" }}>
-                                                                {[
-                                                                        { name: "Python", level: 95 },
-                                                                        { name: "Cybersecurity", level: 90 },
-                                                                        { name: "C / C++", level: 80 },
-                                                                        { name: "Discord Bots", level: 85 },
-                                                                        { name: "C#", level: 75 },
-                                                                        { name: "JavaScript", level: 70 },
-                                                                        { name: "Linux", level: 85 },
-                                                                        { name: "Git / GitHub", level: 90 },
-                                                                ].map((skill, i) => (
+                                                                {SKILLS.slice(0, 6).map((skill, i) => (
                                                                         <motion.div
                                                                                 key={skill.name}
                                                                                 initial={{ opacity: 0, y: 6 }}
@@ -159,10 +151,10 @@ export function AboutSection() {
                                                                                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
                                                                                         <motion.div
                                                                                                 initial={{ width: 0 }}
-                                                                                                animate={isInView ? { width: `${skill.level}%` } : { width: 0 }}
+                                                                                                animate={isInView ? { width: `${Math.min(skill.level, 100)}%` } : { width: 0 }}
                                                                                                 transition={{ duration: 1, delay: 0.3 + i * 0.05, ease: "easeOut" }}
                                                                                                 className="h-full rounded-full bg-primary"
-                                                                                                style={{ boxShadow: "0 0 8px oklch(0.58 0.2 15 / 0.4)", willChange: "width" }}
+                                                                                                style={{ boxShadow: "0 0 8px color-mix(in oklch, var(--primary) 40%, transparent)", willChange: "width" }}
                                                                                         />
                                                                                 </div>
                                                                         </motion.div>

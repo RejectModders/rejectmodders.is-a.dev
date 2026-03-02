@@ -7,6 +7,7 @@ import { ScrollToTop } from '@/components/scroll-to-top'
 import { TerminalEasterEgg } from '@/components/terminal-easter-egg'
 import { CommandPalette } from '@/components/command-palette'
 import { FloatingCTA } from '@/components/floating-cta'
+import { BugFixToast } from '@/components/bug-fix-toast'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
@@ -80,6 +81,7 @@ export default function RootLayout({
           <CommandPalette />
           <FloatingCTA />
           <ScrollToTop />
+          <BugFixToast />
           <PageTransition>
             {children}
           </PageTransition>

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, useInView } from "framer-motion"
 import { useRef, useEffect, useState } from "react"
@@ -80,7 +80,7 @@ export function FooterSection() {
 					{" />"}
 				</Link>
 
-				{/* Nav — plain links, hover handled by CSS transition */}
+				{/* Nav - plain links, hover handled by CSS transition */}
 				<div className="flex flex-wrap items-center justify-center gap-6">
 					{navLinks.map((link) =>
 						link.external ? (

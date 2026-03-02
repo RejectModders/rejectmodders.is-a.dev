@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import { RefreshCw, Home } from "lucide-react"
@@ -30,7 +30,7 @@ export default function GlobalError({
     { prompt: false, text: "  HTTP/2 500  Internal Server Error",             color: "#f87171" },
     ...(error.digest ? [{ prompt: false, text: `  digest: ${error.digest}`,   color: "#475569" }] : []),
     { prompt: false, text: "",                                                  color: "" },
-    { prompt: false, text: "  Top-level crash. Retry or go home.",            color: "oklch(0.58 0.2 15)" },
+    { prompt: false, text: "  Top-level crash. Retry or go home.",            color: "var(--primary)" },
   ]
 
   const s = {
@@ -78,7 +78,7 @@ export default function GlobalError({
               <div style={{ width: "0.7rem", height: "0.7rem", borderRadius: "50%", backgroundColor: "#ff5f57", flexShrink: 0 }} />
               <div style={{ width: "0.7rem", height: "0.7rem", borderRadius: "50%", backgroundColor: "#febc2e", flexShrink: 0 }} />
               <div style={{ width: "0.7rem", height: "0.7rem", borderRadius: "50%", backgroundColor: "#28c840", flexShrink: 0 }} />
-              <span style={{ marginLeft: "0.4rem", fontSize: "0.65rem", color: "#475569" }}>crash log — rejectmodders@is-a.dev</span>
+              <span style={{ marginLeft: "0.4rem", fontSize: "0.65rem", color: "#475569" }}>crash log - rejectmodders@is-a.dev</span>
             </div>
             {/* Lines */}
             <div style={{ padding: "1rem 1.25rem", fontSize: "clamp(0.65rem, 2.5vw, 0.8rem)", lineHeight: 1.9 }}>
@@ -137,7 +137,7 @@ export default function GlobalError({
             persistent?{" "}
             <a href="https://github.com/RejectModders/rejectmodders.is-a.dev/issues"
               target="_blank" rel="noopener noreferrer"
-              style={{ color: "oklch(0.58 0.2 15 / 0.6)", textDecoration: "underline" }}>
+              style={{ color: "var(--primary)", opacity: 0.6, textDecoration: "underline" }}>
               open an issue
             </a>
           </p>
