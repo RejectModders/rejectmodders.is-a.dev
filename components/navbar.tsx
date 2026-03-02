@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Sun, Moon, Search } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useTheme } from "next-themes"
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -18,17 +19,17 @@ const navLinks = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
 
+  useEffect(() => { setMounted(true) }, [])
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  useEffect(() => {
-    setMobileOpen(false)
-  }, [pathname])
+  useEffect(() => { setMobileOpen(false) }, [pathname])
 
   return (
     <>
@@ -76,6 +77,25 @@ export function Navbar() {
             >
               GitHub
             </a>
+            {/* Cmd+K */}
+            <button
+              onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
+              className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+              title="Search (⌘K)"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <kbd className="hidden text-[10px] sm:inline">⌘K</kbd>
+            </button>
+            {/* Theme toggle */}
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                title="Toggle theme"
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+            )}
           </div>
 
           {/* Mobile toggle */}

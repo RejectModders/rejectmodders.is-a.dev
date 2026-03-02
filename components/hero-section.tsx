@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
 import { ChevronDown, ArrowRight } from "lucide-react"
 import Link from "next/link"
-
+import { Particles } from "@/components/particles"
 // Letter animation — starts at 0.4s, each letter adds 0.025s
 const letterVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -41,6 +41,9 @@ export function HeroSection() {
         animate={{ backgroundPosition: ["0px 0px", "60px 60px"] }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
       />
+
+      {/* Particles */}
+      <Particles count={55} />
 
       {/* Radial glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 40%, oklch(0.58 0.2 15 / 0.1) 0%, transparent 60%)" }} />

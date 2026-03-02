@@ -109,24 +109,10 @@ export function ProjectsPageContent() {
   useEffect(() => {
     async function fetchAllRepos() {
       try {
-        const [personalRes, disutilsRes, vulnradarRes] = await Promise.allSettled([
-          fetch("https://api.github.com/users/RejectModders/repos?sort=updated&per_page=30"),
-          fetch("https://api.github.com/orgs/disutils/repos?sort=updated&per_page=30"),
-          fetch("https://api.github.com/orgs/vulnradar/repos?sort=updated&per_page=30"),
-        ])
+        const res = await fetch("/api/github")
+        if (!res.ok) return
+        const allRepos: Repo[] = await res.json()
 
-        const allRepos: Repo[] = []
-
-        for (const result of [personalRes, disutilsRes, vulnradarRes]) {
-          if (result.status === "fulfilled" && result.value.ok) {
-            const data = await result.value.json()
-            if (Array.isArray(data)) {
-              allRepos.push(...data)
-            }
-          }
-        }
-
-        // Deduplicate by id, filter forks, sort by stars then date
         const unique = Array.from(new Map(allRepos.map((r) => [r.id, r])).values())
           .filter((r) => !r.fork && r.name !== "RejectModders" && r.name !== ".github" && r.name !== "LICENSE")
           .sort((a, b) => {

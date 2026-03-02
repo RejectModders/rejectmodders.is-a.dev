@@ -42,18 +42,9 @@ export function ProjectsSection() {
   useEffect(() => {
     async function fetchRepos() {
       try {
-        const [personalRes, disutilsRes, vulnradarRes] = await Promise.allSettled([
-          fetch("https://api.github.com/users/RejectModders/repos?sort=updated&per_page=10"),
-          fetch("https://api.github.com/orgs/disutils/repos?sort=updated&per_page=10"),
-          fetch("https://api.github.com/orgs/vulnradar/repos?sort=updated&per_page=10"),
-        ])
-        const all: Repo[] = []
-        for (const result of [personalRes, disutilsRes, vulnradarRes]) {
-          if (result.status === "fulfilled" && result.value.ok) {
-            const data = await result.value.json()
-            if (Array.isArray(data)) all.push(...data)
-          }
-        }
+        const res = await fetch("/api/github")
+        if (!res.ok) return
+        const all: Repo[] = await res.json()
         const unique = Array.from(new Map(all.map((r) => [r.id, r])).values())
           .filter((r) => !r.fork && !r.archived && r.name !== "RejectModders" && r.name !== ".github" && r.name !== "LICENSE")
           .sort((a, b) => {

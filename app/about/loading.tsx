@@ -1,6 +1,11 @@
 export default function AboutLoading() {
   return (
-    <div className="relative pt-24 pb-16 md:pt-32 md:pb-24">
+    <>
+      <div className="fixed inset-x-0 top-0 z-50 h-0.5 overflow-hidden bg-primary/10">
+        <div className="h-full bg-primary" style={{ animation: "loading-bar 1.4s ease-in-out infinite" }} />
+      </div>
+      <style>{`@keyframes loading-bar{0%{transform:translateX(-100%)}50%{transform:translateX(0%)}100%{transform:translateX(100%)}}`}</style>
+      <div className="relative pt-24 pb-16 md:pt-32 md:pb-24">
       <div className="mx-auto max-w-5xl px-4">
         <div className="mb-8 space-y-3">
           <div className="h-3 w-16 animate-pulse rounded-full bg-primary/20" />
@@ -21,6 +26,7 @@ export default function AboutLoading() {
         </div>
       </div>
     </div>
+    </>
   )
 }
 

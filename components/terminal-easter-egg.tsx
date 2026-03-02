@@ -1674,6 +1674,52 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       BR(),
     ]
   },
+  "cat amanda.txt": () => [
+    L("# amanda.txt", col.primary),
+    BR(),
+    L("  Name:     Amanda", col.fg),
+    L("  Role:     ♥ girlfriend", col.primary),
+    L("  Status:   absolutely wonderful", col.green),
+    L("  Location: heart.exe", col.cyan),
+    BR(),
+    L("  \"she puts up with my terminal obsession.\"", col.muted),
+    L("  \"and that says everything.\"", col.muted),
+    BR(),
+    L("  chmod 777 amanda.txt  # everyone deserves to know", col.muted),
+    BR(),
+  ],
+
+  cursor: (args) => {
+    const color = (args ?? "").replace(/^cursor\s*/i, "").trim().toLowerCase()
+    const colors: Record<string, [number, number, number]> = {
+      red: [220, 38, 38], green: [34, 197, 94], blue: [59, 130, 246],
+      cyan: [6, 182, 212], purple: [168, 85, 247], pink: [236, 72, 153],
+      orange: [249, 115, 22], yellow: [234, 179, 8], white: [255, 255, 255],
+    }
+    if (!color || !colors[color]) {
+      return [
+        L("Usage: cursor <color>", col.red),
+        L("Colors: red, green, blue, cyan, purple, pink, orange, yellow, white", col.muted),
+        BR(),
+      ]
+    }
+    const [r, g, b] = colors[color]
+    window.dispatchEvent(new CustomEvent("rm:cursor-color", { detail: { r, g, b } }))
+    return [L(`Cursor color set to ${color}.`, col.green), L("(resets on page refresh)", col.muted), BR()]
+  },
+
+  theme: (args) => {
+    const t = (args ?? "").replace(/^theme\s*/i, "").trim().toLowerCase()
+    if (t === "light") {
+      window.dispatchEvent(new CustomEvent("rm:set-theme", { detail: "light" }))
+      return [L("Theme set to light. My eyes...", col.yellow), BR()]
+    }
+    if (t === "dark") {
+      window.dispatchEvent(new CustomEvent("rm:set-theme", { detail: "dark" }))
+      return [L("Theme set to dark. Much better.", col.green), BR()]
+    }
+    return [L("Usage: theme <dark|light>", col.red), BR()]
+  },
 }
 
 // ── Async commands ────────────────────────────────────────────────────────────
@@ -1764,6 +1810,22 @@ export function TerminalEasterEgg() {
     window.addEventListener("mouseup", onUp)
     return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp) }
   }, [dragging])
+
+  // External event listeners (from command palette, cursor command, theme command)
+  useEffect(() => {
+    const openTerminal = () => { setOpen(true) }
+    const setThemeEv  = (e: Event) => {
+      const t = (e as CustomEvent).detail as string
+      document.documentElement.classList.toggle("light", t === "light")
+      document.documentElement.classList.toggle("dark",  t === "dark")
+    }
+    window.addEventListener("rm:open-terminal", openTerminal)
+    window.addEventListener("rm:set-theme",     setThemeEv)
+    return () => {
+      window.removeEventListener("rm:open-terminal", openTerminal)
+      window.removeEventListener("rm:set-theme",     setThemeEv)
+    }
+  }, [])
 
   // Konami listener
   useEffect(() => {

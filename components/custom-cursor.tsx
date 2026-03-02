@@ -6,8 +6,6 @@ const lerp  = (a: number, b: number, t: number) => a + (b - a) * t
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 
 const R = 220, G = 38, B = 38
-const rgb   = (a: number) => `rgba(${R},${G},${B},${clamp(a,0,1).toFixed(3)})`
-const white = (a: number) => `rgba(255,255,255,${clamp(a,0,1).toFixed(3)})`
 
 const TAIL_LEN = 18
 const TAIL_GAP = 2
@@ -31,10 +29,20 @@ export function CustomCursor() {
     window.addEventListener("resize", resize)
 
     let mx = 0, my = 0
-    let dx = 0, dy = 0   // dot  — fast
-    let rx = 0, ry = 0   // ring — slow
+    let dx = 0, dy = 0
+    let rx = 0, ry = 0
     let vx = 0, vy = 0
     let speed = 0
+    let curR = R, curG = G, curB = B
+
+    const onColorChange = (e: Event) => {
+      const { r, g, b } = (e as CustomEvent).detail
+      curR = r; curG = g; curB = b
+    }
+    window.addEventListener("rm:cursor-color", onColorChange)
+
+    const rgb   = (a: number) => `rgba(${curR},${curG},${curB},${clamp(a,0,1).toFixed(3)})`
+    const white = (a: number) => `rgba(255,255,255,${clamp(a,0,1).toFixed(3)})`
 
     let clicking  = false
     let typing    = false
@@ -173,7 +181,7 @@ export function CustomCursor() {
           ctx.beginPath(); ctx.arc(dx, dy, dotR * 5, 0, Math.PI * 2)
           ctx.fillStyle = glow; ctx.fill()
           ctx.beginPath(); ctx.arc(dx, dy, dotR, 0, Math.PI * 2)
-          ctx.fillStyle = `rgb(${R},${G},${B})`; ctx.fill()
+          ctx.fillStyle = `rgb(${curR},${curG},${curB})`; ctx.fill()
           ctx.beginPath(); ctx.arc(dx - dotR * 0.3, dy - dotR * 0.3, dotR * 0.35, 0, Math.PI * 2)
           ctx.fillStyle = white(0.5); ctx.fill()
         }
@@ -199,7 +207,8 @@ export function CustomCursor() {
 
     return () => {
       cancelAnimationFrame(rafId)
-      window.removeEventListener("resize",      resize)
+      window.removeEventListener("resize",           resize)
+      window.removeEventListener("rm:cursor-color",  onColorChange)
       document.removeEventListener("mousemove",  onMove)
       document.removeEventListener("mouseleave", onLeave)
       document.removeEventListener("mouseenter", onEnter)

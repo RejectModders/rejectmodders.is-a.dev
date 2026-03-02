@@ -5,12 +5,16 @@ import { CustomCursor } from '@/components/custom-cursor'
 import { PageTransition } from '@/components/page-transition'
 import { ScrollToTop } from '@/components/scroll-to-top'
 import { TerminalEasterEgg } from '@/components/terminal-easter-egg'
+import { CommandPalette } from '@/components/command-palette'
+import { FloatingCTA } from '@/components/floating-cta'
+import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono' })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://rejectmodders.is-a.dev'),
   title: {
     default: 'RejectModders | Cybersecurity Developer',
     template: '%s | RejectModders',
@@ -65,15 +69,22 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className="relative font-sans antialiased noise-bg cursor-none">
-        <CustomCursor />
-        <TerminalEasterEgg />
-        <ScrollToTop />
-        <PageTransition>
-          {children}
-        </PageTransition>
-        <Analytics />
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <CustomCursor />
+          <TerminalEasterEgg />
+          <CommandPalette />
+          <FloatingCTA />
+          <ScrollToTop />
+          <PageTransition>
+            {children}
+          </PageTransition>
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   )
