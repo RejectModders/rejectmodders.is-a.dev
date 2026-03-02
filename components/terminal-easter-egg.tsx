@@ -1813,7 +1813,7 @@ export function TerminalEasterEgg() {
 
     setCmdHistory(h => [trimmed, ...h])
     setHistIdx(-1)
-    appendLines([L(`rejectmodders@is-a.dev:~$ ${trimmed}`, col.fg)])
+    appendLines([L(`rm@rejectmodders.is-a.dev:~$ ${trimmed}`, col.fg)])
 
     const cmd = trimmed.toLowerCase()
 
@@ -1960,11 +1960,11 @@ export function TerminalEasterEgg() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 20 }}
               transition={{ duration: 0.18 }}
-              style={isFullscreen ? {} : { left: pos.x, top: pos.y, position: "fixed" }}
+              style={isFullscreen ? {} : { left: pos.x, top: pos.y, position: "fixed", width: "740px", maxWidth: "calc(100vw - 2rem)", height: "500px", overflow: "hidden" }}
               className={
                 isFullscreen
                   ? "fixed inset-4 z-50 flex flex-col bg-background border border-border rounded-xl shadow-2xl font-mono text-sm overflow-hidden"
-                  : "z-50 flex flex-col bg-background border border-border rounded-xl shadow-2xl font-mono text-sm overflow-hidden w-[min(896px,calc(100vw-2rem))]"
+                  : "z-50 flex flex-col bg-background border border-border rounded-xl shadow-2xl font-mono text-sm overflow-hidden"
               }
             >
               {/* Title bar — drag handle */}
@@ -2014,12 +2014,11 @@ export function TerminalEasterEgg() {
 
               {/* Output */}
               <div
-                className="flex-1 overflow-y-auto p-4 space-y-0.5 cursor-text min-h-0"
-                style={{ height: isFullscreen ? undefined : "520px" }}
+                className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 space-y-0.5 cursor-text"
                 onClick={() => inputRef.current?.focus()}
               >
                 {lines.map((line, i) => (
-                  <div key={i} className={`leading-5 whitespace-pre-wrap break-all ${line.color}`}>
+                  <div key={i} className={`leading-5 whitespace-pre overflow-hidden ${line.color}`}>
                     {line.text || "\u00a0"}
                   </div>
                 ))}
@@ -2028,9 +2027,9 @@ export function TerminalEasterEgg() {
 
               {/* Input */}
               <div className="flex items-center gap-1.5 px-4 py-3 border-t border-border shrink-0 bg-muted/20">
-                <span className="text-green-400 select-none font-bold shrink-0">rejectmodders</span>
+                <span className="text-green-400 select-none font-bold shrink-0">rm</span>
                 <span className="text-muted-foreground select-none shrink-0">@</span>
-                <span className="text-cyan-400 select-none font-bold shrink-0">is-a.dev</span>
+                <span className="text-cyan-400 select-none font-bold shrink-0">rejectmodders.is-a.dev</span>
                 <span className="text-muted-foreground select-none shrink-0">:~$</span>
                 <input
                   ref={inputRef}
