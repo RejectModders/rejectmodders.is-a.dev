@@ -8,12 +8,13 @@ import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 
 const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
+  { label: "Home",     href: "/" },
+  { label: "About",    href: "/about" },
   { label: "Projects", href: "/projects" },
-  { label: "Friends", href: "/friends" },
-  { label: "Spotify", href: "/spotify" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Friends",  href: "/friends" },
+  { label: "Games",    href: "/games" },
+  { label: "Spotify",  href: "/spotify" },
+  { label: "Contact",  href: "/#contact" },
 ]
 
 export function Navbar() {

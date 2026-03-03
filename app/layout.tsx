@@ -74,7 +74,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="relative font-sans antialiased noise-bg cursor-none">
+      <body className="relative font-sans antialiased noise-bg cursor-none" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <CustomCursor />
           <TerminalEasterEgg />
