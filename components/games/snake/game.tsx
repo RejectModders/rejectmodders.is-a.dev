@@ -83,8 +83,12 @@ export function SnakeGame({ primary, onBack }: { primary: string; onBack: () => 
           setDisplay(d => ({ ...d, alive: false, hs: ns.hs }))
           clearInterval(ns.interval); return
         }
+
+        // Check if eating food BEFORE adding head to snake
+        const eatingFood = head.x === ns.food.x && head.y === ns.food.y
         ns.snake.unshift(head)
-        if (head.x === ns.food.x && head.y === ns.food.y) {
+
+        if (eatingFood) {
           ns.score++; ns.eatFlash = 8
           spawnParticles(ns.food.x, ns.food.y, "#fbbf24", 10)
           ns.food = rndFood(ns.snake)
