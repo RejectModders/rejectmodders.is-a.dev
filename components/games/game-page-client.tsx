@@ -31,7 +31,7 @@ import { CrosswordMiniGame }  from "./crossword-mini/game"
 import { ColorFloodGame }     from "./color-flood/game"
 import { WordSearchGame }     from "./word-search/game"
 import { PianoTilesGame }     from "./piano-tiles/game"
-import { BrickBuilderGame }  from "./brick-builder/game"
+import { BrickBuilderGame }   from "./brick-builder/game"
 
 export function GamePageClient({ game }: { game: string }) {
   const primary = usePrimary()

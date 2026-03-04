@@ -28,7 +28,8 @@ function checkGuess(guess: string, answer: string): LetterState[] {
 }
 
 export function WordleGame({ primary, onBack }: { primary: string; onBack: () => void }) {
-  const [answer] = useState(() => WORDS[Math.floor(Math.random() * WORDS.length)])
+  const [gameKey, setGameKey] = useState(0)
+  const [answer, setAnswer] = useState(() => WORDS[Math.floor(Math.random() * WORDS.length)])
   const [guesses, setGuesses] = useState<string[]>([])
   const [states, setStates] = useState<LetterState[][]>([])
   const [current, setCurrent] = useState("")
@@ -64,7 +65,14 @@ export function WordleGame({ primary, onBack }: { primary: string; onBack: () =>
   const delLetter = useCallback(() => setCurrent(c => c.slice(0,-1)), [])
 
   const reset = useCallback(() => {
-    window.location.reload()
+    setAnswer(WORDS[Math.floor(Math.random() * WORDS.length)])
+    setGuesses([])
+    setStates([])
+    setCurrent("")
+    setStatus("playing")
+    setShake(false)
+    setMsg("")
+    setGameKey(k => k + 1)
   }, [])
 
   useEffect(() => {

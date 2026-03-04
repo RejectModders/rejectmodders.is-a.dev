@@ -18,7 +18,7 @@ const GAME_META: Record<string, { title: string; desc: string }> = {
   simon:           { title: "Simon Says",      desc: "Repeat the growing colour sequence." },
   asteroids:       { title: "Asteroids",       desc: "Shoot rocks, don't get hit." },
   "space-invaders":{ title: "Space Invaders",  desc: "Shoot the alien grid before they reach you." },
-  pacman:          { title: "Pac-Man Lite",    desc: "Eat all the dots, avoid ghosts." },
+  pacman:          { title: "Pac-Man",          desc: "Eat all the dots, avoid ghosts." },
   dino:            { title: "Dino Run",        desc: "Jump over cacti in an endless desert run." },
   solitaire:       { title: "Solitaire",       desc: "Classic Klondike — move all cards to the foundation." },
   blackjack:       { title: "Blackjack",       desc: "Beat the dealer to 21 without busting." },

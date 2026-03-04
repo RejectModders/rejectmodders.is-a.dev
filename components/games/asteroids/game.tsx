@@ -223,12 +223,12 @@ export function AsteroidsGame({ primary, onBack }: { primary: string; onBack: ()
       <div className="flex items-center gap-4 md:hidden">
         {[
           {label:"←",key:"ArrowLeft"},{label:"↑",key:"ArrowUp"},{label:"→",key:"ArrowRight"},
-          {label:"🔫",key:" "},
+          {label:"fire",key:" "},
         ].map(({label,key})=>(
           <button key={label}
             onTouchStart={e=>{e.preventDefault();state.current.keys.add(key);if(!state.current.started){state.current.started=true;setDisplay(d=>({...d,started:true}))}}}
             onTouchEnd={e=>{e.preventDefault();state.current.keys.delete(key)}}
-            className="h-14 w-14 rounded-xl border border-primary/30 bg-primary/10 font-bold text-primary text-lg touch-none select-none">
+            className="h-14 w-14 rounded-xl border border-primary/30 bg-primary/10 font-bold text-primary text-sm touch-none select-none">
             {label}
           </button>
         ))}

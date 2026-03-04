@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
@@ -28,14 +28,13 @@ const AnimatedText = ({ text, className }: { text: string; className?: string })
 )
 
 export function HeroSection() {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"], layoutEffect: false })
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center" style={{ overflow: "clip" }}>
-      <div ref={ref} className="absolute inset-0" />
+    <section ref={ref} className="relative flex min-h-screen items-center justify-center" style={{ overflow: "clip" }}>
 
       {/* Grid bg */}
       <motion.div

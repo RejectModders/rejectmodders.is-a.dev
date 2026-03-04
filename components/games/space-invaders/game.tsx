@@ -240,11 +240,11 @@ export function SpaceInvadersGame({ primary, onBack }: { primary: string; onBack
       </div>
       <canvas ref={canvasRef} width={W} height={H} className="rounded-xl border border-primary/20" style={{maxWidth:"100%",height:"auto"}}/>
       <div className="flex gap-4 md:hidden">
-        {[{l:"←",k:"ArrowLeft"},{l:"→",k:"ArrowRight"},{l:"🔫",k:" "}].map(({l,k})=>(
+        {[{l:"←",k:"ArrowLeft"},{l:"→",k:"ArrowRight"},{l:"fire",k:" "}].map(({l,k})=>(
           <button key={l}
             onTouchStart={e=>{e.preventDefault();state.current.keys.add(k);if(!state.current.started)state.current.started=true;if(k===" "&&state.current.shootCooldown<=0){state.current.playerBullets.push({x:state.current.ship.x,y:state.current.ship.y-18});state.current.shootCooldown=0.3}}}
             onTouchEnd={e=>{e.preventDefault();state.current.keys.delete(k)}}
-            className="h-14 w-14 rounded-xl border border-primary/30 bg-primary/10 text-primary font-bold text-xl touch-none">{l}</button>
+            className="h-14 w-14 rounded-xl border border-primary/30 bg-primary/10 text-primary font-bold text-sm touch-none">{l}</button>
         ))}
       </div>
       <p className="font-mono text-xs text-muted-foreground hidden md:block">← → move · space shoot · R restart</p>
