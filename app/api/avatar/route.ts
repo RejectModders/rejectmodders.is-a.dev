@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 
-// Default cache TTL — 24 hours
-const DEFAULT_TTL = 60 * 60 * 24
-
 // Allowlist of trusted hosts to prevent open-proxy abuse
 const ALLOWED_HOSTS = [
   // GitHub avatars
@@ -29,8 +26,6 @@ export const runtime = "edge"
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
   const url = searchParams.get("url")
-  const ttlParam = searchParams.get("ttl")
-  const ttl = ttlParam ? Math.max(10, Math.min(parseInt(ttlParam), DEFAULT_TTL)) : DEFAULT_TTL
 
   if (!url) {
     return new NextResponse("Missing url parameter", { status: 400 })
@@ -49,7 +44,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const upstream = await fetch(url, {
-      next: { revalidate: ttl },
+      next: { revalidate: false },
       headers: {
         "User-Agent": "rejectmodders.is-a.dev image-cache/1.0",
       },
@@ -66,8 +61,10 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": contentType,
-        "Cache-Control": `public, max-age=${ttl}, s-maxage=${ttl}, stale-while-revalidate=${ttl}`,
-        "CDN-Cache-Control": `public, max-age=${ttl}`,
+        "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0",
+        "CDN-Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
         "Vary": "Accept",
       },
     })

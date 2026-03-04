@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { motion, useInView } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Music2, Headphones, Radio, ExternalLink, Disc3 } from "lucide-react"
 
 const SPOTIFY_UID = "31tfph3mamrlj4uch76albbptgay"
@@ -95,6 +95,13 @@ export function SpotifyPageContent() {
   const isInView         = useInView(ref,           { once: true })
   const nowPlayingInView = useInView(nowPlayingRef, { once: true })
   const recentInView     = useInView(recentRef,     { once: true })
+
+  // Force fresh timestamps on mount to bypass all caching
+  const [timestamp, setTimestamp] = useState<number>(0)
+
+  useEffect(() => {
+    setTimestamp(Date.now())
+  }, [])
 
   return (
     <div ref={ref} className="relative pt-24 pb-16 md:pt-32 md:pb-24" style={{ overflow: "clip" }}>
@@ -207,7 +214,7 @@ export function SpotifyPageContent() {
                   className="relative block p-1"
                 >
                   <SpotifyImage
-                    src={`/api/avatar?ttl=60&url=${encodeURIComponent(`https://spotify-github-profile.kittinanx.com/api/view?uid=${SPOTIFY_UID}&cover_image=true&theme=default&show_offline=true&background_color=0d0d0d&interchange=true&bar_color=1DB954`)}`}
+                    src={`/api/avatar?url=${encodeURIComponent(`https://spotify-github-profile.kittinanx.com/api/view?uid=${SPOTIFY_UID}&cover_image=true&theme=default&show_offline=true&background_color=0d0d0d&interchange=true&bar_color=1DB954&t=${timestamp}`)}`}
                     alt="Spotify Now Playing"
                     skeletonRows={1}
                   />
@@ -257,7 +264,7 @@ export function SpotifyPageContent() {
 
                 <div className="relative p-1">
                   <SpotifyImage
-                    src={`/api/avatar?ttl=300&url=${encodeURIComponent(`https://spotify-recently-played-readme.vercel.app/api?user=${SPOTIFY_UID}&count=5&unique=true&width=500`)}`}
+                    src={`/api/avatar?url=${encodeURIComponent(`https://spotify-recently-played-readme.vercel.app/api?user=${SPOTIFY_UID}&count=5&unique=true&width=500&t=${timestamp}`)}`}
                     alt="Recently Played on Spotify"
                     skeletonRows={5}
                   />

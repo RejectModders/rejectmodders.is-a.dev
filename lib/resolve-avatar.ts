@@ -58,7 +58,7 @@ async function resolveTwitterAvatar(twitter: string | null): Promise<string | nu
   if (!username) return null
   const url = `https://unavatar.io/twitter/${username}?json`
   try {
-    const res = await fetch(url, { next: { revalidate: 86400 } })
+    const res = await fetch(url, { next: { revalidate: 7200 } })
     if (res.ok) {
       const data = await res.json()
       // unavatar returns { url: "https://..." }
@@ -106,7 +106,7 @@ async function resolveYoutubeAvatar(youtube: string | null): Promise<string | nu
       const handle = identifier.startsWith("@") ? identifier.slice(1) : identifier
       const res = await fetch(
         `https://www.googleapis.com/youtube/v3/channels?part=snippet&forHandle=${encodeURIComponent(handle)}&key=${apiKey}`,
-        { next: { revalidate: 86400 } }
+        { next: { revalidate: 7200 } }
       )
       if (res.ok) {
         const data = await res.json()
@@ -121,7 +121,7 @@ async function resolveYoutubeAvatar(youtube: string | null): Promise<string | nu
     if (channelId) {
       const res = await fetch(
         `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`,
-        { next: { revalidate: 86400 } }
+        { next: { revalidate: 7200 } }
       )
       if (res.ok) {
         const data = await res.json()
@@ -147,7 +147,7 @@ async function resolveGravatarAvatar(email: string | null): Promise<string | nul
   const hash = createHash("md5").update(email.trim().toLowerCase()).digest("hex")
   const checkUrl = `https://www.gravatar.com/avatar/${hash}?s=200&d=404`
   try {
-    const res = await fetch(checkUrl, { method: "HEAD", next: { revalidate: 86400 } })
+    const res = await fetch(checkUrl, { method: "HEAD", next: { revalidate: 7200 } })
     if (res.ok) return `https://www.gravatar.com/avatar/${hash}?s=200`
   } catch {
     // silently fail
