@@ -7,17 +7,17 @@ import { Terminal } from "lucide-react"
 const LINES = [
   { text: "SSH-2.0-OpenSSH_9.3p1 Ubuntu-1ubuntu3.6", delay: 0.2 },
   { text: "", delay: 0.5 },
-  { text: "rejectmodders.is-a.dev login: admin", delay: 0.8 },
+  { text: "rejectmodders.dev login: admin", delay: 0.8 },
   { text: "Password: ", delay: 1.4 },
   { text: "", delay: 2.0 },
   { text: "Access denied.", delay: 2.2, color: "text-red-400" },
   { text: "", delay: 2.5 },
-  { text: "rejectmodders.is-a.dev login: root", delay: 2.7 },
+  { text: "rejectmodders.dev login: root", delay: 2.7 },
   { text: "Password: ", delay: 3.3 },
   { text: "", delay: 3.9 },
   { text: "Access denied.", delay: 4.1, color: "text-red-400" },
   { text: "", delay: 4.4 },
-  { text: "rejectmodders.is-a.dev login: rejectmodders", delay: 4.6 },
+  { text: "rejectmodders.dev login: rejectmodders", delay: 4.6 },
   { text: "Password: ", delay: 5.2 },
   { text: "", delay: 5.8 },
   { text: "Access denied.", delay: 6.0, color: "text-red-400" },
@@ -60,7 +60,7 @@ export default function AdminPage() {
           <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
           <div className="h-3 w-3 rounded-full bg-[#28c840]" />
           <Terminal className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground">ssh admin@rejectmodders.is-a.dev</span>
+          <span className="text-xs text-muted-foreground">ssh admin@rejectmodders.dev</span>
         </div>
 
         {/* Terminal output */}
@@ -95,7 +95,7 @@ export default function AdminPage() {
 
         {/* Footer */}
         <div className="border-t border-border px-6 py-3 text-xs text-muted-foreground/50">
-          <a href="/" className="hover:text-primary transition-colors">← back to rejectmodders.is-a.dev</a>
+          <a href="/" className="hover:text-primary transition-colors">← back to rejectmodders.dev</a>
         </div>
       </motion.div>
     </div>

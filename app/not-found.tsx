@@ -42,7 +42,7 @@ export default function NotFound() {
   useEffect(() => { setPath(window.location.pathname) }, [])
 
   const lines = [
-    { text: `$ curl -sI https://rejectmodders.is-a.dev${path || "/???"}`, delay: 0.4,  color: "text-foreground/90" },
+    { text: `$ curl -sI https://rejectmodders.dev${path || "/???"}`, delay: 0.4,  color: "text-foreground/90" },
     { text: "  Resolving DNS...",                               delay: 0.75, color: "text-muted-foreground" },
     { text: "  Connected to 76.76.21.21 (Vercel Edge)",        delay: 1.0,  color: "text-green-400" },
     { text: "",                                                 delay: 1.2,  color: "" },
@@ -135,7 +135,7 @@ export default function NotFound() {
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
           className="mt-6 font-mono text-xs text-muted-foreground/40">
           think this is a mistake?{" "}
-          <a href="https://github.com/RejectModders/rejectmodders.is-a.dev/issues"
+          <a href="https://github.com/RejectModders/rejectmodders.dev/issues"
             target="_blank" rel="noopener noreferrer"
             className="text-primary/50 underline underline-offset-2 hover:text-primary transition-colors">
             open an issue

@@ -1,5 +1,5 @@
-Contact: mailto:rejectmodders@vulnradar.dev
+Contact: mailto:liam@rejectmodders.dev
 Expires: 2027-01-01T00:00:00z
 Preferred-Languages: en
-Canonical: https://rejectmodders.is-a.dev/.well-known/security.txt
+Canonical: https://rejectmodders.dev/.well-known/security.txt
 

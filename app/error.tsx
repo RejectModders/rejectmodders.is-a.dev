@@ -154,7 +154,7 @@ export default function ErrorPage({
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
           className="mt-6 font-mono text-xs text-muted-foreground/40">
           persistent issue?{" "}
-          <a href="https://github.com/RejectModders/rejectmodders.is-a.dev/issues"
+          <a href="https://github.com/RejectModders/rejectmodders.dev/issues"
             target="_blank" rel="noopener noreferrer"
             className="text-primary/50 underline underline-offset-2 hover:text-primary transition-colors">
             open an issue

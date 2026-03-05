@@ -10,7 +10,7 @@ export async function GET() {
     {
       status: "ok",
       owner: "RejectModders",
-      site: "rejectmodders.is-a.dev",
+      site: "rejectmodders.dev",
       build_time: BUILD_TIME,
       timestamp: new Date().toISOString(),
       uptime_since: BUILD_TIME,

@@ -95,7 +95,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
                 </p>
               </div>
               <a
-                href="https://github.com/RejectModders/rejectmodders.is-a.dev"
+                href="https://github.com/RejectModders/rejectmodders.dev"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex shrink-0 items-center gap-2 rounded-lg border border-primary/40 bg-primary/10 px-5 py-2.5 font-mono text-sm text-primary transition-all duration-150 hover:-translate-y-0.5 hover:bg-primary/20 hover:border-primary/60"

@@ -41,7 +41,7 @@ export function ContactSection() {
     { href: "https://github.com/RejectModders", icon: Github, label: "Follow on GitHub", primary: true },
     { href: "https://vulnradar.dev", icon: ExternalLink, label: "Visit vulnradar.dev", primary: false },
     // email is intentionally obfuscated - assembled at runtime to deter scrapers
-    { href: ["rejectmodders", "vulnradar.dev"].join("@"), icon: Mail, label: "Get in Touch", primary: false, isEmail: true },
+    { href: ["liam", "rejectmodders.dev"].join("@"), icon: Mail, label: "Get in Touch", primary: false, isEmail: true },
   ]
 
   const statItems = stats ? [

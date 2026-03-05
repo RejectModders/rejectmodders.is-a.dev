@@ -416,7 +416,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   pwd: () => [
-    L("https://rejectmodders.is-a.dev", col.cyan),
+    L("https://rejectmodders.dev", col.cyan),
     BR(),
   ],
 
@@ -443,14 +443,14 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   "cat readme": () => [
-    L("# rejectmodders.is-a.dev", col.primary),
+    L("# rejectmodders.dev", col.primary),
     BR(),
     L("Personal portfolio built with:", col.fg),
     L("  Next.js 16, TypeScript, Tailwind CSS v4", col.muted),
     L("  Framer Motion, shadcn/ui", col.muted),
     L("  Deployed on Vercel", col.muted),
     BR(),
-    L("Source: github.com/RejectModders/rejectmodders.is-a.dev", col.cyan),
+    L("Source: github.com/RejectModders/rejectmodders.dev", col.cyan),
     BR(),
     L("You found the terminal easter egg!", col.green),
     L("Trigger: ↑ ↑ ↓ ↓ ← → ← → B A", col.primary),
@@ -498,7 +498,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     BR(),
     L("  GitHub      https://github.com/RejectModders", col.cyan),
     L("  VulnRadar   https://vulnradar.dev", col.cyan),
-    L("  Repo        https://github.com/RejectModders/rejectmodders.is-a.dev", col.cyan),
+    L("  Repo        https://github.com/RejectModders/rejectmodders.dev", col.cyan),
     BR(),
   ],
 
@@ -539,7 +539,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     BR(),
     L("  GitHub:    github.com/RejectModders", col.cyan),
     L("  VulnRadar: vulnradar.dev", col.cyan),
-    L("  PRs:       github.com/RejectModders/rejectmodders.is-a.dev", col.cyan),
+    L("  PRs:       github.com/RejectModders/rejectmodders.dev", col.cyan),
     BR(),
     L("  Or just open an issue. I'll see it.", col.muted),
     BR(),
@@ -562,7 +562,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   uname: () => [
-    L("Linux rejectmodders.is-a.dev 6.x.x #1 SMP x86_64 GNU/Linux", col.green),
+    L("Linux rejectmodders.dev 6.x.x #1 SMP x86_64 GNU/Linux", col.green),
     L("Next.js 16.1.6 / Vercel Edge Runtime", col.muted),
     BR(),
   ],
@@ -571,7 +571,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("# environment (sanitized)", col.primary),
     BR(),
     L("  NODE_ENV=production", col.fg),
-    L("  NEXT_PUBLIC_SITE=rejectmodders.is-a.dev", col.fg),
+    L("  NEXT_PUBLIC_SITE=rejectmodders.dev", col.fg),
     L("  FLAG=rm{y0u_f0und_th3_t3rm1n4l_e4st3r_egg}", col.red),
     BR(),
     L("  nice try.", col.muted),
@@ -579,19 +579,19 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   ping: () => [
-    L("PING rejectmodders.is-a.dev (76.76.21.21): 56 bytes", col.fg),
+    L("PING rejectmodders.dev (76.76.21.21): 56 bytes", col.fg),
     L("64 bytes from 76.76.21.21: icmp_seq=0 ttl=57 time=4.2 ms", col.green),
     L("64 bytes from 76.76.21.21: icmp_seq=1 ttl=57 time=3.8 ms", col.green),
     L("64 bytes from 76.76.21.21: icmp_seq=2 ttl=57 time=4.1 ms", col.green),
     BR(),
-    L("--- rejectmodders.is-a.dev ping statistics ---", col.fg),
+    L("--- rejectmodders.dev ping statistics ---", col.fg),
     L("3 packets transmitted, 3 received, 0% packet loss", col.green),
     L("round-trip min/avg/max = 3.8/4.0/4.2 ms", col.muted),
     BR(),
   ],
 
   curl: () => [
-    L("$ curl -I https://rejectmodders.is-a.dev", col.muted),
+    L("$ curl -I https://rejectmodders.dev", col.muted),
     BR(),
     L("HTTP/2 200", col.green),
     L("content-type: text/html; charset=utf-8", col.fg),
@@ -684,10 +684,10 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   neofetch: () => [
-    L("  ____  __  __    rm@rejectmodders.is-a.dev", col.primary),
+    L("  ____  __  __    rm@rejectmodders.dev", col.primary),
     L(" |  _ \\|  \\/  |   -------------------------", col.primary),
     L(" | |_) | |\\/| |   OS:     Vercel Edge Linux", col.fg),
-    L(" |  _ <| |  | |   Host:   rejectmodders.is-a.dev", col.fg),
+    L(" |  _ <| |  | |   Host:   rejectmodders.dev", col.fg),
     L(" |_| \\_\\_|  |_|   Kernel: Next.js 15", col.fg),
     L("                  Shell:  rm-terminal v2.0", col.fg),
     L("                  DE:     React 19 + Framer Motion", col.fg),
@@ -868,7 +868,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   },
 
   weather: () => [
-    L("Weather for: rejectmodders.is-a.dev (76.76.21.21)", col.primary),
+    L("Weather for: rejectmodders.dev (76.76.21.21)", col.primary),
     BR(),
     L("  Location:    The Cloud™, Vercel Edge Region", col.fg),
     L("  Condition:   ⛅  Partly Cloudy with a chance of downtime", col.fg),
@@ -995,9 +995,9 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   whois: () => [
-    L("% WHOIS rejectmodders.is-a.dev", col.muted),
+    L("% WHOIS rejectmodders.dev", col.muted),
     BR(),
-    L("  Domain Name:   REJECTMODDERS.IS-A.DEV", col.fg),
+    L("  Domain Name:   REJECTMODDERS.DEV", col.fg),
     L("  Registrar:     is-a.dev (open-source subdomain project)", col.fg),
     L("  Created:       2024", col.fg),
     L("  Status:        ACTIVE", col.green),
@@ -1009,21 +1009,21 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   traceroute: () => [
-    L("traceroute to rejectmodders.is-a.dev (76.76.21.21)", col.fg),
+    L("traceroute to rejectmodders.dev (76.76.21.21)", col.fg),
     BR(),
     L(" 1  your-router (192.168.1.1)          0.4 ms", col.fg),
     L(" 2  isp-gateway (10.0.0.1)             2.1 ms", col.fg),
     L(" 3  backbone-1 (45.12.34.56)           8.3 ms", col.fg),
     L(" 4  cloudflare-edge (104.21.0.1)      12.7 ms", col.fg),
     L(" 5  vercel-edge (76.76.21.1)          14.2 ms", col.fg),
-    L(" 6  rejectmodders.is-a.dev (76.76.21.21)  14.9 ms", col.green),
+    L(" 6  rejectmodders.dev (76.76.21.21)  14.9 ms", col.green),
     BR(),
     L("6 hops. not bad.", col.muted),
     BR(),
   ],
 
   nmap: () => [
-    L("Starting Nmap scan on rejectmodders.is-a.dev...", col.fg),
+    L("Starting Nmap scan on rejectmodders.dev...", col.fg),
     BR(),
     L("  PORT    STATE  SERVICE", col.primary),
     L("  80/tcp  open   http     → redirects to HTTPS", col.fg),
@@ -1037,9 +1037,9 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   ssh: () => [
-    L("ssh rm@rejectmodders.is-a.dev", col.muted),
+    L("ssh rm@rejectmodders.dev", col.muted),
     BR(),
-    L("ssh: connect to host rejectmodders.is-a.dev port 22: Connection refused", col.red),
+    L("ssh: connect to host rejectmodders.dev port 22: Connection refused", col.red),
     BR(),
     L("Yeah, no SSH here. It's a static site.", col.muted),
     L("Try the terminal easter egg instead (you already did).", col.muted),
@@ -1048,19 +1048,19 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   "git log": () => [
     L("commit a1b2c3d (HEAD -> main, origin/main)", col.yellow),
-    L("Author: RejectModders <rm@rejectmodders.is-a.dev>", col.fg),
+    L("Author: RejectModders <rm@rejectmodders.dev>", col.fg),
     L("Date:   " + new Date().toDateString(), col.fg),
     BR(),
     L("    feat: added more terminal easter egg commands", col.fg),
     BR(),
     L("commit f00dcafe", col.yellow),
-    L("Author: RejectModders <rm@rejectmodders.is-a.dev>", col.fg),
+    L("Author: RejectModders <rm@rejectmodders.dev>", col.fg),
     L("Date:   Sat Mar 1 2026", col.fg),
     BR(),
     L("    fix: restored truncated terminal-easter-egg.tsx", col.fg),
     BR(),
     L("commit deadbeef", col.yellow),
-    L("Author: RejectModders <rm@rejectmodders.is-a.dev>", col.fg),
+    L("Author: RejectModders <rm@rejectmodders.dev>", col.fg),
     L("Date:   Fri Feb 28 2026", col.fg),
     BR(),
     L("    init: portfolio v2 with konami code terminal", col.fg),
@@ -1115,7 +1115,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   reboot: () => [
-    L("Broadcast message from rm@rejectmodders.is-a.dev:", col.red),
+    L("Broadcast message from rm@rejectmodders.dev:", col.red),
     L("The system is going down for reboot NOW!", col.red),
     BR(),
     L("...", col.muted),
@@ -1125,7 +1125,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   shutdown: () => [
-    L("Broadcast message from rm@rejectmodders.is-a.dev:", col.red),
+    L("Broadcast message from rm@rejectmodders.dev:", col.red),
     L("The system is going down for poweroff NOW!", col.red),
     BR(),
     L("...", col.muted),
@@ -1337,7 +1337,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   dig: (args) => {
-    const domain = (args ?? "").replace(/^dig\s*/i, "").trim() || "rejectmodders.is-a.dev"
+    const domain = (args ?? "").replace(/^dig\s*/i, "").trim() || "rejectmodders.dev"
     return [
       L(`; <<>> DiG 9.18 <<>> ${domain}`, col.muted),
       L(";; QUESTION SECTION:", col.fg),
@@ -1450,7 +1450,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   "wget": (args) => {
-    const url = (args ?? "").replace(/^wget\s*/i, "").trim() || "https://rejectmodders.is-a.dev"
+    const url = (args ?? "").replace(/^wget\s*/i, "").trim() || "https://rejectmodders.dev"
     return [
       L(`--2026-03-01 00:00:00--  ${url}`, col.fg),
       L(`Resolving ${url.replace(/https?:\/\//,"")}... 76.76.21.21`, col.fg),
@@ -1467,7 +1467,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   },
 
   "nslookup": (args) => {
-    const domain = (args ?? "").replace(/^nslookup\s*/i, "").trim() || "rejectmodders.is-a.dev"
+    const domain = (args ?? "").replace(/^nslookup\s*/i, "").trim() || "rejectmodders.dev"
     return [
       L(`Server:  1.1.1.1`, col.muted),
       L(`Address: 1.1.1.1#53`, col.muted),
@@ -1533,7 +1533,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     ]
     return [
       L(`npm ${sub}`, col.muted),
-      L("> rejectmodders.is-a.dev@0.1.0 " + sub, col.fg),
+      L("> rejectmodders.dev@0.1.0 " + sub, col.fg),
       L("> next " + sub, col.fg),
       BR(),
       L("  ▲ Next.js 16.1.6 (Turbopack)", col.fg),
@@ -1696,7 +1696,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L('ID_LIKE=debian', col.fg),
     L('PRETTY_NAME="Vercel Edge OS 1.0.0 LTS"', col.green),
     L('VERSION_CODENAME=rejectmodders', col.primary),
-    L('HOME_URL="https://rejectmodders.is-a.dev"', col.cyan),
+    L('HOME_URL="https://rejectmodders.dev"', col.cyan),
     BR(),
   ],
 
@@ -1759,7 +1759,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   "cat .bashrc": () => [
-    L("# .bashrc - rm@rejectmodders.is-a.dev", col.muted),
+    L("# .bashrc - rm@rejectmodders.dev", col.muted),
     BR(),
     L("export PATH=$HOME/.local/bin:$PATH", col.fg),
     L("export EDITOR=vim", col.fg),
@@ -1780,7 +1780,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   "cat /etc/hosts": () => [
     L("127.0.0.1   localhost", col.fg),
     L("::1         localhost ip6-localhost ip6-loopback", col.fg),
-    L("76.76.21.21 rejectmodders.is-a.dev", col.green),
+    L("76.76.21.21 rejectmodders.dev", col.green),
     L("0.0.0.0     evil.com  # blocked", col.red),
     L("0.0.0.0     trackers.net  # blocked", col.red),
     BR(),
@@ -1788,7 +1788,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   "cat /etc/motd": () => [
     L("╔═══════════════════════════════════�-", col.primary),
-    L("║  Welcome to rejectmodders.is-a.dev ║", col.primary),
+    L("║  Welcome to rejectmodders.dev      ║", col.primary),
     L("║  Unauthorized access is logged.    ║", col.primary),
     L("║  Just kidding. Hi :)               ║", col.primary),
     L("╚═══════════════════════════════════╝", col.primary),
@@ -1951,7 +1951,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
   ],
 
   "git clone": (args) => {
-    const repo = (args ?? "").replace(/git clone\s*/i, "").trim() || "https://github.com/RejectModders/rejectmodders.is-a.dev"
+    const repo = (args ?? "").replace(/git clone\s*/i, "").trim() || "https://github.com/RejectModders/rejectmodders.dev"
     return [
       L(`Cloning into '${repo.split("/").pop()}'...`, col.fg),
       L("remote: Enumerating objects: 1337, done.", col.muted),
@@ -2013,7 +2013,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
       return [L(s, col.green), BR()]
     }
     return [
-      L("openssl s_client -connect rejectmodders.is-a.dev:443", col.muted),
+      L("openssl s_client -connect rejectmodders.dev:443", col.muted),
       L("depth=2 C=US, O=Let's Encrypt", col.fg),
       L("verify return:1", col.green),
       L("Certificate chain verified: OK", col.green),
@@ -2030,7 +2030,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("Your identification has been saved in /home/rm/.ssh/id_ed25519", col.fg),
     L("Your public key has been saved in /home/rm/.ssh/id_ed25519.pub", col.fg),
     BR(),
-    L("SHA256:rm4c3sSg00dK3y+f0rS3cur1ty (rm@rejectmodders.is-a.dev)", col.green),
+    L("SHA256:rm4c3sSg00dK3y+f0rS3cur1ty (rm@rejectmodders.dev)", col.green),
     BR(),
     L("(key not actually generated - this is a browser)", col.muted),
     BR(),
@@ -2041,7 +2041,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     BR(),
     L("pub   ed25519 2024-01-01 [SC]", col.fg),
     L("      DEADBEEF1337C0FFEEBADC0FFEECAFEF00D", col.green),
-    L("uid   RejectModders <rm@rejectmodders.is-a.dev>", col.fg),
+    L("uid   RejectModders <rm@rejectmodders.dev>", col.fg),
     L("sub   cv25519 2024-01-01 [E]", col.fg),
     BR(),
   ],
@@ -2078,7 +2078,7 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
 
   export: (args) => {
     const kv = (args ?? "").replace(/export\s*/i, "").trim()
-    if (!kv) return [L("declare -x NODE_ENV=production", col.fg), L("declare -x SITE=rejectmodders.is-a.dev", col.fg), BR()]
+    if (!kv) return [L("declare -x NODE_ENV=production", col.fg), L("declare -x SITE=rejectmodders.dev", col.fg), BR()]
     return [L(`export: ${kv} - set for this session only`, col.green), BR()]
   },
 
@@ -2307,9 +2307,9 @@ const COMMANDS: Record<string, (args?: string) => Line[]> = {
     L("# crontab -l", col.primary),
     BR(),
     L("# m h  dom mon dow   command", col.muted),
-    L("  * * * * *  curl -s https://rejectmodders.is-a.dev > /dev/null", col.fg),
+    L("  * * * * *  curl -s https://rejectmodders.dev > /dev/null", col.fg),
     L("  0 9 * * 1  echo 'start of week: touch grass'", col.yellow),
-    L("  0 2 * * *  vulnradar --scan rejectmodders.is-a.dev", col.green),
+    L("  0 2 * * *  vulnradar --scan rejectmodders.dev", col.green),
     BR(),
   ],
 
@@ -2623,7 +2623,7 @@ export function TerminalEasterEgg() {
 
     setCmdHistory(h => [trimmed, ...h])
     setHistIdx(-1)
-    appendLines([L(`rm@rejectmodders.is-a.dev:~$ ${trimmed}`, col.fg)])
+    appendLines([L(`rm@rejectmodders.dev:~$ ${trimmed}`, col.fg)])
 
     const cmd = trimmed.toLowerCase()
 
@@ -3170,7 +3170,7 @@ export function TerminalEasterEgg() {
 
                 <Terminal className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span className="text-xs text-muted-foreground flex-1 text-center -ml-6">
-                  rm@rejectmodders.is-a.dev: ~
+                  rm@rejectmodders.dev: ~
                 </span>
 
                 <button
@@ -3199,7 +3199,7 @@ export function TerminalEasterEgg() {
               <div className="flex items-center gap-1.5 px-4 py-3 border-t border-border shrink-0 bg-muted/20">
                 <span className="text-green-400 select-none font-bold shrink-0">rm</span>
                 <span className="text-muted-foreground select-none shrink-0">@</span>
-                <span className="text-cyan-400 select-none font-bold shrink-0">rejectmodders.is-a.dev</span>
+                <span className="text-cyan-400 select-none font-bold shrink-0">rejectmodders.dev</span>
                 <span className="text-muted-foreground select-none shrink-0">:~$</span>
                 <input
                   ref={inputRef}

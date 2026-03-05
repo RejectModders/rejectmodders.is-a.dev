@@ -32,7 +32,7 @@ const CRASH_SCENARIOS = [
     msg: "DRIVER_IRQL_NOT_LESS_OR_EQUAL",
     detail: "A process has exceeded the click rate limit.",
     lines: [
-      "rejectmodders.is-a.dev has been stopped to prevent damage.",
+      "rejectmodders.dev has been stopped to prevent damage.",
       "If this is the first time you've seen this stop error,",
       "restart the site. Otherwise calm your clicking hand.",
       "",
@@ -98,7 +98,7 @@ const CRASH_SCENARIOS = [
     title: "PROCESS TERMINATED",
     code: "SIGTERM",
     color: "#a855f7",
-    msg: "rm@rejectmodders.is-a.dev: process killed",
+    msg: "rm@rejectmodders.dev: process killed",
     detail: "The click daemon has been terminated.",
     lines: [
       "$ ps aux | grep click",

@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       // 2-hour window — subsequent requests are served from the cache.
       next: { revalidate: 7200, tags: ["avatars"] },
       headers: {
-        "User-Agent": "rejectmodders.is-a.dev image-cache/1.0",
+        "User-Agent": "rejectmodders.dev image-cache/1.0",
       },
     })
 

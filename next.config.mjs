@@ -79,7 +79,7 @@ const nextConfig = {
             value: JSON.stringify({
               group: "default",
               max_age: 86400,
-              endpoints: [{ url: "https://rejectmodders.is-a.dev/api/csp-report" }],
+              endpoints: [{ url: "https://rejectmodders.dev/api/csp-report" }],
             }),
           },
           {
@@ -98,7 +98,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://rejectmodders.is-a.dev",
+            value: "https://rejectmodders.dev",
           },
           {
             key: "Access-Control-Allow-Methods",

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://rejectmodders.is-a.dev"
+  const base = "https://rejectmodders.dev"
   const now = new Date()
 
   return [

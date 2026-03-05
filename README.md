@@ -1,4 +1,4 @@
-# rejectmodders.is-a.dev
+# rejectmodders.dev
 
 My personal site. Built with Next.js, Tailwind CSS, and TypeScript.
 
@@ -11,8 +11,8 @@ Think you belong on this page? If we actually know each other, open a pull reque
 ### 1. Fork & clone
 
 ```bash
-git clone https://github.com/<your-username>/rejectmodders.is-a.dev.git
-cd rejectmodders.is-a.dev
+git clone https://github.com/<your-username>/rejectmodders.dev.git
+cd rejectmodders.dev
 ```
 
 ### 2. Install dependencies
@@ -76,7 +76,7 @@ git commit -m "friends: add YourName"
 git push origin add-yourname
 ```
 
-Then head to [github.com/RejectModders/rejectmodders.is-a.dev](https://github.com/RejectModders/rejectmodders.is-a.dev) and open a PR from your fork.
+Then head to [github.com/RejectModders/rejectmodders.dev](https://github.com/RejectModders/rejectmodders.dev) and open a PR from your fork.
 
 ---
 

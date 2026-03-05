@@ -17,7 +17,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono' })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://rejectmodders.is-a.dev'),
+  metadataBase: new URL('https://rejectmodders.dev'),
   title: {
     default: 'RejectModders | Cybersecurity Developer',
     template: '%s | RejectModders',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: 'RejectModders | Cybersecurity Developer',
     description: 'Cybersecurity-focused developer from Missouri. Building security tools and writing code.',
     type: 'website',
-    url: 'https://rejectmodders.is-a.dev',
+    url: 'https://rejectmodders.dev',
     siteName: 'RejectModders',
     images: [
       {

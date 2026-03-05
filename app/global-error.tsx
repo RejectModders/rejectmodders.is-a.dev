@@ -135,7 +135,7 @@ export default function GlobalError({
 
           <p style={{ marginTop: "1.5rem", fontSize: "0.65rem", color: "#334155" }}>
             persistent?{" "}
-            <a href="https://github.com/RejectModders/rejectmodders.is-a.dev/issues"
+            <a href="https://github.com/RejectModders/rejectmodders.dev/issues"
               target="_blank" rel="noopener noreferrer"
               style={{ color: "var(--primary)", opacity: 0.6, textDecoration: "underline" }}>
               open an issue
