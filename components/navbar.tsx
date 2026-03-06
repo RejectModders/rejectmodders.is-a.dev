@@ -25,11 +25,11 @@ export function Navbar() {
 
   return (
     <>
-      {/* Entire header + contents animate in as one unit - no stagger, no delay */}
+      {/* Header animates first - content waits for this to complete */}
       <motion.header
         initial={{ y: -64, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.35, ease: [0.215, 0.61, 0.355, 1] }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         style={{ willChange: "transform, opacity" }}
         className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${
           scrolled
@@ -37,7 +37,7 @@ export function Navbar() {
             : "bg-transparent"
         }`}
       >
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+        <nav aria-label="Main navigation" className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           {/* Logo */}
           <Link href="/" className="group font-mono text-sm font-bold text-foreground">
             {"<"}
@@ -73,17 +73,17 @@ export function Navbar() {
             <button
               onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
               className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
-              title="Search (⌘K)"
+              aria-label="Search site, press Command K"
             >
-              <Search className="h-3.5 w-3.5" />
-              <kbd className="hidden text-[10px] sm:inline">⌘K</kbd>
+              <Search className="h-3.5 w-3.5" aria-hidden="true" />
+              <kbd className="hidden text-[10px] sm:inline" aria-hidden="true">⌘K</kbd>
             </button>
             {/* Theme toggle */}
             {mounted && (
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
-                title="Toggle theme"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
@@ -94,9 +94,11 @@ export function Navbar() {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="text-foreground md:hidden"
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
           </button>
         </nav>
       </motion.header>
@@ -114,11 +116,14 @@ export function Navbar() {
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
+              id="mobile-menu"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               className="fixed inset-x-0 top-15 z-40 border-b border-border bg-background/95 backdrop-blur-xl md:hidden"
+              role="navigation"
+              aria-label="Mobile navigation"
             >
               <div className="flex flex-col gap-1 px-4 py-4">
                 {NAV_LINKS.map((link) => (

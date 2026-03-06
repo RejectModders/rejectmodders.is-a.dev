@@ -1,302 +1,481 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
-import { ChevronLeft, RotateCcw, ChevronUp, ChevronDown, ChevronRight } from "lucide-react"
-import { loadHS, saveHS } from "../helpers"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { ChevronLeft, ChevronUp, ChevronDown, ChevronRight, RotateCcw, Volume2, VolumeX } from "lucide-react"
+import { saveHS, getHS, usePrimary } from "../helpers"
+import { gameSounds } from "../sounds"
 
-const COLS = 24, ROWS = 20, CELL = 22
+// ── Game Constants ───────────────────────────────────────────────────────────
+const GRID_SIZE = 20
+const CELL_SIZE = 20
+const CANVAS_SIZE = GRID_SIZE * CELL_SIZE
+const INITIAL_SPEED = 150
+const SPEED_INCREMENT = 5
+const MIN_SPEED = 60
 
-function rndFood(snake: {x:number;y:number}[]) {
-  let f: {x:number;y:number}
-  do { f = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) } }
-  while (snake.some(s => s.x === f.x && s.y === f.y))
-  return f
+type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT"
+type Point = { x: number; y: number }
+type GameState = "idle" | "playing" | "gameover"
+
+const DIRECTIONS: Record<Direction, Point> = {
+  UP: { x: 0, y: -1 },
+  DOWN: { x: 0, y: 1 },
+  LEFT: { x: -1, y: 0 },
+  RIGHT: { x: 1, y: 0 },
 }
 
-export function SnakeGame({ primary, onBack }: { primary: string; onBack: () => void }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const state = useRef({
-    snake: [{ x: 12, y: 10 }],
-    dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 },
-    food: { x: 5, y: 5 },
-    score: 0, alive: true, started: false, hs: 0,
-    interval: 0 as unknown as ReturnType<typeof setInterval>,
-    raf: 0,
-    touchStartX: 0, touchStartY: 0,
-    particles: [] as {x:number;y:number;vx:number;vy:number;life:number;maxLife:number;color:string}[],
-    eatFlash: 0,
-  })
-  const [display, setDisplay] = useState({ score: 0, alive: true, started: false, hs: 0 })
+const OPPOSITE: Record<Direction, Direction> = {
+  UP: "DOWN",
+  DOWN: "UP",
+  LEFT: "RIGHT",
+  RIGHT: "LEFT",
+}
 
-  const reset = useCallback(() => {
-    const s = state.current
-    clearInterval(s.interval)
-    s.snake = [{ x: 12, y: 10 }, { x: 11, y: 10 }, { x: 10, y: 10 }]
-    s.dir = { x: 1, y: 0 }; s.nextDir = { x: 1, y: 0 }
-    s.food = rndFood(s.snake)
-    s.score = 0; s.alive = true; s.started = false
-    s.particles = []; s.eatFlash = 0
-    s.hs = loadHS()["snake"] ?? 0
-    setDisplay({ score: 0, alive: true, started: false, hs: s.hs })
+// ── Utility Functions ────────────────────────────────────────────────────────
+function randomFood(snake: Point[]): Point {
+  let food: Point
+  do {
+    food = {
+      x: Math.floor(Math.random() * GRID_SIZE),
+      y: Math.floor(Math.random() * GRID_SIZE),
+    }
+  } while (snake.some((s) => s.x === food.x && s.y === food.y))
+  return food
+}
+
+function getSpeed(score: number): number {
+  return Math.max(MIN_SPEED, INITIAL_SPEED - Math.floor(score / 3) * SPEED_INCREMENT)
+}
+
+// ── Snake Game Component ─────────────────────────────────────────────────────
+export function SnakeGame({ onBack }: { primary?: string; onBack: () => void }) {
+  const primary = usePrimary()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const gameLoopRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const rafRef = useRef<number>(0)
+
+  const [gameState, setGameState] = useState<GameState>("idle")
+  const [score, setScore] = useState(0)
+  const [highScore, setHighScore] = useState(0)
+  const [soundEnabled, setSoundEnabled] = useState(true)
+
+  // Game state refs for animation loop access
+  const snakeRef = useRef<Point[]>([{ x: 10, y: 10 }])
+  const directionRef = useRef<Direction>("RIGHT")
+  const nextDirectionRef = useRef<Direction>("RIGHT")
+  const foodRef = useRef<Point>({ x: 5, y: 5 })
+  const scoreRef = useRef(0)
+
+  // Load high score on mount
+  useEffect(() => {
+    setHighScore(getHS("snake"))
   }, [])
 
-  const spawnParticles = (x: number, y: number, color: string, count = 8) => {
-    const s = state.current
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2
-      const spd = 1.5 + Math.random() * 2
-      s.particles.push({
-        x: x * CELL + CELL / 2, y: y * CELL + CELL / 2,
-        vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
-        life: 1, maxLife: 0.4 + Math.random() * 0.4,
-        color,
-      })
-    }
-  }
+  // ── Game Logic ─────────────────────────────────────────────────────────────
+  const resetGame = useCallback(() => {
+    snakeRef.current = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }]
+    directionRef.current = "RIGHT"
+    nextDirectionRef.current = "RIGHT"
+    foodRef.current = randomFood(snakeRef.current)
+    scoreRef.current = 0
+    setScore(0)
+    setGameState("idle")
+    if (gameLoopRef.current) clearInterval(gameLoopRef.current)
+  }, [])
 
-  const steer = useCallback((nd: { x: number; y: number }) => {
-    const s = state.current
-    if (nd.x === -s.dir.x && nd.y === -s.dir.y) return
-    s.nextDir = nd
-    if (!s.started && s.alive) {
-      s.started = true
-      setDisplay(d => ({ ...d, started: true }))
-      const SPEEDS = [160, 150, 135, 120, 105, 90]
-      const getSpeed = () => Math.max(SPEEDS[SPEEDS.length-1], SPEEDS[Math.min(Math.floor(s.score / 5), SPEEDS.length-1)])
-      const tick = () => {
-        const ns = state.current
-        if (!ns.alive) return
-        ns.dir = { ...ns.nextDir }
-        const head = { x: ns.snake[0].x + ns.dir.x, y: ns.snake[0].y + ns.dir.y }
-        if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
-          ns.alive = false; saveHS("snake", ns.score)
-          ns.hs = Math.max(ns.hs, ns.score)
-          // death particles along snake body
-          ns.snake.forEach(seg => spawnParticles(seg.x, seg.y, primary, 3))
-          setDisplay(d => ({ ...d, alive: false, hs: ns.hs }))
-          clearInterval(ns.interval); return
-        }
-        if (ns.snake.some(seg => seg.x === head.x && seg.y === head.y)) {
-          ns.alive = false; saveHS("snake", ns.score)
-          ns.hs = Math.max(ns.hs, ns.score)
-          ns.snake.forEach(seg => spawnParticles(seg.x, seg.y, primary, 3))
-          setDisplay(d => ({ ...d, alive: false, hs: ns.hs }))
-          clearInterval(ns.interval); return
-        }
+  const startGame = useCallback(() => {
+    if (gameState === "playing") return
+    resetGame()
+    setGameState("playing")
+    gameSounds.play("start")
 
-        // Check if eating food BEFORE adding head to snake
-        const eatingFood = head.x === ns.food.x && head.y === ns.food.y
-        ns.snake.unshift(head)
+    const tick = () => {
+      const snake = snakeRef.current
+      const dir = DIRECTIONS[nextDirectionRef.current]
+      directionRef.current = nextDirectionRef.current
 
-        if (eatingFood) {
-          ns.score++; ns.eatFlash = 8
-          spawnParticles(ns.food.x, ns.food.y, "#fbbf24", 10)
-          ns.food = rndFood(ns.snake)
-          setDisplay(d => ({ ...d, score: ns.score }))
-          // Speed up: restart interval at new speed
-          clearInterval(ns.interval)
-          ns.interval = setInterval(tick, getSpeed())
-        } else {
-          ns.snake.pop()
-        }
+      const head = {
+        x: snake[0].x + dir.x,
+        y: snake[0].y + dir.y,
       }
-      s.interval = setInterval(tick, getSpeed())
+
+      // Wall collision
+      if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+        gameOver()
+        return
+      }
+
+      // Self collision
+      if (snake.some((s) => s.x === head.x && s.y === head.y)) {
+        gameOver()
+        return
+      }
+
+      // Move snake
+      const newSnake = [head, ...snake]
+
+      // Check food
+      if (head.x === foodRef.current.x && head.y === foodRef.current.y) {
+        scoreRef.current++
+        setScore(scoreRef.current)
+        foodRef.current = randomFood(newSnake)
+        gameSounds.play("eat")
+
+        // Check for speed increase (every 3 points)
+        const newSpeed = getSpeed(scoreRef.current)
+        const oldSpeed = getSpeed(scoreRef.current - 1)
+        if (newSpeed < oldSpeed) {
+          gameSounds.play("levelup")
+        }
+
+        // Restart interval with new speed
+        if (gameLoopRef.current) clearInterval(gameLoopRef.current)
+        gameLoopRef.current = setInterval(tick, newSpeed)
+      } else {
+        newSnake.pop()
+      }
+
+      snakeRef.current = newSnake
     }
-  }, [primary]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    gameLoopRef.current = setInterval(tick, INITIAL_SPEED)
+  }, [gameState, resetGame])
+
+  const gameOver = useCallback(() => {
+    if (gameLoopRef.current) clearInterval(gameLoopRef.current)
+    setGameState("gameover")
+    gameSounds.play("die")
+
+    const finalScore = scoreRef.current
+    const currentHS = getHS("snake")
+    if (finalScore > currentHS) {
+      saveHS("snake", finalScore)
+      setHighScore(finalScore)
+    }
+  }, [])
+
+  const changeDirection = useCallback(
+    (newDir: Direction) => {
+      if (gameState === "idle") {
+        startGame()
+      }
+      if (OPPOSITE[newDir] !== directionRef.current) {
+        nextDirectionRef.current = newDir
+      }
+    },
+    [gameState, startGame]
+  )
+
+  // ── Keyboard Controls ──────────────────────────────────────────────────────
   useEffect(() => {
-    reset()
-    const canvas = canvasRef.current!
+    const keyMap: Record<string, Direction> = {
+      ArrowUp: "UP",
+      ArrowDown: "DOWN",
+      ArrowLeft: "LEFT",
+      ArrowRight: "RIGHT",
+      w: "UP",
+      W: "UP",
+      s: "DOWN",
+      S: "DOWN",
+      a: "LEFT",
+      A: "LEFT",
+      d: "RIGHT",
+      D: "RIGHT",
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "r" || e.key === "R") {
+        resetGame()
+        return
+      }
+      if (gameState === "gameover" && (e.key === " " || e.key === "Enter")) {
+        resetGame()
+        return
+      }
+      const dir = keyMap[e.key]
+      if (dir) {
+        e.preventDefault()
+        changeDirection(dir)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [changeDirection, gameState, resetGame])
+
+  // ── Touch Controls ─────────────────────────────────────────────────────────
+  const touchStartRef = useRef<Point | null>(null)
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault()
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault()
+      if (!touchStartRef.current) return
+
+      const dx = e.changedTouches[0].clientX - touchStartRef.current.x
+      const dy = e.changedTouches[0].clientY - touchStartRef.current.y
+
+      if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+        if (gameState === "gameover") resetGame()
+        return
+      }
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        changeDirection(dx > 0 ? "RIGHT" : "LEFT")
+      } else {
+        changeDirection(dy > 0 ? "DOWN" : "UP")
+      }
+    },
+    [changeDirection, gameState, resetGame]
+  )
+
+  // ── Rendering ──────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
     const ctx = canvas.getContext("2d")!
-    const W = COLS * CELL, H = ROWS * CELL
 
-    const draw = (ts: number) => {
-      const s = state.current
-      ctx.fillStyle = "#080808"; ctx.fillRect(0, 0, W, H)
+    const render = (time: number) => {
+      // Background
+      ctx.fillStyle = "#0a0a0a"
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
 
-      // Subtle grid
-      ctx.strokeStyle = "#ffffff09"; ctx.lineWidth = 0.5
-      for (let x = 0; x <= COLS; x++) { ctx.beginPath(); ctx.moveTo(x * CELL, 0); ctx.lineTo(x * CELL, H); ctx.stroke() }
-      for (let y = 0; y <= ROWS; y++) { ctx.beginPath(); ctx.moveTo(0, y * CELL); ctx.lineTo(W, y * CELL); ctx.stroke() }
+      // Grid
+      ctx.strokeStyle = "#ffffff08"
+      ctx.lineWidth = 0.5
+      for (let i = 0; i <= GRID_SIZE; i++) {
+        ctx.beginPath()
+        ctx.moveTo(i * CELL_SIZE, 0)
+        ctx.lineTo(i * CELL_SIZE, CANVAS_SIZE)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.moveTo(0, i * CELL_SIZE)
+        ctx.lineTo(CANVAS_SIZE, i * CELL_SIZE)
+        ctx.stroke()
+      }
 
       // Border
-      ctx.strokeStyle = primary + "33"; ctx.lineWidth = 2
-      ctx.strokeRect(1, 1, W - 2, H - 2)
+      ctx.strokeStyle = primary + "40"
+      ctx.lineWidth = 2
+      ctx.strokeRect(1, 1, CANVAS_SIZE - 2, CANVAS_SIZE - 2)
 
-      // Food — animated pulse
-      if (s.alive || s.eatFlash > 0) {
-        const pulse = 0.88 + 0.12 * Math.sin(ts / 220)
-        const fx = s.food.x * CELL + CELL / 2, fy = s.food.y * CELL + CELL / 2
-        const r = (CELL / 2 - 2) * pulse
-        // Glow
-        const grd = ctx.createRadialGradient(fx, fy, 0, fx, fy, r * 2)
-        grd.addColorStop(0, "#fbbf2444")
-        grd.addColorStop(1, "transparent")
-        ctx.fillStyle = grd
-        ctx.beginPath(); ctx.arc(fx, fy, r * 2, 0, Math.PI * 2); ctx.fill()
-        // Apple dot
-        ctx.fillStyle = "#fbbf24"
-        ctx.beginPath(); ctx.arc(fx, fy, r, 0, Math.PI * 2); ctx.fill()
-        ctx.fillStyle = "#fff8"
-        ctx.beginPath(); ctx.arc(fx - r * 0.28, fy - r * 0.28, r * 0.28, 0, Math.PI * 2); ctx.fill()
-      }
+      // Food with pulse animation
+      const pulse = 0.85 + 0.15 * Math.sin(time / 200)
+      const food = foodRef.current
+      const fx = food.x * CELL_SIZE + CELL_SIZE / 2
+      const fy = food.y * CELL_SIZE + CELL_SIZE / 2
+      const fr = (CELL_SIZE / 2 - 2) * pulse
 
-      // Eat flash overlay
-      if (s.eatFlash > 0) {
-        s.eatFlash--
-        ctx.fillStyle = `rgba(251,191,36,${s.eatFlash / 80})`
-        ctx.fillRect(0, 0, W, H)
-      }
+      // Food glow
+      const glow = ctx.createRadialGradient(fx, fy, 0, fx, fy, fr * 2)
+      glow.addColorStop(0, "#fbbf2444")
+      glow.addColorStop(1, "transparent")
+      ctx.fillStyle = glow
+      ctx.beginPath()
+      ctx.arc(fx, fy, fr * 2, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Food body
+      ctx.fillStyle = "#fbbf24"
+      ctx.beginPath()
+      ctx.arc(fx, fy, fr, 0, Math.PI * 2)
+      ctx.fill()
+
+      // Food shine
+      ctx.fillStyle = "#ffffff55"
+      ctx.beginPath()
+      ctx.arc(fx - fr * 0.3, fy - fr * 0.3, fr * 0.25, 0, Math.PI * 2)
+      ctx.fill()
 
       // Snake
-      s.snake.forEach((seg, i) => {
+      const snake = snakeRef.current
+      snake.forEach((segment, i) => {
         const isHead = i === 0
-        const t = 1 - i / s.snake.length
-        ctx.globalAlpha = Math.max(0.2, t * 0.95 + 0.05)
-        ctx.fillStyle = isHead ? primary : primary + "cc"
-        const pad = isHead ? 1 : Math.min(4, 1 + i * 0.15)
-        const radius = isHead ? 6 : 3
-        const x = seg.x * CELL + pad, y = seg.y * CELL + pad
-        const sz = CELL - pad * 2
+        const alpha = Math.max(0.3, 1 - (i / snake.length) * 0.7)
+        ctx.globalAlpha = alpha
+
+        const x = segment.x * CELL_SIZE + 1
+        const y = segment.y * CELL_SIZE + 1
+        const size = CELL_SIZE - 2
+        const radius = isHead ? 6 : 4
+
+        ctx.fillStyle = isHead ? primary : primary + "dd"
         ctx.beginPath()
-        ctx.roundRect(x, y, sz, sz, radius)
+        ctx.roundRect(x, y, size, size, radius)
         ctx.fill()
+
         // Head shine
         if (isHead) {
-          ctx.fillStyle = "rgba(255,255,255,0.2)"
+          ctx.fillStyle = "rgba(255,255,255,0.25)"
           ctx.beginPath()
-          ctx.roundRect(x + 2, y + 2, sz - 4, sz / 2 - 2, 4)
+          ctx.roundRect(x + 2, y + 2, size - 4, size / 2 - 2, 4)
           ctx.fill()
         }
       })
       ctx.globalAlpha = 1
 
-      // Particles
-      for (const p of s.particles) {
-        p.x += p.vx; p.y += p.vy
-        p.vy += 0.08 // slight gravity
-        p.life -= 1 / (p.maxLife * 60)
-        if (p.life > 0) {
-          ctx.globalAlpha = Math.max(0, p.life)
-          ctx.fillStyle = p.color
-          const radius = Math.max(0, 3 * p.life)
-          ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2); ctx.fill()
-        }
-      }
-      s.particles = s.particles.filter(p => p.life > 0)
-      ctx.globalAlpha = 1
-
       // Overlays
-      if (!s.started && s.alive) {
-        ctx.fillStyle = "rgba(0,0,0,0.62)"; ctx.fillRect(0, 0, W, H)
-        ctx.fillStyle = primary; ctx.font = "bold 30px monospace"; ctx.textAlign = "center"
-        ctx.fillText("SNAKE", W / 2, H / 2 - 36)
-        ctx.fillStyle = "#fff"; ctx.font = "13px monospace"
-        ctx.fillText("arrow keys · WASD · swipe", W / 2, H / 2)
-        ctx.fillStyle = "#555"; ctx.font = "12px monospace"
-        ctx.fillText("walls & self = instant death", W / 2, H / 2 + 22)
-        if (s.hs > 0) {
-          ctx.fillStyle = "#fbbf24"; ctx.font = "bold 12px monospace"
-          ctx.fillText(`best: ${s.hs}`, W / 2, H / 2 + 48)
+      if (gameState === "idle") {
+        ctx.fillStyle = "rgba(0,0,0,0.7)"
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+
+        ctx.textAlign = "center"
+        ctx.fillStyle = primary
+        ctx.font = "bold 28px monospace"
+        ctx.fillText("SNAKE", CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 40)
+
+        ctx.fillStyle = "#ffffff"
+        ctx.font = "12px monospace"
+        ctx.fillText("Arrow Keys / WASD / Swipe", CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 5)
+
+        ctx.fillStyle = "#666666"
+        ctx.font = "11px monospace"
+        ctx.fillText("Avoid walls and yourself", CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 18)
+
+        if (highScore > 0) {
+          ctx.fillStyle = "#fbbf24"
+          ctx.font = "bold 11px monospace"
+          ctx.fillText(`Best: ${highScore}`, CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 42)
         }
-        ctx.fillStyle = primary + "aa"; ctx.font = "13px monospace"
-        ctx.fillText("press any key to start", W / 2, H / 2 + 74)
-      }
-      if (!s.alive) {
-        ctx.fillStyle = "rgba(0,0,0,0.72)"; ctx.fillRect(0, 0, W, H)
-        ctx.fillStyle = "#ef4444"; ctx.font = "bold 32px monospace"; ctx.textAlign = "center"
-        ctx.fillText("GAME OVER", W / 2, H / 2 - 44)
-        ctx.fillStyle = "#fff"; ctx.font = "bold 22px monospace"
-        ctx.fillText(`score: ${s.score}`, W / 2, H / 2 - 4)
-        if (s.hs > 0) { ctx.fillStyle = "#fbbf24"; ctx.font = "bold 14px monospace"; ctx.fillText(`best: ${s.hs}`, W / 2, H / 2 + 26) }
-        ctx.fillStyle = "#666"; ctx.font = "13px monospace"; ctx.fillText("press R or tap to restart", W / 2, H / 2 + 58)
+
+        ctx.fillStyle = primary + "cc"
+        ctx.font = "11px monospace"
+        ctx.fillText("Press any arrow to start", CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 65)
       }
 
-      s.raf = requestAnimationFrame(draw)
+      if (gameState === "gameover") {
+        ctx.fillStyle = "rgba(0,0,0,0.8)"
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+
+        ctx.textAlign = "center"
+        ctx.fillStyle = "#ef4444"
+        ctx.font = "bold 26px monospace"
+        ctx.fillText("GAME OVER", CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 35)
+
+        ctx.fillStyle = "#ffffff"
+        ctx.font = "bold 18px monospace"
+        ctx.fillText(`Score: ${scoreRef.current}`, CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 5)
+
+        if (highScore > 0) {
+          ctx.fillStyle = "#fbbf24"
+          ctx.font = "bold 12px monospace"
+          ctx.fillText(`Best: ${highScore}`, CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 30)
+        }
+
+        ctx.fillStyle = "#666666"
+        ctx.font = "11px monospace"
+        ctx.fillText("Press R or tap to restart", CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 55)
+      }
+
+      rafRef.current = requestAnimationFrame(render)
     }
-    state.current.raf = requestAnimationFrame(draw)
-    return () => { cancelAnimationFrame(state.current.raf); clearInterval(state.current.interval) }
-  }, [primary, reset])
 
-  // Keyboard
+    rafRef.current = requestAnimationFrame(render)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [primary, gameState, highScore])
+
+  // Cleanup
   useEffect(() => {
-    const dirs: Record<string, { x: number; y: number }> = {
-      ArrowUp: { x:0,y:-1 }, w: { x:0,y:-1 }, W: { x:0,y:-1 },
-      ArrowDown: { x:0,y:1 }, s: { x:0,y:1 }, S: { x:0,y:1 },
-      ArrowLeft: { x:-1,y:0 }, a: { x:-1,y:0 }, A: { x:-1,y:0 },
-      ArrowRight: { x:1,y:0 }, d: { x:1,y:0 }, D: { x:1,y:0 },
+    return () => {
+      if (gameLoopRef.current) clearInterval(gameLoopRef.current)
+      cancelAnimationFrame(rafRef.current)
     }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "r" || e.key === "R") { reset(); return }
-      if (!state.current.alive && (e.key === " " || e.key === "Enter")) { reset(); return }
-      if (dirs[e.key]) { e.preventDefault(); steer(dirs[e.key]) }
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [reset, steer])
-
-  // Touch swipe
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault()
-    if (!state.current.alive) { reset(); return }
-    state.current.touchStartX = e.touches[0].clientX
-    state.current.touchStartY = e.touches[0].clientY
-  }, [reset])
-
-  const onTouchEnd = useCallback((e: React.TouchEvent) => {
-    e.preventDefault()
-    const dx = e.changedTouches[0].clientX - state.current.touchStartX
-    const dy = e.changedTouches[0].clientY - state.current.touchStartY
-    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return
-    if (Math.abs(dx) > Math.abs(dy)) steer(dx > 0 ? { x:1,y:0 } : { x:-1,y:0 })
-    else steer(dy > 0 ? { x:0,y:1 } : { x:0,y:-1 })
-  }, [steer])
+  }, [])
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
-      <div className="flex w-full max-w-[528px] items-center justify-between">
-        <button onClick={onBack} className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-primary transition-colors">
+    <div className="flex flex-col items-center gap-4 w-full max-w-md">
+      {/* Header */}
+      <div className="flex w-full items-center justify-between px-1">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
           <ChevronLeft className="h-3.5 w-3.5" /> back
         </button>
         <div className="flex items-center gap-4 font-mono text-xs">
-          <span className="text-primary font-bold">score: {display.score}</span>
-          {display.hs > 0 && <span className="text-muted-foreground">best: {display.hs}</span>}
-          <button onClick={reset} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
+          <span className="text-primary font-bold">Score: {score}</span>
+          {highScore > 0 && <span className="text-muted-foreground">Best: {highScore}</span>}
+          <button
+            onClick={() => setSoundEnabled(gameSounds.toggle())}
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+            title={soundEnabled ? "Mute sounds" : "Enable sounds"}
+          >
+            {soundEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+          </button>
+          <button
+            onClick={resetGame}
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+            title="Restart game"
+          >
             <RotateCcw className="h-3 w-3" />
           </button>
         </div>
       </div>
+
+      {/* Game Canvas */}
       <canvas
         ref={canvasRef}
-        width={COLS * CELL}
-        height={ROWS * CELL}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
+        width={CANVAS_SIZE}
+        height={CANVAS_SIZE}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         className="rounded-xl border border-primary/30 touch-none select-none"
         style={{ maxWidth: "100%", height: "auto" }}
       />
-      {/* Mobile d-pad */}
+
+      {/* Mobile D-Pad */}
       <div className="grid grid-cols-3 gap-2 md:hidden w-44">
         <div />
-        <button onTouchStart={e=>{e.preventDefault();steer({x:0,y:-1})}} onClick={()=>steer({x:0,y:-1})}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none">
+        <button
+          onTouchStart={(e) => {
+            e.preventDefault()
+            changeDirection("UP")
+          }}
+          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+        >
           <ChevronUp className="h-6 w-6" />
         </button>
         <div />
-        <button onTouchStart={e=>{e.preventDefault();steer({x:-1,y:0})}} onClick={()=>steer({x:-1,y:0})}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none">
+        <button
+          onTouchStart={(e) => {
+            e.preventDefault()
+            changeDirection("LEFT")
+          }}
+          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+        >
           <ChevronLeft className="h-6 w-6" />
         </button>
-        <button onTouchStart={e=>{e.preventDefault();steer({x:0,y:1})}} onClick={()=>steer({x:0,y:1})}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none">
+        <button
+          onTouchStart={(e) => {
+            e.preventDefault()
+            changeDirection("DOWN")
+          }}
+          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+        >
           <ChevronDown className="h-6 w-6" />
         </button>
-        <button onTouchStart={e=>{e.preventDefault();steer({x:1,y:0})}} onClick={()=>steer({x:1,y:0})}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none">
+        <button
+          onTouchStart={(e) => {
+            e.preventDefault()
+            changeDirection("RIGHT")
+          }}
+          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+        >
           <ChevronRight className="h-6 w-6" />
         </button>
       </div>
-      <p className="font-mono text-xs text-muted-foreground hidden md:block">arrow keys / WASD · speed increases every 5 points</p>
+
+      {/* Desktop Instructions */}
+      <p className="font-mono text-xs text-muted-foreground hidden md:block">
+        Arrow Keys / WASD to move | R to restart | Speed increases with score
+      </p>
     </div>
   )
 }

@@ -1,11 +1,9 @@
-﻿"use client"
+"use client"
 
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { Shield, Zap, FileSearch, ArrowRight, ExternalLink, CheckCircle2 } from "lucide-react"
-
-const EASE = [0.215, 0.61, 0.355, 1] as const
-const DUR  = 0.4
+import { EASE, DUR, SCROLL_STEP } from "@/lib/animation"
 
 const features = [
   { icon: FileSearch, label: "175+ Vulnerability Checks", desc: "SQLi, XSS, SSRF, open redirects, misconfigs and more" },
@@ -79,7 +77,7 @@ export function VulnRadarSection() {
                   key={f.label}
                   initial={{ opacity: 0, y: 16 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: DUR, delay: 0.18 + i * 0.07, ease: EASE }}
+                  transition={{ duration: DUR, delay: 0.18 + i * SCROLL_STEP, ease: EASE }}
                   className="card-hover flex items-start gap-3 rounded-xl border border-border bg-card p-4"
                 >
                   <f.icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />

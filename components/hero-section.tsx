@@ -6,16 +6,17 @@ import { ChevronDown, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { GITHUB_URL, TECH_TAGS } from "@/config/constants"
+import { EASE, DUR, PAGE_START } from "@/lib/animation"
 
 const Particles = dynamic(() => import("@/components/particles"), { ssr: false })
 
-// Fast, snappy letter animation - starts immediately, each letter adds 0.02s
+// Letter animation - starts after navbar (PAGE_START), each letter adds 0.015s
 const letterVariants = {
   hidden: { opacity: 0, y: 12 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.02, duration: 0.2, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { delay: PAGE_START + i * 0.015, duration: 0.2, ease: EASE },
   }),
 }
 
@@ -57,11 +58,11 @@ export function HeroSection() {
 
       <motion.div style={{ y, opacity, willChange: "transform, opacity" }} className="relative z-10 flex flex-col items-center gap-5 px-4 text-center">
 
-{/* Status badge - appears immediately */}
+{/* Status badge - appears after navbar */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: DUR, delay: PAGE_START, ease: EASE }}
           className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 backdrop-blur-sm"
         >
           <span className="relative flex h-2 w-2">
@@ -88,11 +89,11 @@ export function HeroSection() {
           ))}
         </h1>
 
-{/* Subtitle - fast fade in */}
+{/* Subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ delay: PAGE_START + 0.25, duration: DUR, ease: EASE }}
           className="max-w-xl text-pretty text-lg text-muted-foreground md:text-xl"
         >
           Cybersecurity dev from Missouri, building things I actually care about.
@@ -100,11 +101,11 @@ export function HeroSection() {
           <span className="text-foreground">Right now that means security tools and keeping people safe online.</span>
         </motion.p>
 
-        {/* Tech tags - fast stagger */}
+        {/* Tech tags */}
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.03, delayChildren: 0.35 } } }}
+          variants={{ visible: { transition: { staggerChildren: 0.025, delayChildren: PAGE_START + 0.3 } } }}
           className="flex flex-wrap justify-center gap-2"
         >
           {TECH_TAGS.map((lang) => (
@@ -112,7 +113,7 @@ export function HeroSection() {
               key={lang}
               variants={{
                 hidden: { opacity: 0, scale: 0.9 },
-                visible: { opacity: 1, scale: 1, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] } },
+                visible: { opacity: 1, scale: 1, transition: { duration: 0.2, ease: EASE } },
               }}
               className="rounded-md border border-border bg-secondary/80 px-3 py-1 font-mono text-xs text-muted-foreground backdrop-blur-sm transition-all duration-150 hover:scale-105 hover:border-primary/40"
             >
@@ -121,15 +122,15 @@ export function HeroSection() {
           ))}
         </motion.div>
 
-        {/* CTA buttons - fast stagger */}
+        {/* CTA buttons */}
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.05, delayChildren: 0.4 } } }}
+          variants={{ visible: { transition: { staggerChildren: 0.04, delayChildren: PAGE_START + 0.38 } } }}
           className="flex flex-col items-center gap-3 pt-1 sm:flex-row sm:gap-4"
         >
           <motion.div
-            variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } } }}
+            variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: DUR, ease: EASE } } }}
             whileTap={{ scale: 0.97 }}
           >
             <Link href="/projects" className="group inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground hover:brightness-110 glow-red transition-transform duration-150 hover:-translate-y-0.5">
@@ -138,7 +139,7 @@ export function HeroSection() {
             </Link>
           </motion.div>
           <motion.div
-            variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } } }}
+            variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: DUR, ease: EASE } } }}
             whileTap={{ scale: 0.97 }}
           >
             <Link href="/about" className="rounded-lg border border-border bg-secondary px-6 py-3 font-medium text-secondary-foreground hover:border-primary/30 hover:bg-muted transition-all duration-150 hover:-translate-y-0.5">
@@ -146,7 +147,7 @@ export function HeroSection() {
             </Link>
           </motion.div>
           <motion.a
-            variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } } }}
+            variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: DUR, ease: EASE } } }}
             whileTap={{ scale: 0.97 }}
             href={GITHUB_URL}
             target="_blank"
@@ -163,13 +164,13 @@ export function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.4 }}
+        transition={{ delay: PAGE_START + 0.5, duration: DUR }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
       >
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
+          transition={{ delay: PAGE_START + 1, duration: 0.6 }}
           className="font-mono text-[10px] text-muted-foreground/25 select-none"
         >
           {`// press Ctrl+K for magic`}

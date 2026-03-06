@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from "react"
 import { GitBranch } from "lucide-react"
 import Link from "next/link"
 import { FOOTER_NAV_LINKS, GITHUB_URL, SITE_NAME } from "@/config/constants"
+import { EASE, DUR } from "@/lib/animation"
 
 function StatusBadge() {
 	const [status, setStatus] = useState<"loading" | "ok" | "error">("loading")
@@ -58,7 +59,7 @@ export function FooterSection() {
 			ref={ref}
 			initial={{ opacity: 0, y: 16 }}
 			animate={isInView ? { opacity: 1, y: 0 } : {}}
-			transition={{ duration: 0.4, ease: "easeOut" }}
+			transition={{ duration: DUR, ease: EASE }}
 			style={{ willChange: "transform, opacity" }}
 			className="border-t border-border py-8"
 		>

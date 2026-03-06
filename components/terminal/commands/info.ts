@@ -1,0 +1,145 @@
+import { col, L, BR } from "../colors"
+import { LOGO_LINES } from "../constants"
+import type { CommandHandler } from "../types"
+
+// ── Site & Info Commands ───────────────────────────────────────────────────────
+
+export const infoCommands: Record<string, CommandHandler> = {
+  whoami: () => [
+    L("uid=1000(rejectmodders) gid=1000(rejectmodders)", col.green),
+    L("groups=security,developer,founder,nerd", col.green),
+    BR(),
+    L("Name:       RejectModders", col.fg),
+    L("Location:   Missouri, USA", col.fg),
+    L("Role:       Cybersecurity Developer", col.fg),
+    L("Focus:      Vulnerability research & security tooling", col.fg),
+    L("Currently:  Building VulnRadar", col.primary),
+    BR(),
+  ],
+
+  ls: () => [
+    L("total 7", col.muted),
+    L("drwxr-xr-x  /", col.muted),
+    L("-rw-r--r--  home         /                  [ public ]", col.fg),
+    L("-rw-r--r--  about        /about             [ public ]", col.fg),
+    L("-rw-r--r--  projects     /projects          [ public ]", col.fg),
+    L("-rw-r--r--  friends      /friends           [ public ]", col.fg),
+    L("-rw-r--r--  games        /games             [ public ]", col.fg),
+    L("-rw-r--r--  spotify      /spotify           [ public ]", col.fg),
+    L("-rw-------  secrets      /???               [ hidden ]", col.red),
+    BR(),
+  ],
+
+  pwd: () => [
+    L("https://rejectmodders.dev", col.cyan),
+    BR(),
+  ],
+
+  "cat about": () => [
+    L("# about.md", col.primary),
+    BR(),
+    L("Hey, I'm RejectModders.", col.fg),
+    L("Cybersecurity developer from Missouri. I got into this stuff because I", col.muted),
+    L("genuinely enjoy finding how things break - and then stopping it.", col.muted),
+    BR(),
+    L("Languages I actually use:", col.fg),
+    L("  Python (main), C, C++, C# - I'll write it in whatever fits.", col.muted),
+    BR(),
+    L("What I do:", col.fg),
+    L("  › Vulnerability research", col.muted),
+    L("  › Security tooling & scanners", col.muted),
+    L("  › Discord bot development (past)", col.muted),
+    L("  › Open-source projects", col.muted),
+    BR(),
+    L("Currently:", col.primary),
+    L("  Building VulnRadar - a platform with 175+ vulnerability checks,", col.muted),
+    L("  severity ratings, and fix guidance. The tool I wished existed.", col.muted),
+    BR(),
+  ],
+
+  "cat readme": () => [
+    L("# rejectmodders.dev", col.primary),
+    BR(),
+    L("Personal portfolio built with:", col.fg),
+    L("  Next.js 16, TypeScript, Tailwind CSS v4", col.muted),
+    L("  Framer Motion, shadcn/ui", col.muted),
+    L("  Deployed on Vercel", col.muted),
+    BR(),
+    L("Source: github.com/RejectModders/rejectmodders.dev", col.cyan),
+    BR(),
+    L("You found the terminal easter egg!", col.green),
+    L("Trigger: Konami code (↑↑↓↓←→←→BA) or Ctrl+`", col.muted),
+    BR(),
+  ],
+
+  "cat vulnradar": () => [
+    L("# VulnRadar", col.primary),
+    BR(),
+    L("The vulnerability scanner I wished existed.", col.fg),
+    BR(),
+    L("Features:", col.fg),
+    L("  › 175+ vulnerability checks", col.muted),
+    L("  › CVSS severity ratings", col.muted),
+    L("  › Fix guidance & remediation", col.muted),
+    L("  › API & CLI support", col.muted),
+    L("  › Team collaboration", col.muted),
+    BR(),
+    L("Status: In development", col.yellow),
+    L("URL: vulnradar.dev", col.cyan),
+    BR(),
+  ],
+
+  skills: () => [
+    L("# Technical Skills", col.primary),
+    BR(),
+    L("  Python          ████████████████████  95%", col.green),
+    L("  Security        ███████████████████░  90%", col.green),
+    L("  C/C++           ████████████████░░░░  80%", col.yellow),
+    L("  JavaScript/TS   ███████████████░░░░░  75%", col.yellow),
+    L("  Network Sec     ███████████████░░░░░  75%", col.yellow),
+    L("  Linux           ██████████████░░░░░░  70%", col.yellow),
+    L("  Reversing       ████████████░░░░░░░░  60%", col.orange),
+    L("  Web Dev         ██████████░░░░░░░░░░  50%", col.orange),
+    BR(),
+  ],
+
+  links: () => [
+    L("# Links", col.primary),
+    BR(),
+    L("  GitHub    github.com/RejectModders", col.cyan),
+    L("  Discord   rejectmodders", col.cyan),
+    L("  Email     rm@rejectmodders.dev", col.cyan),
+    L("  VulnRadar vulnradar.dev", col.cyan),
+    BR(),
+  ],
+
+  contact: () => [
+    L("# Contact", col.primary),
+    BR(),
+    L("  Email:    rm@rejectmodders.dev", col.fg),
+    L("  Discord:  rejectmodders", col.fg),
+    L("  GitHub:   github.com/RejectModders", col.cyan),
+    BR(),
+    L("  Business inquiries welcome.", col.muted),
+    L("  Security reports: liam@rejectmodders.dev", col.green),
+    BR(),
+  ],
+
+  ascii: () => [...LOGO_LINES],
+  banner: () => [...LOGO_LINES],
+
+  "cat amanda.txt": () => [
+    L("# amanda.txt", col.primary),
+    BR(),
+    L("  Name:     Amanda", col.fg),
+    L("  Role:     girlfriend", col.primary),
+    L("  Status:   absolutely wonderful", col.green),
+    L("  Location: heart.exe", col.cyan),
+    BR(),
+    L('  "she puts up with my terminal obsession."', col.muted),
+    L('  "and that says everything."', col.muted),
+    BR(),
+    L("  chmod 777 amanda.txt  # everyone deserves to know", col.muted),
+    BR(),
+  ],
+}

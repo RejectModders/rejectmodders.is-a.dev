@@ -82,10 +82,6 @@ export const SITEMAP_ROUTES = [
 // ── Skills / Languages ───────────────────────────────────────────────────────
 export const TECH_TAGS = ["Python", "C / C++", "JavaScript", "TypeScript", "Bash"] as const
 
-// ── Animation Constants ──────────────────────────────────────────────────────
-export const ANIMATION_EASE = [0.215, 0.61, 0.355, 1] as const
-export const ANIMATION_DURATION = 0.4
-
 // ── Avatar Proxy Allowlist ───────────────────────────────────────────────────
 export const AVATAR_ALLOWED_HOSTS = [
   // GitHub avatars

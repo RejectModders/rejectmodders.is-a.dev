@@ -3,10 +3,8 @@
 import { motion, useInView } from "framer-motion"
 import { useRef, useEffect, useState } from "react"
 import { Github, ExternalLink, Mail, MapPin, Users, BookOpen, ArrowRight } from "lucide-react"
-import { GITHUB_URL, GITHUB_USER_API, VULNRADAR_URL, getEmail, SITE_LOCATION, ANIMATION_EASE, ANIMATION_DURATION } from "@/config/constants"
-
-const EASE = [0.25, 0.1, 0.25, 1] as const
-const DUR  = 0.25
+import { GITHUB_URL, GITHUB_USER_API, VULNRADAR_URL, getEmail, SITE_LOCATION } from "@/config/constants"
+import { EASE, DUR, SCROLL_STEP } from "@/lib/animation"
 
 // Animated number counter
 function AnimatedNumber({ value, isInView }: { value: number; isInView: boolean }) {
@@ -52,7 +50,7 @@ export function ContactSection() {
   ] : []
 
   return (
-    <section ref={ref} id="contact" className="relative py-24 md:py-32" style={{ overflow: "clip" }}>
+    <section ref={ref} id="contact" className="relative py-24 md:py-32 scroll-mt-20" style={{ overflow: "clip" }}>
       {/* Ambient orb */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{ background: "radial-gradient(circle, oklch(0.45 0.18 15 / 0.07) 0%, transparent 70%)" }} />
@@ -109,7 +107,7 @@ export function ContactSection() {
               {statItems.map((s, i) => (
                 <motion.div key={s.label}
                   initial={{ opacity: 0, y: 8 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: DUR, delay: 0.08 + i * 0.03, ease: EASE }}
+                  transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
                   className="card-hover rounded-lg border border-border bg-secondary p-3 text-center cursor-default"
                 >
                   <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
@@ -141,7 +139,7 @@ export function ContactSection() {
               return (
                 <motion.div key={link.label}
                   initial={{ opacity: 0, y: 6 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: DUR, delay: 0.1 + i * 0.03, ease: EASE }}
+                  transition={{ duration: DUR, delay: 0.15 + i * SCROLL_STEP, ease: EASE }}
                 >
                   {link.isEmail ? (
                     <button

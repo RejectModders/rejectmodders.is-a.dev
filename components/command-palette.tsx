@@ -3,13 +3,14 @@
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, Home, User, FolderGit2, Users, Music, Terminal, ExternalLink, ArrowRight } from "lucide-react"
+import { Search, Home, User, FolderGit2, Users, Music, Gamepad2, Terminal, ExternalLink, ArrowRight } from "lucide-react"
 
 const ITEMS = [
   { group: "Pages", icon: Home,        label: "Home",           href: "/",         internal: true },
   { group: "Pages", icon: User,        label: "About",          href: "/about",    internal: true },
   { group: "Pages", icon: FolderGit2,  label: "Projects",       href: "/projects", internal: true },
   { group: "Pages", icon: Users,       label: "Friends",        href: "/friends",  internal: true },
+  { group: "Pages", icon: Gamepad2,    label: "Games",          href: "/games",    internal: true },
   { group: "Pages", icon: Music,       label: "Spotify",        href: "/spotify",  internal: true },
   { group: "Sections", icon: ArrowRight, label: "Contact",      href: "/#contact", internal: true },
   { group: "Sections", icon: ArrowRight, label: "Skills",       href: "/#about",   internal: true },

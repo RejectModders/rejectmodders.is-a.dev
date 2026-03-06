@@ -7,10 +7,9 @@ import {
   Users, BookOpen, Zap, Globe, Bot, Rocket, GitMerge, Search
 } from "lucide-react"
 import { SKILLS } from "@/data/skills"
+import { EASE, DUR, PAGE_START, PAGE_STEP, SCROLL_STEP, getStaggerDelay } from "@/lib/animation"
 
-// ── Shared animation constants - fast and snappy ────────────────────────────
-const EASE = [0.25, 0.1, 0.25, 1] as const
-const DUR  = 0.25
+// ── Animation helpers ────────────────────────────────────────────────────────
 const fadeUp = (delay = 0) => ({
   initial:    { opacity: 0, y: 12 },
   animate:    { opacity: 1, y: 0  },
@@ -19,7 +18,7 @@ const fadeUp = (delay = 0) => ({
 const underline = (delay = 0) => ({
   initial:    { scaleX: 0 },
   animate:    { scaleX: 1 },
-  transition: { duration: 0.3, delay, ease: "easeOut" },
+  transition: { duration: 0.25, delay, ease: "easeOut" },
   style:      { originX: 0 } as React.CSSProperties,
 })
 
@@ -115,9 +114,9 @@ const timelineItems = [
 function SectionHeader({ tag, title, inView }: { tag: string; title: string; inView: boolean }) {
   return (
     <div className="mb-10">
-      <motion.span {...fadeUp(0)} animate={inView ? { opacity: 1, y: 0 } : {}} className="font-mono text-sm text-primary">{tag}</motion.span>
-      <motion.h2 {...fadeUp(0.06)} animate={inView ? { opacity: 1, y: 0 } : {}} className="mt-2 text-3xl font-bold text-foreground md:text-4xl">{title}</motion.h2>
-      <motion.div {...underline(0.12)} animate={inView ? { scaleX: 1 } : {}} className="mt-2 h-1 w-16 rounded-full bg-primary" />
+      <motion.span {...fadeUp(0.05)} animate={inView ? { opacity: 1, y: 0 } : {}} className="font-mono text-sm text-primary">{tag}</motion.span>
+      <motion.h2 {...fadeUp(0.1)} animate={inView ? { opacity: 1, y: 0 } : {}} className="mt-2 text-3xl font-bold text-foreground md:text-4xl">{title}</motion.h2>
+      <motion.div {...underline(0.15)} animate={inView ? { scaleX: 1 } : {}} className="mt-2 h-1 w-16 rounded-full bg-primary" />
     </div>
   )
 }
@@ -147,7 +146,7 @@ export function AboutPageContent() {
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         <div ref={heroRef} className="mb-20">
           {/* Page title */}
-          <motion.div {...fadeUp(0)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="mb-8">
+          <motion.div {...fadeUp(PAGE_START)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="mb-8">
             <span className="font-mono text-sm text-primary">{'// about'}</span>
             <h1 className="mt-2 text-4xl font-bold text-foreground md:text-5xl lg:text-6xl">
               About <span className="text-gradient">Me</span>
@@ -156,12 +155,12 @@ export function AboutPageContent() {
 
           <div className="grid gap-8 lg:grid-cols-3">
             {/* Avatar + stats */}
-            <motion.div {...fadeUp(0.05)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="flex flex-col items-center lg:items-start">
+            <motion.div {...fadeUp(PAGE_START + 0.08)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="flex flex-col items-center lg:items-start">
               {stats?.avatar_url && (
                 <div className="relative mb-6">
                   <motion.div animate={{ scale: [1, 1.06, 1], opacity: [0.4, 0.1, 0.4] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 rounded-2xl border-2 border-primary/40" />
                   <img src={`/api/avatar?url=${encodeURIComponent(stats.avatar_url)}`} alt="RejectModders" className="relative h-40 w-40 rounded-2xl border-2 border-primary/20 object-cover transition-transform duration-150 hover:scale-105" />
-                  <motion.div {...fadeUp(0.1)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="absolute -bottom-2 -right-2 rounded-full border border-primary/30 bg-background px-3 py-1 font-mono text-xs text-primary animate-pulse-glow">
+                  <motion.div {...fadeUp(PAGE_START + 0.15)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="absolute -bottom-2 -right-2 rounded-full border border-primary/30 bg-background px-3 py-1 font-mono text-xs text-primary animate-pulse-glow">
                     Hireable
                   </motion.div>
                 </div>
@@ -175,7 +174,7 @@ export function AboutPageContent() {
                 ].map((s, i) => (
                   <motion.div
                     key={s.label}
-                    {...fadeUp(0.08 + i * 0.03)}
+                    {...fadeUp(PAGE_START + 0.12 + i * 0.04)}
                     animate={heroInView ? { opacity: 1, y: 0 } : {}}
                     className="card-hover rounded-lg border border-border bg-card p-3 text-center cursor-default"
                   >
@@ -190,7 +189,7 @@ export function AboutPageContent() {
             </motion.div>
 
             {/* Bio */}
-            <motion.div {...fadeUp(0.1)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="lg:col-span-2">
+            <motion.div {...fadeUp(PAGE_START + 0.16)} animate={heroInView ? { opacity: 1, y: 0 } : {}} className="lg:col-span-2">
               <div className="card-hover rounded-xl border border-border bg-card p-6 md:p-8">
                 <div className="mb-6 flex items-center gap-2">
                   {[["bg-[#ff5f57]","border-[#e0443e]"], ["bg-[#febc2e]","border-[#d4a012]"], ["bg-[#28c840]","border-[#1aab29]"]].map(([bg, border], i) => <div key={i} className={`h-3 w-3 rounded-full border ${bg} ${border}`} />)}
@@ -233,7 +232,7 @@ export function AboutPageContent() {
                   key={skill.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={skillsInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: DUR, delay: i * 0.03, ease: EASE }}
+                  transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
                 >
                   <div className="mb-1.5 flex items-center justify-between">
                     <span className="text-sm font-medium text-foreground">{skill.name}</span>
@@ -241,7 +240,7 @@ export function AboutPageContent() {
                       className="font-mono text-xs text-primary"
                       initial={{ opacity: 0 }}
                       animate={skillsInView ? { opacity: 1 } : {}}
-                      transition={{ duration: 0.2, delay: i * 0.03 }}
+                      transition={{ duration: 0.2, delay: 0.1 + i * SCROLL_STEP }}
                     >
                       {skill.level > 100 ? skill.level : <AnimatedNumber value={skillsInView ? skill.level : 0} isInView={skillsInView} />}%
                     </motion.span>
@@ -250,7 +249,7 @@ export function AboutPageContent() {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={skillsInView ? { width: `${Math.min(skill.level, 100)}%` } : {}}
-                      transition={{ duration: 0.6, delay: i * 0.03, ease: "easeOut" }}
+                      transition={{ duration: 0.5, delay: 0.1 + i * SCROLL_STEP, ease: "easeOut" }}
                       className="h-full rounded-full bg-primary"
                       style={{ boxShadow: "0 0 8px color-mix(in oklch, var(--primary) 50%, transparent)" }}
                     />
@@ -271,7 +270,7 @@ export function AboutPageContent() {
                 href={org.url} target="_blank" rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 12 }}
                 animate={orgsInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: DUR, delay: i * 0.05, ease: EASE }}
+                transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
                 whileTap={{ scale: 0.98 }}
                 className="card-hover group rounded-xl border border-border bg-card p-6 md:p-8"
               >
@@ -313,13 +312,13 @@ export function AboutPageContent() {
                   key={item.year}
                   initial={{ opacity: 0, y: 12 }}
                   animate={timelineInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: DUR, delay: i * 0.04, ease: EASE }}
+                  transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
                   className={`relative mb-10 flex flex-col gap-2 pl-14 md:w-1/2 md:pl-0 ${isRight ? "md:ml-auto md:pl-12" : "md:pr-12 md:text-right"}`}
                 >
                   {/* Icon dot */}
                   <motion.div
                     initial={{ scale: 0 }} animate={timelineInView ? { scale: 1 } : {}}
-                    transition={{ delay: i * 0.04, type: "spring", stiffness: 500, damping: 20 }}
+                    transition={{ delay: 0.1 + i * SCROLL_STEP, type: "spring", stiffness: 500, damping: 20 }}
                     className={`absolute left-1.5 top-0.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary bg-background transition-colors duration-150 hover:bg-primary/10 ${isRight ? "md:-left-4" : "md:left-auto md:-right-4"}`}
                   >
                     <Icon className="h-3.5 w-3.5 text-primary" />

@@ -1,10 +1,11 @@
-﻿"use client"
+"use client"
 
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import { useRef, useEffect, useState, useMemo } from "react"
 import { Star, GitFork, ExternalLink, Code2, Search, Filter, ArrowUpRight, Archive } from "lucide-react"
+import { EASE, DUR, PAGE_START, PAGE_STEP, SCROLL_STEP } from "@/lib/animation"
 
-// Easing function - matches the site-wide EASE curve
+// Easing function for counters
 function easeOut(t: number) {
   return 1 - Math.pow(1 - t, 3)
 }
@@ -185,7 +186,7 @@ export function ProjectsPageContent() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4, delay: 0.45, ease: [0.215, 0.61, 0.355, 1] }}
+          transition={{ duration: DUR, delay: PAGE_START, ease: EASE }}
           className="mb-8"
         >
           <span className="font-mono text-sm text-primary">{'// projects'}</span>
@@ -201,7 +202,7 @@ export function ProjectsPageContent() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4, delay: 0.52, ease: [0.215, 0.61, 0.355, 1] }}
+          transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP, ease: EASE }}
           className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4"
         >
           {[
@@ -214,7 +215,7 @@ export function ProjectsPageContent() {
               key={stat.label}
               initial={{ opacity: 0, y: 12 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.15 + i * 0.05, type: "spring", stiffness: 280, damping: 22 }}
+              transition={{ delay: PAGE_START + PAGE_STEP * 2 + i * 0.04, type: "spring", stiffness: 280, damping: 22 }}
               whileTap={{ scale: 0.98 }}
               className="card-hover rounded-lg border border-border bg-card p-4 text-center cursor-default"
             >
@@ -230,7 +231,7 @@ export function ProjectsPageContent() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.15 }}
+          transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP * 3, ease: EASE }}
           className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
           {/* Source filter */}
@@ -282,7 +283,7 @@ export function ProjectsPageContent() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.25 }}
+            transition={{ delay: PAGE_START + PAGE_STEP * 4, ease: EASE }}
             className="mb-6 flex flex-wrap gap-2"
           >
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -336,7 +337,7 @@ export function ProjectsPageContent() {
                   rel="noopener noreferrer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.4), ease: [0.215, 0.61, 0.355, 1] }}
+                  transition={{ duration: DUR, delay: Math.min(i * SCROLL_STEP, 0.35), ease: EASE }}
                   whileTap={{ scale: 0.98 }}
                   className="card-hover group relative flex flex-col rounded-xl border border-border bg-card p-6"
                 >
@@ -434,7 +435,7 @@ export function ProjectsPageContent() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP * 5, ease: EASE }}
           className="mt-12 flex flex-wrap justify-center gap-4"
         >
           {[

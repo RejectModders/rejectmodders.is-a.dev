@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { ChevronLeft, RotateCcw } from "lucide-react"
-import { loadHS, saveHS } from "../helpers"
+import { ChevronLeft, RotateCcw, Volume2, VolumeX } from "lucide-react"
+import { getHS, saveHS } from "../helpers"
+import { gameSounds } from "../sounds"
 
 const TCOLS = 10, TROWS = 20, TC = 28
 
@@ -51,6 +52,7 @@ export function TetrisGame({ primary, onBack }: { primary: string; onBack: () =>
     raf: 0,
   })
   const [display, setDisplay] = useState({ score: 0, lines: 0, level: 1, alive: true, started: false, hs: 0 })
+  const [soundEnabled, setSoundEnabled] = useState(true)
 
   const place = useCallback(() => {
     const s = state.current; if (!s.piece) return
@@ -64,11 +66,20 @@ export function TetrisGame({ primary, onBack }: { primary: string; onBack: () =>
     const newBoard = [...Array.from({ length: cleared }, () => Array(TCOLS).fill(0) as (string | 0)[]), ...filtered] as TBoard
     s.board = newBoard
     const pts = [0, 100, 300, 500, 800][cleared] ?? 0
+    const oldLevel = s.level
     s.score += pts * s.level; s.lines += cleared; s.level = Math.floor(s.lines / 10) + 1
+    
+    // Play sounds
+    if (cleared > 0) {
+      if (cleared >= 4) gameSounds.play("levelup") // Tetris!
+      else gameSounds.play("eat")
+    }
+    if (s.level > oldLevel) gameSounds.play("levelup")
     const next = spawnPiece()
     if (!fits(s.board, next.shape, next.x, next.y)) {
       s.alive = false; s.piece = null; saveHS("tetris", s.score)
       s.hs = Math.max(s.hs, s.score)
+      gameSounds.play("die")
       setDisplay(d => ({ ...d, alive: false, hs: s.hs })); clearInterval(s.interval); return
     }
     s.piece = next
@@ -91,13 +102,14 @@ export function TetrisGame({ primary, onBack }: { primary: string; onBack: () =>
   const reset = useCallback(() => {
     const s = state.current; clearInterval(s.interval)
     s.board = emptyBoard(); s.piece = null; s.score = 0; s.lines = 0; s.level = 1; s.alive = true; s.started = false
-    s.hs = loadHS()["tetris"] ?? 0
+    s.hs = getHS("tetris")
     setDisplay({ score: 0, lines: 0, level: 1, alive: true, started: false, hs: s.hs })
   }, [])
 
   const startGame = useCallback(() => {
     const s = state.current; if (s.started) return
     s.piece = spawnPiece(); s.started = true
+    gameSounds.play("start")
     setDisplay(d => ({ ...d, started: true }))
     s.interval = setInterval(tick, Math.max(100, 600 - (s.level - 1) * 50))
   }, [tick])
@@ -210,7 +222,14 @@ export function TetrisGame({ primary, onBack }: { primary: string; onBack: () =>
         <div className="flex items-center gap-4 font-mono text-xs">
           <span className="text-primary">score: {display.score}</span>
           <span className="text-muted-foreground">lv: {display.level}</span>
-          <button onClick={reset} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
+          <button
+            onClick={() => setSoundEnabled(gameSounds.toggle())}
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+            title={soundEnabled ? "Mute sounds" : "Enable sounds"}
+          >
+            {soundEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+          </button>
+          <button onClick={reset} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors" title="Restart game">
             <RotateCcw className="h-3 w-3" />
           </button>
         </div>

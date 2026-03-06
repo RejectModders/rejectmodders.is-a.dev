@@ -3,7 +3,8 @@
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { Heart, MessageCircle, Github as GitHubIcon, Twitter, Globe, Youtube, User, Mail } from "lucide-react"
-import { GITHUB_REPO_URL, ANIMATION_EASE, ANIMATION_DURATION } from "@/config/constants"
+import { GITHUB_REPO_URL } from "@/config/constants"
+import { EASE, DUR, PAGE_START, PAGE_STEP, SCROLL_STEP } from "@/lib/animation"
 
 interface Friend {
   name: string
@@ -18,15 +19,12 @@ interface Friend {
   resolvedAvatar?: string | null
 }
 
-const EASE = ANIMATION_EASE
-const DUR  = ANIMATION_DURATION
-
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: 0.52 + i * 0.07, duration: DUR, ease: EASE },
+    transition: { delay: PAGE_START + PAGE_STEP * 4 + i * SCROLL_STEP, duration: DUR, ease: EASE },
   }),
 }
 
@@ -57,7 +55,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: DUR, delay: 0.45, ease: EASE }}
+          transition={{ duration: DUR, delay: PAGE_START, ease: EASE }}
           className="mb-12"
         >
           <span className="font-mono text-sm text-primary">{'// friends'}</span>
@@ -66,7 +64,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
           </h1>
           <motion.p
             initial={{ opacity: 0, y: 12 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: DUR, delay: 0.52, ease: EASE }}
+            transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP, ease: EASE }}
             className="mt-4 max-w-lg text-lg leading-relaxed text-muted-foreground"
           >
             These are the people who actually matter to me. Wouldn't trade any of them.
@@ -77,7 +75,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: DUR, delay: 0.52, ease: EASE }}
+          transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP * 2, ease: EASE }}
           className="mb-12"
         >
           <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 md:p-8">
@@ -112,7 +110,7 @@ export function FriendsPageContent({ friends }: { friends: Friend[] }) {
         {gf && (
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: DUR, delay: 0.52, ease: EASE }}
+            transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP * 3, ease: EASE }}
             className="mb-12"
           >
             <div className="card-hover relative overflow-hidden rounded-2xl border border-primary/30 bg-card p-6 md:p-8">

@@ -5,9 +5,7 @@ import { useRef, useEffect, useState } from "react"
 import { Shield, Code2, MapPin, Zap, Github, Star, GitFork, Terminal, Lock, Bug, Cpu, ArrowRight, GitCommit, GitPullRequest, AlertCircle, Clock } from "lucide-react"
 import Link from "next/link"
 import { SKILLS } from "@/data/skills"
-
-const EASE = [0.215, 0.61, 0.355, 1] as const
-const DUR  = 0.4
+import { EASE, DUR, SCROLL_STEP } from "@/lib/animation"
 
 // ── GitHub stats ─────────────────────────────────────────────────────────────
 interface GHStats { public_repos: number; followers: number; stars: number }
@@ -240,7 +238,7 @@ export function IntroStrip() {
                 key={s.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={statsInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: DUR, delay: i * 0.08, ease: EASE }}
+                transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
                 className="card-hover flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-5 text-center"
               >
                 <s.icon className="h-5 w-5 text-primary" />
@@ -296,7 +294,7 @@ export function IntroStrip() {
                   target="_blank" rel="noopener noreferrer"
                   initial={{ opacity: 0, x: -10 }}
                   animate={actInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: DUR, delay: 0.08 + i * 0.05, ease: EASE }}
+                  transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
                   className="group flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 transition-all duration-150 hover:border-primary/30 hover:-translate-y-0.5"
                 >
                   <div className="mt-0.5 shrink-0">{eventIcon(e.type)}</div>
@@ -350,7 +348,7 @@ export function IntroStrip() {
                 key={card.title}
                 initial={{ opacity: 0, y: 24 }}
                 animate={focusInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: DUR, delay: 0.1 + i * 0.08, ease: EASE }}
+                transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
                 className="card-hover group relative flex flex-col rounded-xl border border-border bg-card p-5"
               >
                 <div className="mb-3 flex items-center gap-2">

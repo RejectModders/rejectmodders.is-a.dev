@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { 
-  AVATAR_ALLOWED_HOSTS, 
-  CACHE_DURATION_AVATAR, 
+import {
+  AVATAR_ALLOWED_HOSTS,
+  CACHE_DURATION_AVATAR,
   CACHE_DURATION_AVATAR_STALE,
   AllowedHost
 } from "@/config/constants"

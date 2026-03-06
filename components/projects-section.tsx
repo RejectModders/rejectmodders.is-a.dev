@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion"
 import { useRef, useEffect, useState } from "react"
 import { Star, GitFork, ArrowUpRight, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { EASE, DUR, SCROLL_STEP } from "@/lib/animation"
 
 interface Repo {
   id: number
@@ -67,13 +68,13 @@ export function ProjectsSection() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: DUR, ease: EASE }}
           className="mb-12"
         >
           <motion.span
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: DUR, delay: 0.05, ease: EASE }}
             className="font-mono text-sm text-primary"
           >
             {'// projects'}
@@ -81,7 +82,7 @@ export function ProjectsSection() {
           <motion.h2
             initial={{ opacity: 0, y: 8 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.25, delay: 0.03, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: DUR, delay: 0.1, ease: EASE }}
             className="mt-2 text-3xl font-bold text-foreground md:text-4xl"
           >
             Featured Projects
@@ -89,14 +90,14 @@ export function ProjectsSection() {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : {}}
-            transition={{ duration: 0.3, delay: 0.06, ease: "easeOut" }}
+            transition={{ duration: 0.25, delay: 0.15, ease: "easeOut" }}
             style={{ originX: 0 }}
             className="mt-2 h-1 w-16 rounded-full bg-primary"
           />
           <motion.p
             initial={{ opacity: 0, y: 6 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.25, delay: 0.08, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: DUR, delay: 0.2, ease: EASE }}
             className="mt-4 max-w-lg text-muted-foreground"
           >
             Open source projects from my personal account and organizations, fetched live from GitHub.
@@ -113,7 +114,7 @@ export function ProjectsSection() {
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 12 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.25, delay: i * 0.04, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: DUR, delay: 0.1 + i * SCROLL_STEP, ease: EASE }}
               whileTap={{ scale: 0.98 }}
               className="card-hover group relative flex flex-col rounded-xl border border-border bg-card p-5"
             >
@@ -172,7 +173,7 @@ export function ProjectsSection() {
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.25, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: DUR, delay: 0.4, ease: EASE }}
             className="mt-10 text-center"
           >
             <Link

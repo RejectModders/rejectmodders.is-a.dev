@@ -3,9 +3,9 @@
 import { motion, useInView } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
 import { Music2, Headphones, Radio, ExternalLink, Disc3 } from "lucide-react"
+import { EASE, DUR, PAGE_START, PAGE_STEP } from "@/lib/animation"
 
 const SPOTIFY_UID = "31tfph3mamrlj4uch76albbptgay"
-const EASE = [0.215, 0.61, 0.355, 1] as const
 
 // Equalizer bars
 function EqualizerBars({ playing = true }: { playing?: boolean }) {
@@ -122,13 +122,13 @@ export function SpotifyPageContent() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4, delay: 0.45, ease: EASE }}
+          transition={{ duration: DUR, delay: PAGE_START, ease: EASE }}
           className="mb-16 text-center"
         >
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4, delay: 0.45, ease: EASE }}
+            transition={{ duration: DUR, delay: PAGE_START, ease: EASE }}
             className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1DB954]/30 bg-[#1DB954]/5 px-4 py-1.5"
           >
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }}>
@@ -140,14 +140,14 @@ export function SpotifyPageContent() {
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4, delay: 0.52, ease: EASE }}
+            transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP, ease: EASE }}
             className="block font-mono text-sm text-primary"
           >{'// music'}</motion.span>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4, delay: 0.58, ease: EASE }}
+            transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP * 2, ease: EASE }}
             className="mt-2 text-4xl font-bold text-foreground md:text-5xl lg:text-6xl"
           >
             What I&apos;m <span className="text-gradient">Listening To</span>
@@ -156,7 +156,7 @@ export function SpotifyPageContent() {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : {}}
-            transition={{ duration: 0.4, delay: 0.65, ease: "easeOut" }}
+            transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP * 3, ease: "easeOut" }}
             style={{ originX: 0.5 }}
             className="mx-auto mt-3 h-1 w-20 rounded-full bg-[#1DB954]"
           />
@@ -164,7 +164,7 @@ export function SpotifyPageContent() {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4, delay: 0.7, ease: EASE }}
+            transition={{ duration: DUR, delay: PAGE_START + PAGE_STEP * 4, ease: EASE }}
             className="mt-4 text-lg text-muted-foreground"
           >
             Whatever I've been playing recently. Taste varies a lot, fair warning.

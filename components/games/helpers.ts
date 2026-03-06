@@ -38,13 +38,16 @@ export function usePrimary() {
   return c
 }
 
-// ── HIGH SCORES (localStorage) ────────────────────────────────────────────────
-export const HS_KEY = "rm_game_hs"
+// ── HIGH SCORES v2 (localStorage) - Fresh start for rewritten games ───────────
+export const HS_KEY = "rm_games_v2"
 export function loadHS(): Record<string, number> {
   try { return JSON.parse(localStorage.getItem(HS_KEY) ?? "{}") } catch { return {} }
 }
 export function saveHS(game: string, score: number) {
   const hs = loadHS()
   if ((hs[game] ?? 0) < score) { hs[game] = score; localStorage.setItem(HS_KEY, JSON.stringify(hs)) }
+}
+export function getHS(game: string): number {
+  return loadHS()[game] ?? 0
 }
 
