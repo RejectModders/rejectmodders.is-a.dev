@@ -360,10 +360,18 @@
 }
 
 /* Focus visible improvements */
-:focus-visible {
+:focus-visible:not(.terminal-input) {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* Terminal input - no focus outline */
+.terminal-input:focus,
+.terminal-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* Better selection color */
