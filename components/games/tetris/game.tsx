@@ -849,55 +849,74 @@ export function TetrisGame({ onBack }: { primary?: string; onBack: () => void })
       </div>
 
       {/* Mobile Controls */}
-      <div className="flex flex-col gap-2 md:hidden w-full max-w-xs">
-        {/* Top row: Hold, Rotate, Next info */}
-        <div className="flex justify-between items-center px-2">
+      <div className="flex flex-col gap-3 md:hidden w-full max-w-sm px-2">
+        {/* Top row: Hold + Info + Pause */}
+        <div className="flex justify-between items-center">
           <button
             onTouchStart={(e) => { e.preventDefault(); if (gameState === "playing") holdPiece() }}
-            className="flex h-10 w-16 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary font-mono text-xs touch-none"
+            className="flex h-11 px-4 items-center justify-center gap-1.5 rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary font-mono text-xs touch-none"
           >
-            HOLD
+            <span>HOLD</span>
           </button>
-          <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-            <span>Lines: {lines}</span>
-            {highScore > 0 && <span className="text-yellow-500">Best: {highScore}</span>}
+          <div className="flex items-center gap-3 font-mono text-xs text-muted-foreground">
+            <span>Ln: {lines}</span>
+            {highScore > 0 && <span className="text-yellow-500">Hi: {highScore}</span>}
           </div>
+          <button
+            onTouchStart={(e) => { e.preventDefault(); pauseGame() }}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+          >
+            {gameState === "paused" ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+          </button>
         </div>
         
-        {/* Main controls */}
-        <div className="flex justify-center items-center gap-2">
-          <button
-            onTouchStart={(e) => { e.preventDefault(); if (gameState === "idle") startGame(); else if (gameState === "playing") movePiece(-1, 0) }}
-            className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
+        {/* Main controls - D-pad style */}
+        <div className="flex justify-between items-center gap-3">
+          {/* Left side: Rotate buttons */}
           <div className="flex flex-col gap-2">
+            <button
+              onTouchStart={(e) => { e.preventDefault(); if (gameState === "playing") rotatePiece(false) }}
+              className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+            >
+              <RotateCcw className="h-5 w-5" />
+            </button>
             <button
               onTouchStart={(e) => { e.preventDefault(); if (gameState === "playing") rotatePiece(true) }}
               className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
             >
               <RotateCw className="h-5 w-5" />
             </button>
+          </div>
+          
+          {/* Center: Movement controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onTouchStart={(e) => { e.preventDefault(); if (gameState === "idle") startGame(); else if (gameState === "playing") movePiece(-1, 0) }}
+              className="flex h-16 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+            >
+              <ChevronLeft className="h-7 w-7" />
+            </button>
             <button
               onTouchStart={(e) => { e.preventDefault(); if (gameState === "idle") startGame(); else if (gameState === "playing") { movePiece(0, 1); scoreRef.current += 1; setScore(scoreRef.current) } }}
-              className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+              className="flex h-16 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
             >
-              <ChevronDown className="h-5 w-5" />
+              <ChevronDown className="h-7 w-7" />
+            </button>
+            <button
+              onTouchStart={(e) => { e.preventDefault(); if (gameState === "idle") startGame(); else if (gameState === "playing") movePiece(1, 0) }}
+              className="flex h-16 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+            >
+              <ChevronRight className="h-7 w-7" />
             </button>
           </div>
-          <button
-            onTouchStart={(e) => { e.preventDefault(); if (gameState === "idle") startGame(); else if (gameState === "playing") movePiece(1, 0) }}
-            className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
+          
+          {/* Right side: Hard drop */}
           <button
             onTouchStart={(e) => { e.preventDefault(); if (gameState === "idle") startGame(); else if (gameState === "playing") hardDrop() }}
-            className="flex h-14 w-20 items-center justify-center rounded-xl border border-primary/30 bg-primary/20 active:bg-primary/40 text-primary font-mono text-xs touch-none"
+            className="flex h-24 w-16 flex-col items-center justify-center gap-1 rounded-xl border border-primary/40 bg-primary/20 active:bg-primary/40 text-primary font-mono text-xs touch-none"
           >
-            <ChevronsDown className="h-5 w-5 mr-1" />
-            DROP
+            <ChevronsDown className="h-6 w-6" />
+            <span>DROP</span>
           </button>
         </div>
       </div>

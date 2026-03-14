@@ -431,8 +431,7 @@ export function SnakeGame({ onBack }: { primary?: string; onBack: () => void }) 
       />
 
       {/* Mobile D-Pad */}
-      <div className="grid grid-cols-3 gap-2 md:hidden w-44">
-        <div />
+      <div className="flex flex-col items-center gap-2 md:hidden">
         <button
           onTouchStart={(e) => {
             e.preventDefault()
@@ -440,36 +439,37 @@ export function SnakeGame({ onBack }: { primary?: string; onBack: () => void }) 
           }}
           className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
         >
-          <ChevronUp className="h-6 w-6" />
+          <ChevronUp className="h-7 w-7" />
         </button>
-        <div />
-        <button
-          onTouchStart={(e) => {
-            e.preventDefault()
-            changeDirection("LEFT")
-          }}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
-        <button
-          onTouchStart={(e) => {
-            e.preventDefault()
-            changeDirection("DOWN")
-          }}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
-        >
-          <ChevronDown className="h-6 w-6" />
-        </button>
-        <button
-          onTouchStart={(e) => {
-            e.preventDefault()
-            changeDirection("RIGHT")
-          }}
-          className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
+        <div className="flex gap-2">
+          <button
+            onTouchStart={(e) => {
+              e.preventDefault()
+              changeDirection("LEFT")
+            }}
+            className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+          >
+            <ChevronLeft className="h-7 w-7" />
+          </button>
+          <button
+            onTouchStart={(e) => {
+              e.preventDefault()
+              changeDirection("DOWN")
+            }}
+            className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+          >
+            <ChevronDown className="h-7 w-7" />
+          </button>
+          <button
+            onTouchStart={(e) => {
+              e.preventDefault()
+              changeDirection("RIGHT")
+            }}
+            className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 active:bg-primary/30 text-primary touch-none"
+          >
+            <ChevronRight className="h-7 w-7" />
+          </button>
+        </div>
       </div>
 
       {/* Desktop Instructions */}
