@@ -188,7 +188,7 @@
   width: 0;
   height: 2px;
   background: var(--primary);
-  transition: width 0.3s ease;
+  transition: width 0.15s ease-out;
 }
 .animated-underline:hover::after {
   width: 100%;
@@ -196,13 +196,13 @@
 
 /* ── Consistent card hover — primary border glow on ALL cards ── */
 .card-hover {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  transition: border-color 0.1s ease-out, box-shadow 0.1s ease-out, transform 0.08s ease-out;
 }
 .card-hover:hover {
   border-color: color-mix(in oklch, var(--primary) 45%, transparent);
   box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary) 12%, transparent),
-              0 8px 32px color-mix(in oklch, var(--primary) 8%, transparent);
-  transform: translateY(-3px);
+              0 6px 24px color-mix(in oklch, var(--primary) 6%, transparent);
+  transform: translateY(-2px);
 }
 
 /* Floating animation */
@@ -312,7 +312,7 @@
   color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 3px;
-  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  transition: color 0.1s ease-out, text-decoration-color 0.1s ease-out;
 }
 .prose-link:hover {
   color: color-mix(in oklch, var(--primary) 80%, white);

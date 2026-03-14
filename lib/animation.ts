@@ -173,24 +173,24 @@ export const fastStaggerContainer = {
 export const cardHover = {
   rest: { scale: 1, y: 0 },
   hover: { 
-    scale: 1.02, 
-    y: -3,
-    transition: { duration: 0.1, ease: EASE_SNAPPY }
+    scale: 1.015, 
+    y: -2,
+    transition: { duration: 0.08, ease: EASE_SNAPPY }
   },
-  tap: { scale: 0.98, transition: { duration: 0.08 } },
+  tap: { scale: 0.98, transition: { duration: 0.05 } },
 }
 
 /** Button hover effect - instant */
 export const buttonHover = {
   rest: { scale: 1 },
-  hover: { scale: 1.02, transition: { duration: 0.08 } },
-  tap: { scale: 0.97, transition: { duration: 0.06 } },
+  hover: { scale: 1.015, transition: { duration: 0.06 } },
+  tap: { scale: 0.97, transition: { duration: 0.04 } },
 }
 
 /** Subtle lift effect - immediate */
 export const subtleLift = {
   rest: { y: 0 },
-  hover: { y: -2, transition: { duration: 0.1, ease: EASE_SNAPPY } },
+  hover: { y: -2, transition: { duration: 0.08, ease: EASE_SNAPPY } },
 }
 
 // ── Utility Functions ────────────────────────────────────────────────────────
