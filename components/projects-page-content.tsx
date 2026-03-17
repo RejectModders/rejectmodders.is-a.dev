@@ -134,7 +134,7 @@ export function ProjectsPageContent() {
   useEffect(() => {
     async function fetchAllRepos() {
       try {
-        const res = await fetch("/api/github")
+        const res = await fetch("/api/github", { cache: "no-store" })
         if (!res.ok) return
         const allRepos: Repo[] = await res.json()
 

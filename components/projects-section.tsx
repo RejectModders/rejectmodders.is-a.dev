@@ -42,7 +42,7 @@ export function ProjectsSection() {
   useEffect(() => {
     async function fetchRepos() {
       try {
-        const res = await fetch("/api/github")
+        const res = await fetch("/api/github", { cache: "no-store" })
         if (!res.ok) return
         const all: Repo[] = await res.json()
         const unique = Array.from(new Map(all.map((r) => [r.id, r])).values())
