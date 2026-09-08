@@ -315,7 +315,9 @@ export function CustomCursor() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    if (typeof window === "undefined" || window.matchMedia("(pointer: coarse)").matches) return
+    if (typeof window === "undefined") return
+    if (window.matchMedia("(pointer: coarse)").matches) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     const canvas = canvasRef.current; if (!canvas) return
     const ctx = canvas.getContext("2d"); if (!ctx) return
 
@@ -420,6 +422,14 @@ export function CustomCursor() {
     document.addEventListener("mousedown",  onDown)
     document.addEventListener("mouseup",    onUp)
 
+    // Mutated in place every frame instead of reallocated - the arrays are
+    // stable references, only the scalars change.
+    const drawProps: DrawCtx = {
+      ctx, dx: 0, dy: 0, rx: 0, ry: 0, curR, curG, curB,
+      clickBlend: 0, typingBlend: 0, speed: 0, vx: 0, vy: 0, frame: 0,
+      tail, tailHead: 0, rings, particles, sparks,
+    }
+
     const draw = () => {
       rafId = requestAnimationFrame(draw)
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -489,7 +499,12 @@ export function CustomCursor() {
 
       if (cursorScale <= 0.01) return
 
-      const drawProps: DrawCtx = { ctx, dx, dy, rx, ry, curR, curG, curB, clickBlend, typingBlend, speed, vx, vy, frame, tail, tailHead, rings, particles, sparks }
+      // Reused across frames instead of allocated fresh each tick to cut GC pressure.
+      drawProps.dx = dx; drawProps.dy = dy; drawProps.rx = rx; drawProps.ry = ry
+      drawProps.curR = curR; drawProps.curG = curG; drawProps.curB = curB
+      drawProps.clickBlend = clickBlend; drawProps.typingBlend = typingBlend
+      drawProps.speed = speed; drawProps.vx = vx; drawProps.vy = vy; drawProps.frame = frame
+      drawProps.tailHead = tailHead
 
       if (breakMode && cursorScale < 1) {
         ctx.save(); ctx.translate(dx, dy); ctx.scale(cursorScale, cursorScale); ctx.translate(-dx, -dy)
@@ -515,8 +530,20 @@ export function CustomCursor() {
     tail.forEach(pt => { pt.x = dx; pt.y = dy; pt.speed = 0 })
     rafId = requestAnimationFrame(draw)
 
+    // Background tabs still receive rAF ticks on some platforms - stop the
+    // loop outright instead of relying on browser throttling.
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId)
+      } else {
+        rafId = requestAnimationFrame(draw)
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+
     return () => {
       cancelAnimationFrame(rafId)
+      document.removeEventListener("visibilitychange", onVisibility)
       window.removeEventListener("resize",            resize)
       window.removeEventListener("rm:cursor-color",   onColorChange)
       window.removeEventListener("rm:cursor-style",   onStyleChange)

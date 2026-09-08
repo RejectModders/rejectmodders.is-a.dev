@@ -1,6 +1,16 @@
 import { createHash } from "crypto"
 
 /**
+ * `data/friends.json` is community-edited via PRs and never runtime-validated
+ * against the FriendRaw shape - a field that's the wrong JSON type (a number
+ * instead of a string, for example) must not crash avatar resolution for
+ * everyone. Every friend-supplied field is passed through this before use.
+ */
+function asString(value: unknown): string | null {
+  return typeof value === "string" && value.length > 0 ? value : null
+}
+
+/**
  * Wrap an external avatar URL through our caching proxy (/api/avatar?url=...).
  * This means browsers never hit GitHub/unavatar/etc. directly - only our edge
  * function does, and it caches the result for 24 h via Next.js Data Cache.
@@ -204,22 +214,23 @@ export async function resolveAvatar(friend: FriendRaw): Promise<string | null> {
   // 1. Custom avatar - always takes priority, no lookups needed
   // Local paths (e.g. /friends/amanda.png) are passed through as-is;
   // external URLs (e.g. an imgur link) are proxied through our cache.
-  if (friend.avatar) return proxied(friend.avatar)
+  const avatar = asString(friend.avatar)
+  if (avatar) return proxied(avatar)
 
   // 2. GitHub - always available, no API key needed
-  const githubUsername = extractGithubUsername(friend.github)
+  const githubUsername = extractGithubUsername(asString(friend.github))
   if (githubUsername) return proxied(buildGithubAvatarUrl(githubUsername))
 
   // 3. Twitter/X - via unavatar.io, no API key needed
-  const twitterAvatar = await resolveTwitterAvatar(friend.twitter)
+  const twitterAvatar = await resolveTwitterAvatar(asString(friend.twitter))
   if (twitterAvatar) return proxied(twitterAvatar)
 
   // 4. Gravatar from email
-  const gravatar = await resolveGravatarAvatar(friend.email)
+  const gravatar = await resolveGravatarAvatar(asString(friend.email))
   if (gravatar) return proxied(gravatar)
 
   // 5. YouTube (requires YOUTUBE_API_KEY in .env.local)
-  const ytAvatar = await resolveYoutubeAvatar(friend.youtube)
+  const ytAvatar = await resolveYoutubeAvatar(asString(friend.youtube))
   if (ytAvatar) return proxied(ytAvatar)
 
   return null
@@ -227,12 +238,19 @@ export async function resolveAvatar(friend: FriendRaw): Promise<string | null> {
 
 /**
  * Resolve avatars for all friends in parallel.
+ * A single malformed friend entry (bad PR data) falls back to no avatar
+ * instead of taking down the whole /friends page for everyone.
  */
 export async function resolveAllAvatars(friends: FriendRaw[]): Promise<FriendResolved[]> {
   return Promise.all(
-    friends.map(async (friend) => ({
-      ...friend,
-      resolvedAvatar: await resolveAvatar(friend),
-    }))
+    friends.map(async (friend) => {
+      let resolvedAvatar: string | null = null
+      try {
+        resolvedAvatar = await resolveAvatar(friend)
+      } catch (err) {
+        console.error(`[resolve-avatar] Failed to resolve avatar for "${friend?.name}":`, err)
+      }
+      return { ...friend, resolvedAvatar }
+    })
   )
 }

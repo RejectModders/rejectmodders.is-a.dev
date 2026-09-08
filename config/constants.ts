@@ -6,25 +6,28 @@
 // ── Domain Configuration ─────────────────────────────────────────────────────
 export const SITE_URL = "https://rejectmodders.dev"
 export const LEGACY_DOMAIN = "rejectmodders.is-a.dev"
-export const LEGACY_URL = `https://${LEGACY_DOMAIN}`
 
 // ── Site Metadata ────────────────────────────────────────────────────────────
 export const SITE_NAME = "RejectModders"
 export const SITE_TITLE = "RejectModders | Cybersecurity Developer"
-export const SITE_DESCRIPTION = "Cybersecurity-focused developer from Missouri. Building security tools, writing code in Python, C, C++ and C#. Founder of Disutils & VulnRadar."
-export const SITE_KEYWORDS = ["cybersecurity", "developer", "python", "security tools", "RejectModders", "VulnRadar", "Disutils"]
+export const SITE_DESCRIPTION = "Cybersecurity-focused developer from Missouri, presented as a fully interactive retro CRT terminal - boot it up, log in, and explore. Founder of VulnRadar & WSLATL LLC."
+export const SITE_KEYWORDS = ["cybersecurity", "developer", "python", "security tools", "RejectModders", "VulnRadar", "WSLATL", "retro terminal", "interactive portfolio"]
 export const SITE_AUTHOR = "RejectModders"
 export const SITE_LOCATION = "Missouri, USA"
-export const SITE_ROLE = "Cybersecurity Developer"
 
 // ── Theme Configuration ──────────────────────────────────────────────────────
-export const THEME_COLOR = "#dc2626"
+export const THEME_COLOR = "#ff5347"
 
 // ── External Links ───────────────────────────────────────────────────────────
 export const GITHUB_URL = "https://github.com/RejectModders"
 export const GITHUB_USERNAME = "RejectModders"
 export const GITHUB_REPO_URL = "https://github.com/RejectModders/rejectmodders.dev"
 export const VULNRADAR_URL = "https://vulnradar.dev"
+
+// Orgs whose repos count toward the "ecosystem" repo/star totals shown across
+// the site, and repos to exclude from those totals (this repo itself, forks).
+export const GITHUB_ORGS = ["disutils", "vulnradar", "wslatl"] as const
+export const GITHUB_SKIP_REPOS = ["RejectModders", ".github", "LICENSE"] as const
 
 // ── Contact Information ──────────────────────────────────────────────────────
 // Email is split to deter scrapers - assemble at runtime
@@ -34,13 +37,11 @@ export const getEmail = () => `${EMAIL_USER}@${EMAIL_DOMAIN}`
 
 // ── API Endpoints ────────────────────────────────────────────────────────────
 export const GITHUB_API_URL = "https://api.github.com"
-export const GITHUB_USER_API = `${GITHUB_API_URL}/users/${GITHUB_USERNAME}`
 
 // ── Caching Configuration ────────────────────────────────────────────────────
-// Website content: 2-4 hours (7200-14400 seconds)
-export const CACHE_DURATION_PAGE = 7200 // 2 hours
-export const CACHE_DURATION_PAGE_MAX = 14400 // 4 hours
-export const CACHE_DURATION_STATIC = 31536000 // 1 year for static assets
+// Website content: 2-4 hours (7200-14400 seconds). Page Cache-Control lives in
+// next.config.mjs directly - it can't import this .ts file at config-load time,
+// so these values are the source of truth in prose, not in code.
 
 // GitHub Actions / API: 5-10 minutes (300-600 seconds)
 export const CACHE_DURATION_API = 600 // 10 minutes
@@ -71,10 +72,6 @@ export const FOOTER_NAV_LINKS = [
 // ── Sitemap Configuration ────────────────────────────────────────────────────
 export const SITEMAP_ROUTES = [
   { path: "", changeFrequency: "weekly" as const, priority: 1.0 },
-  { path: "/about", changeFrequency: "monthly" as const, priority: 0.9 },
-  { path: "/projects", changeFrequency: "weekly" as const, priority: 0.8 },
-  { path: "/friends", changeFrequency: "monthly" as const, priority: 0.6 },
-  { path: "/spotify", changeFrequency: "daily" as const, priority: 0.5 },
   { path: "/admin", changeFrequency: "never" as const, priority: 0.1 },
 ] as const
 
@@ -106,8 +103,6 @@ export type AllowedHost = typeof AVATAR_ALLOWED_HOSTS[number]
 
 // ── Feature Flags ────────────────────────────────────────────────────────────
 export const FEATURES = {
-  enableTerminalEasterEgg: true,
-  enableCommandPalette: true,
   enableScrollToTop: true,
   enableLegacyDomainWarning: true,
 } as const

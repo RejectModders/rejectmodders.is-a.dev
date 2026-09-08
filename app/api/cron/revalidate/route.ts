@@ -12,16 +12,22 @@ const REVALIDATABLE_PATHS = [
 
 // Cache tags used on fetch() calls - these bust the Next.js Data Cache
 // entries directly without needing revalidatePath on API routes.
+// (No 'status' tag: /api/status doesn't fetch anything external to tag.)
 const REVALIDATABLE_TAGS = [
     'github',
     'github-stats',
     'github-activity',
     'avatars',
-    'status',
 ]
 
 export async function POST(request: Request) {
     const timestamp = new Date().toISOString()
+
+    const secret = process.env.CRON_SECRET
+    const auth = request.headers.get('authorization')
+    if (!secret || auth !== `Bearer ${secret}`) {
+        return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+    }
 
     try {
         console.log(`[Cache Clear] [${timestamp}] Starting cache revalidation...`)

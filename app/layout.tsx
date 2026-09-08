@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { CustomCursor } from '@/components/layout/custom-cursor'
-import { PageTransition } from '@/components/layout/page-transition'
 import { ScrollToTop } from '@/components/layout/scroll-to-top'
-import { TerminalEasterEgg } from '@/components/layout/terminal-easter-egg'
-import { CommandPalette } from '@/components/layout/command-palette'
 import { ThemeProvider } from '@/components/layout/theme-provider'
 import { LegacyDomainBanner } from '@/components/layout/legacy-domain-banner'
 import {
@@ -15,6 +12,7 @@ import {
   SITE_KEYWORDS,
   SITE_AUTHOR,
   THEME_COLOR,
+  FEATURES,
 } from '@/config/constants'
 import './globals.css'
 
@@ -32,26 +30,26 @@ export const metadata: Metadata = {
   authors: [{ name: SITE_AUTHOR }],
   icons: {
     icon: [
-      { url: '/avatar.png', sizes: '32x32' },
-      { url: '/avatar.png', sizes: '64x64' },
-      { url: '/avatar.png', sizes: '192x192' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-64.png', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
     ],
-    shortcut: '/avatar.png',
-    apple: '/avatar.png',
+    shortcut: '/favicon-32.png',
+    apple: '/favicon-192.png',
   },
   openGraph: {
     title: SITE_TITLE,
-    description: 'Cybersecurity-focused developer from Missouri. Building security tools and writing code.',
+    description: SITE_DESCRIPTION,
     type: 'website',
     url: SITE_URL,
     siteName: SITE_NAME,
-    images: [{ url: '/avatar.png', width: 192, height: 192, alt: `${SITE_NAME} Avatar` }],
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: `${SITE_NAME} - an interactive retro terminal` }],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: SITE_TITLE,
-    description: 'Cybersecurity-focused developer from Missouri. Building security tools and writing code.',
-    images: ['/avatar.png'],
+    description: SITE_DESCRIPTION,
+    images: ['/og-image.jpg'],
   },
   other: { 'theme-color': THEME_COLOR },
 }
@@ -78,12 +76,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <LegacyDomainBanner />
           <CustomCursor />
-          <TerminalEasterEgg />
-          <CommandPalette />
-          <ScrollToTop />
-          <PageTransition>
-            {children}
-          </PageTransition>
+          {FEATURES.enableScrollToTop && <ScrollToTop />}
+          {children}
         </ThemeProvider>
       </body>
     </html>

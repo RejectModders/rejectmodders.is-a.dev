@@ -1,29 +1,14 @@
 import { NextResponse } from "next/server"
 import { GITHUB_USERNAME, GITHUB_API_URL, CACHE_DURATION_API, CACHE_DURATION_API_STALE } from "@/config/constants"
-
-export const dynamic = "force-dynamic"
+import { ghHeaders } from "@/lib/github"
 
 const INTERESTING = ["PushEvent", "CreateEvent", "PullRequestEvent", "IssuesEvent", "WatchEvent"]
-
-function ghHeaders(): Record<string, string> {
-  const h: Record<string, string> = {
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-  }
-  if (process.env.GITHUB_TOKEN) {
-    h["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`
-    console.log("[github/activity] Using GITHUB_TOKEN (authenticated)")
-  } else {
-    console.warn("[github/activity] No GITHUB_TOKEN - unauthenticated (60 req/hr limit)")
-  }
-  return h
-}
 
 export async function GET() {
   const url = `${GITHUB_API_URL}/users/${GITHUB_USERNAME}/events/public?per_page=30`
   console.log(`[github/activity] GET /api/github/activity -> fetching ${url}`)
   try {
-    const res = await fetch(url, { headers: ghHeaders(), cache: "no-store" })
+    const res = await fetch(url, { headers: ghHeaders("github/activity"), next: { revalidate: CACHE_DURATION_API, tags: ["github-activity"] } })
     console.log(`[github/activity] HTTP ${res.status} ${res.statusText}`)
 
     if (!res.ok) {

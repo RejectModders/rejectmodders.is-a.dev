@@ -1,29 +1,27 @@
 {
-  "name": "RejectModders",
-  "short_name": "RM",
-  "description": "Cybersecurity developer from Missouri. Building security tools and writing code.",
+  "name": "RM-1000 | RejectModders",
+  "short_name": "RM-1000",
+  "description": "An interactive retro CRT terminal - boot it up, log in, and explore a cybersecurity developer's portfolio as a working desktop.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0d0d0d",
-  "theme_color": "#dc2626",
+  "background_color": "#0a0604",
+  "theme_color": "#ff5347",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/avatar.png",
+      "src": "/favicon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/avatar.png",
+      "src": "/favicon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
   "shortcuts": [
-    { "name": "Projects",  "url": "/projects", "description": "View projects"  },
-    { "name": "About",     "url": "/about",    "description": "About me"       },
     { "name": "VulnRadar", "url": "https://vulnradar.dev", "description": "VulnRadar security scanner" }
   ],
   "categories": ["portfolio", "developer", "security"]

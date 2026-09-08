@@ -4,24 +4,43 @@ const isDev = process.env.NODE_ENV !== "production"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
-    unoptimized: true,
+    // /api/avatar?url=... proxies external avatars through our own origin -
+    // Next.js treats query strings on local image paths as untrusted by
+    // default, so it needs an explicit opt-in.
+    localPatterns: [
+      { pathname: "/api/avatar", search: "?url=*" },
+    ],
+    // Mirrors config/constants.ts AVATAR_ALLOWED_HOSTS - duplicated here since
+    // next.config.mjs can't import the .ts config module at load time.
+    remotePatterns: [
+      { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      { protocol: "https", hostname: "github.com" },
+      { protocol: "https", hostname: "unavatar.io" },
+      { protocol: "https", hostname: "www.gravatar.com" },
+      { protocol: "https", hostname: "pbs.twimg.com" },
+      { protocol: "https", hostname: "cdn.discordapp.com" },
+      { protocol: "https", hostname: "i.ytimg.com" },
+      { protocol: "https", hostname: "yt3.ggpht.com" },
+      { protocol: "https", hostname: "i.imgur.com" },
+      { protocol: "https", hostname: "giffiles.alphacoders.com" },
+      { protocol: "https", hostname: "spotify-github-profile.kittinanx.com" },
+      { protocol: "https", hostname: "spotify-recently-played-readme.vercel.app" },
+    ],
   },
-  // Allow the VulnRadar sandbox tunnel to access Next.js dev resources (HMR, etc.)
-  allowedDevOrigins: ["sandbox.vulnradar.dev"],
+  // Sandbox tunnels allowed to access Next.js dev resources (HMR, etc.) -
+  // sandbox.rejectmodders.dev is this project's; sandbox.vulnradar.dev is
+  // a separate agent working on VulnRadar concurrently, kept here too so
+  // that work isn't disrupted by this config.
+  allowedDevOrigins: ["sandbox.rejectmodders.dev", "sandbox.vulnradar.dev"],
   async headers() {
     return [
       {
+        // Security headers apply to every route, pages and API alike.
+        // Cache-Control is deliberately NOT set here - it's scoped per
+        // route type below so a response only ever carries one value.
         source: "/(.*)",
         headers: [
-          // ── Caching for pages (2-4 hours) ────────────────────────
-          {
-            key: "Cache-Control",
-            value: "public, max-age=7200, s-maxage=7200, stale-while-revalidate=14400",
-          },
           // ── XSS / injection ─────────────────────────────────────
           {
             key: "Content-Security-Policy",
@@ -31,7 +50,9 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob:",
-              "connect-src 'self' https://api.github.com https://api.spotify.com https://accounts.spotify.com",
+              // All GitHub/Spotify data is fetched server-side through our own
+              // /api/* routes - the browser itself never talks to those hosts.
+              "connect-src 'self'",
               "media-src 'self'",
               "object-src 'none'",
               "frame-ancestors 'none'",
@@ -98,24 +119,22 @@ const nextConfig = {
           },
         ],
       },
-      // Static assets - long-term caching (1 year)
+      // Pages - 2-4hr cache. Excludes /api (each route sets its own
+      // Cache-Control) and /_next/static (Next.js already serves those
+      // immutable by default - a custom override here breaks dev mode).
       {
-        source: "/_next/static/(.*)",
+        source: "/((?!api/|_next/static/).*)",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
+            value: "public, max-age=7200, s-maxage=7200, stale-while-revalidate=14400",
           },
         ],
       },
-      // API routes — shorter cache, tighten CORS to own origin only
+      // API routes — CORS only; Cache-Control comes from each route handler
       {
         source: "/api/(.*)",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "public, s-maxage=600, stale-while-revalidate=1200",
-          },
           {
             key: "Access-Control-Allow-Origin",
             // In dev, allow all origins (sandbox proxy, localhost, etc.)

@@ -1,31 +1,13 @@
 import { NextResponse } from "next/server"
-import { GITHUB_USERNAME, GITHUB_API_URL, CACHE_DURATION_API, CACHE_DURATION_API_STALE } from "@/config/constants"
-
-export const dynamic = "force-dynamic"
-
-const ORGS = ["disutils", "vulnradar", "wslatl"]
-const SKIP = ["RejectModders", ".github", "LICENSE"]
+import { GITHUB_USERNAME, GITHUB_API_URL, GITHUB_ORGS, GITHUB_SKIP_REPOS, CACHE_DURATION_API, CACHE_DURATION_API_STALE } from "@/config/constants"
+import { ghHeaders } from "@/lib/github"
 
 interface GHRepo { id: number; fork: boolean; archived: boolean; name: string; owner: { login: string } }
-
-function ghHeaders(): Record<string, string> {
-  const h: Record<string, string> = {
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-  }
-  if (process.env.GITHUB_TOKEN) {
-    h["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`
-    console.log("[github/repos] Using GITHUB_TOKEN (authenticated)")
-  } else {
-    console.warn("[github/repos] No GITHUB_TOKEN - unauthenticated (60 req/hr limit)")
-  }
-  return h
-}
 
 async function fetchJSON(url: string): Promise<GHRepo[]> {
   console.log(`[github/repos] Fetching: ${url}`)
   try {
-    const res = await fetch(url, { headers: ghHeaders(), cache: "no-store" })
+    const res = await fetch(url, { headers: ghHeaders("github/repos"), next: { revalidate: CACHE_DURATION_API, tags: ["github"] } })
     console.log(`[github/repos] ${url} -> HTTP ${res.status} ${res.statusText}`)
     if (!res.ok) {
       const body = await res.text().catch(() => "(unreadable)")
@@ -46,7 +28,7 @@ export async function GET() {
     console.log("[github/repos] GET /api/github")
     const results = await Promise.all([
       fetchJSON(`${GITHUB_API_URL}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100&type=public`),
-      ...ORGS.map(org => fetchJSON(`${GITHUB_API_URL}/orgs/${org}/repos?sort=updated&per_page=100&type=public`)),
+      ...GITHUB_ORGS.map(org => fetchJSON(`${GITHUB_API_URL}/orgs/${org}/repos?sort=updated&per_page=100&type=public`)),
     ])
 
     const all: GHRepo[] = results.flat()
@@ -54,7 +36,7 @@ export async function GET() {
     const unique = all.filter(r => {
       if (seen.has(r.id)) return false
       seen.add(r.id)
-      return !r.fork && !SKIP.includes(r.name)
+      return !r.fork && !(GITHUB_SKIP_REPOS as readonly string[]).includes(r.name)
     })
 
     console.log(`[github/repos] Returning ${unique.length} unique repos (from ${all.length} total)`)
